@@ -1,0 +1,626 @@
+{
+    "info": [
+        {
+            "name": "Game Jam #1",
+            "theme": "Ужасы и Безысходность",
+            "prize": "6500 рублей",
+            "time": "10 - 24 июля 2018",
+            "places_format": true,
+            "link": "https://goo.gl/sKNx81",
+			"streamlink": "https://www.youtube.com/watch?v=xCU8nXZHvTU",
+            "projects": [
+                {
+                    "name": "Это Сон",
+                    "author": "ndecay",
+                    "win": true
+                },
+                {
+                    "name": "The Gusnya Infinity",
+                    "author": "GUSINY\\_GOD",
+                    "win": true
+                },
+				{
+                    "name": "My Job is Full of Fear",
+                    "author": "Vishnya",
+                    "win": true
+                },
+				{
+                    "name": "Last Hack Mission",
+                    "author": "max\\_hha",
+                    "win": true
+                },
+				{
+                    "name": "Отставшие",
+                    "author": "Fataliti + Godfree",
+                    "win": false
+                },
+				{
+                    "name": "lolScorp",
+                    "author": "лолечка + Scorpicore",
+                    "win": false
+                }
+            ]
+        },
+		{
+            "name": "Game Jam #2",
+            "theme": "Юмор",
+            "prize": "1000 рублей",
+            "time": "10 - 11 августа 2018",
+            "places_format": true,
+            "link": "https://goo.gl/bTF61d",
+			"streamlink": "https://www.youtube.com/watch?v=fri6x6PEE44",
+            "projects": [
+                {
+                    "name": "Octosausage Adventures",
+                    "author": "Fataliti + benedique",
+                    "win": true
+                },
+				{
+                    "name": "Flaxing Simulator ",
+                    "author": "Vishnya",
+                    "win": true
+                },
+				{
+                    "name": "В поисках юмора",
+                    "author": "HaskiGame",
+                    "win": true
+                },
+				{
+                    "name": "Taras Quest",
+                    "author": "OffSide",
+                    "win": false
+                },
+				{
+                    "name": "gayvelopper",
+                    "author": "Vishnya",
+                    "win": false
+                },
+				{
+                    "name": "Walking Is Fun",
+                    "author": "лолечка",
+                    "win": false
+                },
+				{
+                    "name": "Яростный Шарокат",
+                    "author": "Scorpicore",
+                    "win": false
+                },
+				{
+                    "name": "Master of Peace Death",
+                    "author": "Danil\\_Revnov",
+                    "win": false
+                },
+				{
+                    "name": "Чумные Маги",
+                    "author": "Shackal",
+                    "win": false
+                },
+				{
+                    "name": "RJOMBA clicker",
+                    "author": "MaratG2",
+                    "win": false
+                },
+				{
+                    "name": "Captain Russia - Революция",
+                    "author": "Nikudo",
+                    "win": false
+                }
+            ]
+        },
+		{
+            "name": "Weekend Jam #1",
+            "theme": "Шпионы",
+            "prize": "1500  рублей",
+            "time": "25 - 26 августа 2018",
+            "places_format": true,
+            "link": "https://goo.gl/ogDSai",
+			"streamlink": "https://www.youtube.com/watch?v=tngX2qUD3YY",
+            "projects": [
+                {
+                    "name": "Spy Among Us",
+                    "author": "Vishnya + Jesus\\_3k",
+                    "win": true
+                },
+				{
+                    "name": "Ghost Spy Game",
+                    "author": "Fataliti + benedique",
+                    "win": true
+                },
+				{
+                    "name": "ЖАСТБЁРНИТ ",
+                    "author": "Евгений + max\\_hha",
+                    "win": true
+                },
+				{
+                    "name": "Agent003 ",
+                    "author": "OffSide",
+                    "win": true
+                },
+				{
+                    "name": "ULTRA SPY 64",
+                    "author": "ULTRALORD",
+                    "win": false
+                },
+				{
+                    "name": "Cat Spy ",
+                    "author": "Ramses89",
+                    "win": false
+                },
+				{
+                    "name": "Escape from Marshold",
+                    "author": "HaskiGame",
+                    "win": false
+                },
+				{
+                    "name": "Spy Boy ",
+                    "author": "ehot",
+                    "win": false
+                },
+				{
+                    "name": "Bunker of Victory",
+                    "author": "Slug2002",
+                    "win": false
+                },
+				{
+                    "name": "New Spy ",
+                    "author": "лолечка",
+                    "win": false
+                },
+				{
+                    "name": "Afgan Spy ",
+                    "author": "AOAI",
+                    "win": false
+                }
+            ]
+        },
+		{
+            "name": "Weekend Jam #2",
+            "theme": "А что если...",
+            "prize": "2000 рублей + ключи",
+            "time": "27 - 28 октября 2018",
+            "places_format": true,
+            "link": "https://goo.gl/CS2N8Z",
+			"streamlink": "https://www.youtube.com/watch?v=Ty5HLA0NxoQ",
+            "projects": [
+                {
+                    "name": "What IF",
+                    "author": "Kolhun ",
+                    "win": true
+                },
+				{
+                    "name": "Сервак: Истории",
+                    "author": "Offside",
+                    "win": true
+                },
+				{
+                    "name": "Что если Doka 2 существовала",
+                    "author": "Programmmancer",
+                    "win": true
+                },
+				{
+                    "name": "The Legend of Halloween",
+                    "author": "Данные Утеряны",
+                    "win": false
+                },
+				{
+                    "name": "Halloween Party",
+                    "author": "Данные Утеряны",
+                    "win": false
+                },
+				{
+                    "name": "Life is Flex: EEboy",
+                    "author": "Vishnya",
+                    "win": false
+                },
+				{
+                    "name": "Gusnya 3: Toxic World",
+                    "author": "Fataliti + Benedique",
+                    "win": false
+                },
+				{
+                    "name": "Invaders",
+                    "author": "Данные Утеряны",
+                    "win": false
+                },
+				{
+                    "name": "Mark's Space Adventures",
+                    "author": "Данные Утеряны",
+                    "win": false
+                }
+            ]
+        },
+		
+		{
+            "name": "Week Jam #1",
+            "theme": "Пародия на ААА игру",
+            "prize": "4000 рублей + ключи",
+            "time": "17 - 24 ноября 2018",
+            "places_format": true,
+            "link": "https://goo.gl/GByxAQ",
+			"streamlink": "https://www.youtube.com/watch?v=naZe3vSEfFY",
+            "projects": [
+                {
+                    "name": "Metro",
+                    "author": "Hatsimufu",
+                    "win": true
+                },
+				{
+                    "name": "Blocked",
+                    "author": "Stranger",
+                    "win": true
+                },
+				{
+                    "name": "Low Man Sky",
+                    "author": "glebster51",
+                    "win": true
+                },
+				{
+                    "name": "Sovhoz ",
+                    "author": "tatarin289",
+                    "win": false
+                },
+				{
+                    "name": "Shelter76",
+                    "author": "RE:OS",
+                    "win": false
+                },
+				{
+                    "name": "Burda ",
+                    "author": "Скорпикор",
+                    "win": false
+                },
+				{
+                    "name": "VS Train",
+                    "author": "nivel54",
+                    "win": false
+                },
+				{
+                    "name": "Not Immortal",
+                    "author": "Vladis919",
+                    "win": false
+                },
+				{
+                    "name": "Metro 0.2",
+                    "author": "cepblvl",
+                    "win": false
+                },
+				{
+                    "name": "Diablo 5",
+                    "author": "alexey\\_sudakov",
+                    "win": false
+                },
+				{
+                    "name": "Fate Chapters",
+                    "author": "Kolhun",
+                    "win": false
+                }
+            ]
+        },
+		
+		{
+            "name": "РОЖДЕСТВЕНСКИЙ ДЖЕМ ВЫХОДНОГО ДНЯ 20!8",
+            "theme": "Драма или мелодрама",
+            "prize": "2500 рублей",
+            "time": "21-22 декабря 2018",
+            "places_format": true,
+            "link": "https://yadi.sk/d/GulwKp_MKRu7kA",
+			"streamlink": "https://youtu.be/MCbsCJxB9Zs",
+            "projects": [
+                {
+                    "name": "Endless Failure",
+                    "author": "Fataliti+Godfree",
+                    "win": true
+                },
+				{
+                    "name": "My Butterfly",
+                    "author": "ndecay",
+                    "win": true
+                },
+				{
+                    "name": "Зима длиною в вечность",
+                    "author": "Offside",
+                    "win": true
+                },
+				{
+                    "name": "Тупое говно",
+                    "author": "Gopa",
+                    "win": false
+                },
+				{
+                    "name": "Niko",
+                    "author": "Hatsimufu",
+                    "win": false
+                },
+				{
+                    "name": "Console Trap",
+                    "author": "Данные утеряны",
+                    "win": false
+                },
+				{
+                    "name": "На первом месте новый год",
+                    "author": "Данные утеряны",
+                    "win": false
+                }
+            ]
+        },
+		
+		{
+            "name": "Царь-Джем ",
+            "theme": "Живые неживые предметы",
+            "prize": "5000 рублей",
+            "time": "8-11 марта 2019",
+            "places_format": false,
+            "link": "проебалась",
+			"streamlink": "https://youtu.be/91NBOvvucRw",
+            "projects": [
+                {
+                    "name": "Bitch Banana",
+                    "author": "Дядя Женя + glebster51",
+                    "win": true,
+					"nomination": "Лучшая игра"
+                },
+				{
+                    "name": "Bitch Banana",
+                    "author": "Дядя Женя + glebster51",
+                    "win": true,
+					"nomination": "Лучший сюжет"
+                },
+				{
+                    "name": "Bitch Banana",
+                    "author": "Дядя Женя + glebster51",
+                    "win": true,
+					"nomination": "Лучшее звуковое сопровождение"
+                },
+				{
+                    "name": "Ecto Globe",
+                    "author": "Kzerot",
+                    "win": true,
+					"nomination": "Лучшая реализация темы в геймплее"
+                },
+				{
+                    "name": "Adapt",
+                    "author": "domqboy",
+                    "win": true,
+					"nomination": "Самая необычная реализация темы"
+                },
+				{
+                    "name": "Bitch Banana",
+                    "author": "Дядя Женя + glebster51",
+                    "win": true,
+					"nomination": "Самая красивая игра"
+                },
+				{
+                    "name": "I am Helmet",
+                    "author": "maksimf198",
+                    "win": true,
+					"nomination": "Самая увлекательная игра"
+                },
+				{
+                    "name": "Cup of Tea",
+                    "author": "Gopa",
+                    "win": true,
+					"nomination": "Самая весёлая игра"
+                }
+            ]
+        },
+		
+		{
+            "name": "KOJIMA-ДЖЕМ",
+            "theme": "HIDEOKOJIMA GAME",
+            "prize": "5000 рублей",
+            "time": "10-13 октября 2019",
+            "places_format": false,
+            "link": "",
+			"streamlink": "https://www.youtube.com/watch?v=f5w1S53cvQU&feature=youtu.be",
+            "projects": [
+                {
+                    "name": "Dead Starling",
+                    "author": "Andrysha",
+                    "win": true,
+					"nomination": "Сочный Гений",
+					"link": "https://game-dynasty.itch.io/dead-starling"
+                },
+				{
+                    "name": "Connect",
+                    "author": "Battlelore",
+                    "win": false,
+					"nomination": "",
+					"link": "https://drive.google.com/file/d/1vSVZzUllaxUHRQt9evB-Df6CxHXxaqNQ/view?usp=sharing"
+                },
+				{
+                    "name": "NON STOP",
+                    "author": "Быдло Slayer",
+                    "win": false,
+					"nomination": "",
+					"link": "https://yadi.sk/d/O65S_rrwyo0agQ"
+                },
+				{
+                    "name": "CastileVania",
+                    "author": "Doger man man",
+                    "win": true,
+					"nomination": "Непризнанный Гений",
+					"link": "https://dogerman.itch.io/castilevania"
+                },
+				{
+                    "name": "Сircuit Сube",
+                    "author": "Doger man man",
+                    "win": false,
+					"nomination": "",
+					"link": "https://dogerman.itch.io/circuit-cube"
+                },
+				{
+                    "name": "Коза на границе",
+                    "author": "Fataliti x Секретный художник",
+                    "win": false,
+					"nomination": "",
+					"link": "https://yadi.sk/d/TZAUBq6Af5bxkQ"
+                },
+				{
+                    "name": "Personal Kojima",
+                    "author": "Глебецкий ",
+                    "win": false,
+					"nomination": "",
+					"link": "https://glebster51.itch.io/personalkojima"
+                },
+				{
+                    "name": "0.0.10",
+                    "author": "Хатсимуфа",
+                    "win": true,
+					"nomination": "Филологений",
+					"link": "https://drive.google.com/file/d/1lcj7MfOe4ATonhvhbapkBnX2pXMz4sr2/view"
+                },
+				{
+                    "name": "Nedoom",
+                    "author": "HomoHikka",
+                    "win": true,
+					"nomination": "Многозадачный Гений",
+					"link": "https://homohikka.itch.io/kojima-jam-nedoom"
+                },
+				{
+                    "name": "Secret Kojima",
+                    "author": "!LC\\_lkt",
+                    "win": false,
+					"nomination": "",
+					"link": "https://artemy-privalov.itch.io/secret-kojima"
+                },
+				{
+                    "name": "Interview with the Genius",
+                    "author": "LiG0id",
+                    "win": false,
+					"nomination": "",
+					"link": "https://lig0id.itch.io/interview-with-the-genius"
+                },
+				{
+                    "name": "Metal Gear Solid V Fulton Edition",
+                    "author": "MaratG2",
+                    "win": true,
+					"nomination": "Юмор/ Гениальный Лентяй",
+					"link": "https://maratg2.itch.io/metal-gear-solid-v-fulton-edition"
+                },
+				{
+                    "name": "BAKALAHA",
+                    "author": "DOOM",
+                    "win": false,
+					"nomination": "",
+					"link": "https://drive.google.com/file/d/1pU9dGmHGP-eOLXIWtTdyvx5vrowsvzuR/view"
+                },
+				{
+                    "name": "Death for Death",
+                    "author": "ndecay",
+                    "win": false,
+					"nomination": "",
+					"link": "https://ndecay.itch.io/deathfordeath"
+                },
+				{
+                    "name": "OSG",
+                    "author": "Neuromant",
+                    "win": false,
+					"nomination": "",
+					"link": "https://yadi.sk/d/kHj3g7d0JieS0g"
+                },
+				{
+                    "name": "IKojima",
+                    "author": "Purebyte",
+                    "win": false,
+					"nomination": "",
+					"link": "https://purebyte.itch.io/ikojima"
+                },
+				{
+                    "name": "Iteration",
+                    "author": "Игровой патриарх & Vrime",
+                    "win": true,
+					"nomination": "Гений Визуализации",
+					"link": "https://relayx.itch.io/iteration"
+                },
+				{
+                    "name": "Dating Simulator",
+                    "author": "Vita",
+                    "win": false,
+					"nomination": "",
+					"link": "https://vitasapiens.itch.io/for-kojima-jam"
+                },
+				{
+                    "name": "Hideo Kojima.rar",
+                    "author": "vladik",
+                    "win": false,
+					"nomination": "",
+					"link": "https://drive.google.com/file/d/16-_6bI7pvn7a9G1LQFHK5WFao6mXZwqY/view?usp=sharing"
+                },
+				{
+                    "name": "koDJIMA",
+                    "author": "Мр\\_Фронни",
+                    "win": false,
+					"nomination": "",
+					"link": "https://drive.google.com/open?id=1NhgNeOV2jtzYn3XqPCTUd4kuQxvr2QwE"
+                },
+				{
+                    "name": "Siege Of The Castle: Foreign Hordes",
+                    "author": "Патриарх школы волколака",
+                    "win": false,
+					"nomination": "",
+					"link": "https://hnkxobka.itch.io/siege-of-the-castle-foreign-hordes"
+                },
+				{
+                    "name": "Unity of Life",
+                    "author": "Рыбкин",
+                    "win": true,
+					"nomination": "Злобное отражение гения",
+					"link": "https://cdn.discordapp.com/attachments/632546900842643466/632547581196632064/Unity_of_Life.rar"
+                },
+				{
+                    "name": "НПЗ: Чёрт сбежал",
+                    "author": "Vladechka1337",
+                    "win": false,
+					"nomination": "",
+					"link": "https://siluet-salat.itch.io/chortsbezhal"
+                },
+				{
+                    "name": "Kojima's Blocks",
+                    "author": "Zhykovsky",
+                    "win": false,
+					"nomination": "",
+					"link": "https://yadi.sk/d/zUgpTqItic0snQ"
+                },
+				{
+                    "name": "Clickmanjima",
+                    "author": "DOOM",
+                    "win": false,
+					"nomination": "",
+					"link": "https://drive.google.com/open?id=1o-_mik3mYaiIBz6vb_twQ8KNZK3D4Dbe"
+                },
+				{
+                    "name": "TOWN",
+                    "author": "Lord K'zoth",
+                    "win": false,
+					"nomination": "",
+					"link": "https://drive.google.com/file/d/1McWQOLn8ZAlrW4wK8U18UJRF2Gs7LxCg/view"
+                },
+				{
+                    "name": "Just a Game",
+                    "author": "Mr\\_Animatik\\_rus",
+                    "win": false,
+					"nomination": "",
+					"link": "https://mr-animatik-rus.itch.io/just-a-game"
+                },
+				{
+                    "name": "Игра Про То, Как Один Мужик Пошел Убивать Другого Мужика",
+                    "author": "\nСкорп",
+                    "win": false,
+					"nomination": "",
+					"link": "https://scorpicore.itch.io/oneman-killsotherman"
+                },
+				{
+                    "name": "KOJIMA RPG",
+                    "author": "стаха нет",
+                    "win": false,
+					"nomination": "",
+					"link": "https://drive.google.com/file/d/15zlYTQZp6YdCAGAoAKs4ueSB1kimG-hI/view?usp=sharing"
+                }
+            ]
+			
+        }
+		
+    ]
+}
+
+
