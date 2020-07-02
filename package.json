@@ -17,10 +17,13 @@
   },
   "homepage": "https://github.com/Banana090/rgd_bot#readme",
   "dependencies": {
-    "discord.js": "^11.5.1"
+    "@typeit/discord": "^4.0.8",
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.2.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.14",
+    "tslib": "^2.0.0",
     "typescript": "^3.9.6"
   }
 }
