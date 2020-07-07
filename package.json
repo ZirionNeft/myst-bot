@@ -1,28 +1,36 @@
 {
   "name": "rgd_bot",
-  "version": "2.0.0",
-  "description": "Russian Gamedev Original Bot v2",
-  "main": "index.js",
+  "version": "3.0.0",
+  "description": "Russian Gamedev Original Bot",
+  "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'babel-node' build/index.js",
+    "build": "tsc",
+    "start": "node build/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Banana090/rgd_bot.git"
+    "url": "git+https://github.com/ZirionNeft/rgd-bot.git"
   },
-  "author": "Дядя Женя",
+  "author": "RGD-Team",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Banana090/rgd_bot/issues"
+    "url": "https://github.com/ZirionNeft/rgd-bot/issues"
   },
-  "homepage": "https://github.com/Banana090/rgd_bot#readme",
+  "homepage": "https://github.com/ZirionNeft/rgd-bot",
   "dependencies": {
     "@typeit/discord": "^4.0.8",
     "discord.js": "^11.5.1",
     "dotenv": "^8.2.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.10.4",
+    "@babel/core": "^7.10.4",
+    "@babel/node": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
     "@types/node": "^14.0.14",
+    "nodemon": "^2.0.4",
     "tslib": "^2.0.0",
     "typescript": "^3.9.6"
   }
