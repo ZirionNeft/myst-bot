@@ -21,9 +21,12 @@
   "homepage": "https://github.com/ZirionNeft/rgd-bot",
   "dependencies": {
     "@typeit/discord": "^4.0.8",
+    "@types/validator": "^13.1.0",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
-    "node-ts-cache": "^3.2.0"
+    "node-ts-cache": "^3.2.0",
+    "sequelize": "^6.3.1",
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.4",

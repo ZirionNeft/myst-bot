@@ -4,6 +4,8 @@ import config from "../config/config.json";
 import * as console from "console";
 import * as process from "process";
 import { Snowflake } from "discord.js";
+import { Database } from "./database/Database";
+import { Models } from "./database/Models";
 
 export interface ServerDataItem {
   readonly snowflake: Snowflake;
@@ -12,7 +14,6 @@ export interface ServerDataItem {
 
 interface BotConfigKeys {
   channels: string;
-  guild: string;
   roleMessages: string;
   roles: string;
 }
@@ -29,6 +30,16 @@ export type BotConfig = Record<keyof BotConfigKeys, ServerDataItem[]>;
 export class RgdBot {
   @Once("ready")
   ready() {
+    Database.init()
+      .then((v): void => {
+        console.info(`${v.getDialect()}: Database successfully connected!`);
+
+        Models.init(v).then((): void =>
+          console.info("All models successfully synchronised!")
+        );
+      })
+      .catch((e: Error): void => console.error("Database init error"));
+
     console.log(Client.getCommands());
   }
 
