@@ -1,7 +1,8 @@
-import { Command, CommandMessage, Rule, Rules } from "@typeit/discord";
+import { Command, CommandMessage } from "@typeit/discord";
 import { MessageEmbed } from "discord.js";
 import helpRecords from "../../config/help_info.json";
 import BaseCommand from "./BaseCommand";
+import { Aliases } from "../misc/decorators/Aliases";
 
 export interface HelpRecordItem {
   desc: string;
@@ -16,7 +17,6 @@ export abstract class Help extends BaseCommand {
     "помощь",
     "помогите",
     "памагити",
-    "аааблять",
     "чтоделать",
     "команды",
     "помощ",
@@ -28,8 +28,6 @@ export abstract class Help extends BaseCommand {
     "бот",
     "ботчтоумееш",
     "какотправитьлайк",
-    "язапустался",
-    "вишнялох",
     "обучение",
     "каманды",
     "функции",
@@ -38,7 +36,7 @@ export abstract class Help extends BaseCommand {
   ];
 
   @Command("help")
-  @Rules(Rule(Help._aliases.join("|")).end())
+  @Aliases(Help._aliases)
   async runHelp(command: CommandMessage) {
     const content = Object.values(helpRecords as HelpRecords)
       .map((r: HelpRecordItem): string => `\`${r.name}\` - ${r.desc}`)

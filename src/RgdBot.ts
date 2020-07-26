@@ -8,7 +8,7 @@ import { Database } from "./database/Database";
 import { Models } from "./database/Models";
 
 export interface ServerDataItem {
-  readonly snowflake: Snowflake;
+  readonly value: Snowflake | string;
   readonly name: string;
 }
 
@@ -16,6 +16,7 @@ interface BotConfigKeys {
   channels: string;
   roleMessages: string;
   roles: string;
+  icons: string;
 }
 
 export type BotConfig = Record<keyof BotConfigKeys, ServerDataItem[]>;
@@ -34,9 +35,9 @@ export class RgdBot {
       .then((v): void => {
         console.info(`${v.getDialect()}: Database successfully connected!`);
 
-        Models.init(v).then((): void =>
-          console.info("All models successfully synchronised!")
-        );
+        Models.init(v).then((): void => {
+          console.info("All models successfully synchronised!");
+        });
       })
       .catch((e: Error): void => console.error("Database init error"));
 

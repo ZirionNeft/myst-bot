@@ -4,9 +4,9 @@ interface EconomyAttributes {
   id: number;
   memberSnowflake: string;
   coins: number;
-  date: Date;
-  rouletteDate: Date;
-  lootboxDate: Date;
+  date: Date | null;
+  rouletteDate: Date | null;
+  lootboxDate: Date | null;
 }
 
 interface EconomyCreationAttributes extends Optional<EconomyAttributes, "id"> {}
@@ -15,11 +15,11 @@ export default class Economy
   extends Model<EconomyAttributes, EconomyCreationAttributes>
   implements EconomyAttributes {
   coins!: number;
-  date!: Date;
+  date!: Date | null;
   id!: number;
-  lootboxDate!: Date;
+  lootboxDate!: Date | null;
   memberSnowflake!: string;
-  rouletteDate!: Date;
+  rouletteDate!: Date | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
