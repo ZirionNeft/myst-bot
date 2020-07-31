@@ -2,7 +2,7 @@ import { Command, CommandMessage, Rule, Rules } from "@typeit/discord";
 import { GuildMember, MessageEmbed } from "discord.js";
 import BaseCommand from "./BaseCommand";
 import * as console from "console";
-import { RgdBot, ServerDataItem } from "../RgdBot";
+import { ThunderBot, ServerDataItem } from "../ThunderBot";
 
 export abstract class Online extends BaseCommand {
   protected _onlyBotChannel = true;
@@ -25,9 +25,9 @@ export abstract class Online extends BaseCommand {
     const members = command.guild?.members.cache;
 
     const activeRoleSnowflake =
-      RgdBot.config.roles.find(
+      ThunderBot.config.roles.find(
         (dataItem: ServerDataItem): boolean => dataItem.name === "active"
-      )?.snowflake ?? "-1";
+      )?.value ?? "-1";
 
     try {
       members?.forEach((member: GuildMember): void => {

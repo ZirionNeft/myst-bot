@@ -2,7 +2,7 @@ import { Command, CommandMessage } from "@typeit/discord";
 import { MessageEmbed } from "discord.js";
 import helpRecords from "../../config/help_info.json";
 import BaseCommand from "./BaseCommand";
-import { Aliases } from "../misc/decorators/Aliases";
+import { Aliases } from "../decorators/Aliases";
 
 export interface HelpRecordItem {
   desc: string;

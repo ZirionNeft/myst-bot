@@ -1,4 +1,4 @@
-import { ArgsOf, Client, Discord, On, Once } from "@typeit/discord";
+import { ArgsOf, Client, Discord, Guard, On, Once } from "@typeit/discord";
 import * as Path from "path";
 import config from "../config/config.json";
 import * as console from "console";
@@ -6,6 +6,7 @@ import * as process from "process";
 import { Snowflake } from "discord.js";
 import { Database } from "./database/Database";
 import { Models } from "./database/Models";
+import { NotBot } from "./guards/NotBot";
 
 export interface ServerDataItem {
   readonly value: Snowflake | string;
@@ -17,6 +18,7 @@ interface BotConfigKeys {
   roleMessages: string;
   roles: string;
   icons: string;
+  stuffRoles: string;
 }
 
 export type BotConfig = Record<keyof BotConfigKeys, ServerDataItem[]>;
@@ -28,7 +30,7 @@ export type BotConfig = Record<keyof BotConfigKeys, ServerDataItem[]>;
     Path.join(__dirname, "commands", "*.js"),
   ],
 })
-export class RgdBot {
+export class ThunderBot {
   @Once("ready")
   ready() {
     Database.init()
@@ -45,6 +47,7 @@ export class RgdBot {
   }
 
   @On("message")
+  @Guard(NotBot())
   onMessage([message]: ArgsOf<"message">, client: Client) {}
 
   static get config(): BotConfig {
