@@ -41,7 +41,7 @@ export class ThunderBot {
           console.info("All models successfully synchronised!");
         });
       })
-      .catch((e: Error): void => console.error("Database init error"));
+      .catch((e: Error): void => console.error("Database init error\n" + e));
 
     console.log(Client.getCommands());
   }

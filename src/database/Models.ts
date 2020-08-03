@@ -19,6 +19,7 @@ export abstract class Models {
         memberSnowflake: {
           type: new DataTypes.STRING(32),
           allowNull: false,
+          unique: true,
         },
         coins: {
           type: new DataTypes.INTEGER(),
@@ -31,9 +32,11 @@ export abstract class Models {
         },
         rouletteDate: {
           type: new DataTypes.DATE(),
+          defaultValue: null,
         },
         lootboxDate: {
           type: new DataTypes.DATE(),
+          defaultValue: null,
         },
       },
       {

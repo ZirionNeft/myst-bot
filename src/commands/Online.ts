@@ -1,22 +1,23 @@
-import { Command, CommandMessage, Rule, Rules } from "@typeit/discord";
+import {
+  Command,
+  CommandMessage,
+  Description,
+  Infos,
+  Rules,
+} from "@typeit/discord";
 import { GuildMember, MessageEmbed } from "discord.js";
-import BaseCommand from "./BaseCommand";
 import * as console from "console";
-import { ThunderBot, ServerDataItem } from "../ThunderBot";
+import { ServerDataItem, ThunderBot } from "../ThunderBot";
 
-export abstract class Online extends BaseCommand {
-  protected _onlyBotChannel = true;
-
-  protected static _aliases = [
-    "онлайн",
-    "онлаин",
-    "актив",
-    "активные",
-    "активных",
-  ];
-
-  @Command("online")
-  @Rules(Rule(Online._aliases.join("|")).end())
+export abstract class Online {
+  @Command("guild")
+  @Rules("online")
+  @Infos<CommandInfo>({
+    description: "todo",
+    category: "Guild",
+    coreCommand: true,
+    usages: "guild",
+  })
   async runOnline(command: CommandMessage) {
     let onlineMembers = 0;
     let onlineActiveMembers = 0;
@@ -46,15 +47,15 @@ export abstract class Online extends BaseCommand {
     }
 
     const messageEmbed = new MessageEmbed()
-      .setTitle("Статистика Russian Gamedev")
+      .setTitle(`${command.guild?.name} stats`)
       .addField(
-        "Всех",
-        `Всего: ${members?.size ?? -1}\nОнлайн: ${onlineMembers}`,
+        "Members",
+        `All: ${members?.size ?? -1}\nOnline: ${onlineMembers}`,
         true
       )
       .addField(
-        "Активных",
-        `Всего: ${allActiveMembers}\nОнлайн: ${onlineActiveMembers}`,
+        "Active",
+        `All: ${allActiveMembers}\nOnline: ${onlineActiveMembers}`,
         true
       )
       .setColor("#FFFFFF");

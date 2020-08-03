@@ -3,13 +3,14 @@ import { Model, Optional } from "sequelize";
 interface EconomyAttributes {
   id: number;
   memberSnowflake: string;
-  coins: number;
-  date: Date | null;
-  rouletteDate: Date | null;
-  lootboxDate: Date | null;
+  coins?: number;
+  date?: Date | null;
+  rouletteDate?: Date | null;
+  lootboxDate?: Date | null;
 }
 
-interface EconomyCreationAttributes extends Optional<EconomyAttributes, "id"> {}
+export interface EconomyCreationAttributes
+  extends Optional<EconomyAttributes, "id" | "memberSnowflake"> {}
 
 export default class Economy
   extends Model<EconomyAttributes, EconomyCreationAttributes>

@@ -1,68 +1,80 @@
-import { Command, CommandMessage, Rule } from "@typeit/discord";
+import {
+  Command,
+  CommandMessage,
+  Description,
+  Infos,
+  Rule,
+} from "@typeit/discord";
 import { MessageEmbed, NewsChannel, TextChannel, User } from "discord.js";
-import BaseCommand from "./BaseCommand";
 import { ThunderBot } from "../ThunderBot";
 import Economy from "../database/models/economy";
-import { Transaction } from "sequelize";
 import { FieldsEmbed } from "discord-paginationembed";
 import { Database } from "../database/Database";
 import EconomyService from "../services/EconomyService";
 import { Inject } from "typescript-ioc";
+import * as console from "console";
 
-export abstract class Coins extends BaseCommand {
-  // TODO: to remove. add infos decorator for every command decorator
-  protected _onlyBotChannel = false;
+const COINS_TOP =
+  "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";
+const COINS_EMOJI = () =>
+  ThunderBot.config.icons.find((e) => e.name === "coins")?.value;
 
+export abstract class Coins {
   @Inject
   private economyService!: EconomyService;
 
-  private subCommands = ["top", "give"];
+  protected subCommands = ["top", "give"];
 
   @Command("coins :member")
+  @Infos<CommandInfo>({
+    description:
+      "Shows your coins. Use the user mention to get guild member coins",
+    usages: "coins [@member | top | give]",
+    category: "Economy",
+    coreCommand: true,
+  })
   async runCoins(command: CommandMessage) {
     const { member }: { member: string } = command.args;
 
+    // for prevent multi commands proc
     if (this.subCommands.includes(member)) return;
 
     const messageEmbed = new MessageEmbed();
     const author = command.author;
 
-    const icon = ThunderBot.config.icons.find((e) => e.name === "coins")?.value;
-
-    const guildMember =
-      typeof member === "undefined"
-        ? command.member
-        : command.guild?.members.cache.get(member.slice(3, member.length - 1));
+    const guildMember = command.mentions.members?.first() ?? command.member;
 
     const userId = guildMember?.user.id ?? author.id;
-    const memberModelInstance = await this.economyService.getUser(userId);
+    const memberModelInstance = await this.economyService.findOneOrCreate(
+      userId
+    );
 
-    if (memberModelInstance) {
-      messageEmbed
-        .setAuthor(
-          `Монеты ${guildMember?.displayName ?? author.username}`,
-          guildMember?.user.avatarURL() || author?.avatarURL() || undefined
-        )
-        .setDescription(`__Coins:__ ${memberModelInstance.coins} ${icon}`)
-        .setColor("#FFFFFF");
+    messageEmbed
+      .setAuthor(
+        `Монеты ${guildMember?.displayName ?? author.username}`,
+        guildMember?.user.avatarURL() || author?.avatarURL() || undefined
+      )
+      .setDescription(
+        `__Coins:__ ${memberModelInstance.coins} ${COINS_EMOJI()}`
+      )
+      .setColor("#FFFFFF");
 
-      return await command.channel.send({ embed: messageEmbed });
-    } else {
-      return await command.channel.send("Юзер не найден");
-    }
+    return await command.channel.send({ embed: messageEmbed });
   }
 
   @Command(Rule("coins").space("top").end())
+  @Infos<CommandInfo>({
+    description: "Top members filtered by amount of coins",
+    usages: "coins top",
+    category: "Economy",
+  })
   async coinsTop(command: CommandMessage) {
     const memberModels = await this.economyService.getAllPositiveCoins();
 
     const coinsTopEmbed = new FieldsEmbed<Economy>();
 
     coinsTopEmbed.embed
-      .setAuthor(
-        "Coins leaderboard",
-        "https://cdn.discordapp.com/emojis/518875768814829568.png?v=1"
-      )
+      .setAuthor("Coins leaderboard", COINS_TOP)
       .setColor("#FFFFFF");
 
     return await coinsTopEmbed
@@ -91,60 +103,75 @@ export abstract class Coins extends BaseCommand {
       .build();
   }
 
-  @Command("coins award :member")
-  async adminAddCoins(command: CommandMessage) {}
+  // @Command("coins award :member")
+  // async adminAddCoins(command: CommandMessage) {}
 
-  @Command("coins give :arg1 :arg2")
+  @Command("coins give :mention :coins")
+  @Infos<CommandInfo>({
+    description: "Allows you to give some coins to mentioned member",
+    usages: "coins give <@member> <amount>",
+    category: "Economy",
+  })
   async giveCoins(command: CommandMessage) {
-    const { arg1, arg2 }: { arg1: string; arg2: string } = command.args;
+    const { coins }: { coins: string } = command.args;
     const target = command.guild?.member(command.mentions.users.first() ?? "");
-    const amount = parseInt(arg2);
+    const amount = parseInt(coins);
 
-    const targetModelInstance = await this.economyService.getUser(
+    const targetModelInstance = await this.economyService.findOne(
       target?.id ?? ""
     );
 
     if (!target || !targetModelInstance)
       return command.channel.send(
-        `<@${command.author.id}>, target user not found!`
+        `__${command.author.username}__, target user not found!`
       );
 
     if (!amount || amount <= 0)
       return command.channel.send(
-        `<@${command.author.id}>, amount of icons specified not properly`
+        `__${command.author.username}__, amount of icons specified not properly`
       );
 
-    const authorModelInstance = await this.economyService.getUser(
+    const authorModelInstance = await this.economyService.findOne(
       command.author.id
     );
 
     if (!authorModelInstance || authorModelInstance.coins < amount)
       return command.channel.send(
-        `<@${command.author.id}>, you are not rich enough to give so many coins`
+        `__${command.author.username}__, you are not rich enough to give so many coins`
       );
 
     if (command.author.id === target?.id)
       return command.channel.send(
-        `<@${command.author.id}>, transferring coins to yourself will not work. It would be so simple...`
+        `__${command.author.username}__, transferring coins to yourself will not work. It would be so simple...`
       );
 
     try {
       await Database.instance.transaction(async (t) =>
         Promise.all([
-          this.change(command.author, -amount, authorModelInstance, t),
-          this.change(target.user, amount, targetModelInstance, t),
+          this.economyService.update(
+            authorModelInstance,
+            { coins: authorModelInstance.coins - amount },
+            t
+          ),
+          this.economyService.update(
+            targetModelInstance,
+            { coins: targetModelInstance.coins + amount },
+            t
+          ),
         ])
       );
     } catch (e) {
       console.error(e);
       return command.channel.send(
-        `<@${command.author.id}>, an error occurred while transferring coins. Contact the administration`
+        `__${command.author.username}__, an error occurred while transferring coins. Contact the bot support`
       );
     }
 
     return command.channel
       .send(
-        `<@${command.author.id}> sends to <@${target.id}> ${amount} <:rgd_coin_rgd:518875768814829568>`
+        `__${command.author.username}__ sends to __${
+          target.user.username
+        }__ ${amount} ${COINS_EMOJI()}`
       )
       .catch((r) => {
         (command.guild?.channels.cache.get(
@@ -152,25 +179,5 @@ export abstract class Coins extends BaseCommand {
             ""
         ) as TextChannel).send(`${r.name}\n${r.message}`);
       });
-  }
-
-  private async change(
-    user: User,
-    amount: number,
-    model?: Economy | null,
-    transaction?: Transaction
-  ) {
-    if (!model) {
-      model = await this.economyService.getUser(user.id);
-    }
-
-    if (!model) throw new Error("User not found in database");
-
-    return await model.update(
-      {
-        coins: model.coins + amount,
-      },
-      { transaction }
-    );
   }
 }
