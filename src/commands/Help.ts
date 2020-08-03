@@ -6,6 +6,12 @@ export type CommandsByCategories = {
   [P in Category]?: string[];
 };
 
+const CATEGORY_ICON: { [P in Category]?: string } = {
+  Economy: ":moneybag:",
+  Guild: ":busts_in_silhouette:",
+  Other: ":roll_of_paper:",
+};
+
 export abstract class Help {
   @Command("help :hcommand")
   @Infos<CommandInfo>({
@@ -25,17 +31,11 @@ export abstract class Help {
         command.client.user?.avatarURL() ?? undefined
       );
 
-    if (hcommand) {
-      const filteredCommands = commands.filter(
-        (cmd) => cmd.infos.usages.split(" ")[0] === hcommand
-      );
+    const filteredCommands = hcommand
+      ? commands.filter((cmd) => cmd.infos.usages.split(" ")[0] === hcommand)
+      : null;
 
-      if (!filteredCommands.length) {
-        return await command.channel.send(
-          `**${command.author.username}**, command *${hcommand}* not found!`
-        );
-      }
-
+    if (filteredCommands && filteredCommands.length) {
       const prefix = filteredCommands[0].prefix;
       const coreCommand = filteredCommands.find((v) => v.infos.coreCommand);
 
@@ -49,10 +49,17 @@ export abstract class Help {
         .setFooter("Args tip: < > - required, [ ] - non-required")
         .addField(
           ":small_orange_diamond: Category",
-          filteredCommands[0].infos.category,
+          `${CATEGORY_ICON[filteredCommands[0].infos.category] ?? ""} ${
+            filteredCommands[0].infos.category
+          }`,
           true
         )
-        .addField(":small_orange_diamond: Aliases", "*none*", true);
+        .addField(
+          ":small_orange_diamond: Aliases",
+          coreCommand?.infos.aliases?.map((v) => `\`${v}\``).join(" ") ??
+            "*none*",
+          true
+        );
 
       const usageList = filteredCommands
         .filter((v) => !v.infos.coreCommand)
@@ -84,7 +91,7 @@ export abstract class Help {
 
       for (let category of Object.keys(cmdByCategories)) {
         messageEmbed.addField(
-          category,
+          `${CATEGORY_ICON[category] ?? ""} ${category}`,
           cmdByCategories[category].join(" "),
           true
         );
