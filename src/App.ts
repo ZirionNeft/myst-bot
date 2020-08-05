@@ -1,4 +1,6 @@
 import { Client } from "@typeit/discord";
+import { Container } from "typescript-ioc";
+import Throttle from "./logic/Throttle";
 
 export default class App {
   private static _client: Client;
@@ -9,6 +11,8 @@ export default class App {
 
   static async start(): Promise<void> {
     this._client = new Client();
+
+    Container.bind(Throttle);
 
     try {
       // In the login method, you must specify the glob string to load your classes (for the framework).

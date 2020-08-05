@@ -1,4 +1,13 @@
-import { ArgsOf, Client, Discord, Guard, On, Once } from "@typeit/discord";
+import {
+  ArgsOf,
+  Client,
+  CommandMessage,
+  Discord,
+  ExpressionFunction,
+  Guard,
+  On,
+  Once,
+} from "@typeit/discord";
 import * as Path from "path";
 import config from "../config/config.json";
 import * as console from "console";
@@ -7,6 +16,10 @@ import { Snowflake } from "discord.js";
 import { Database } from "./database/Database";
 import { Models } from "./database/Models";
 import { NotBot } from "./guards/NotBot";
+import * as crypto from "crypto";
+import Throttle from "./logic/Throttle";
+import { Container } from "typescript-ioc";
+import { ThrottleMessage } from "./guards/ThrottleMessage";
 
 export interface ServerDataItem {
   readonly value: Snowflake | string;
@@ -23,7 +36,21 @@ interface BotConfigKeys {
 
 export type BotConfig = Record<keyof BotConfigKeys, ServerDataItem[]>;
 
-@Discord(process.env.COMMAND_PREFIX ?? "!", {
+const DEFAULT_PREFIX = process.env.COMMAND_PREFIX ?? "!";
+
+const prefixBehaviour: ExpressionFunction = async (
+  message?: CommandMessage,
+  client?: Client
+) => {
+  const throttle: Throttle = Container.get(Throttle);
+  if (message && (await throttle.hasTimer(message.author.id))) {
+    // Sets fake prefix for prevent command processing if user message was throttled
+    return crypto.randomBytes(2).toString("hex");
+  }
+  return DEFAULT_PREFIX;
+};
+
+@Discord(prefixBehaviour, {
   import: [
     // replace extension with *.ts when the bot launch by ts-node,
     // otherwise *.js and Node launch
@@ -47,7 +74,7 @@ export class ThunderBot {
   }
 
   @On("message")
-  @Guard(NotBot())
+  @Guard(NotBot(), ThrottleMessage())
   onMessage([message]: ArgsOf<"message">, client: Client) {}
 
   static get config(): BotConfig {
