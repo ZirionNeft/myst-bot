@@ -1,10 +1,4 @@
-import {
-  Command,
-  CommandMessage,
-  Description,
-  Infos,
-  Rule,
-} from "@typeit/discord";
+import { Command, CommandMessage, Guard, Infos, Rule } from "@typeit/discord";
 import { MessageEmbed, NewsChannel, TextChannel, User } from "discord.js";
 import { ThunderBot } from "../ThunderBot";
 import Economy from "../database/models/economy";
@@ -13,17 +7,17 @@ import { Database } from "../database/Database";
 import EconomyService from "../services/EconomyService";
 import { Inject } from "typescript-ioc";
 import * as console from "console";
+import { NotBot, ThrottleMessage, WithoutSubCommands } from "../guards";
 
 const COINS_TOP =
   "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";
 const COINS_EMOJI = () =>
   ThunderBot.config.icons.find((e) => e.name === "coins")?.value;
+const SUB_COMMANDS = ["top", "give"];
 
 export abstract class Coins {
   @Inject
   private economyService!: EconomyService;
-
-  protected subCommands = ["top", "give"];
 
   @Command("coins :member")
   @Infos<CommandInfo>({
@@ -33,11 +27,9 @@ export abstract class Coins {
     category: "Economy",
     coreCommand: true,
   })
+  @Guard(NotBot(), WithoutSubCommands(SUB_COMMANDS), ThrottleMessage())
   async runCoins(command: CommandMessage) {
     const { member }: { member: string } = command.args;
-
-    // for prevent multi commands proc
-    if (this.subCommands.includes(member)) return;
 
     const messageEmbed = new MessageEmbed();
     const author = command.author;
@@ -68,6 +60,7 @@ export abstract class Coins {
     usages: "coins top",
     category: "Economy",
   })
+  @Guard(NotBot(), ThrottleMessage())
   async coinsTop(command: CommandMessage) {
     const memberModels = await this.economyService.getAllPositiveCoins();
 
@@ -112,6 +105,7 @@ export abstract class Coins {
     usages: "coins give <@member> <amount>",
     category: "Economy",
   })
+  @Guard(NotBot(), ThrottleMessage())
   async giveCoins(command: CommandMessage) {
     const { coins }: { coins: string } = command.args;
     const target = command.guild?.member(command.mentions.users.first() ?? "");

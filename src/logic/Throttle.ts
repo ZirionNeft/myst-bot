@@ -1,13 +1,12 @@
 import { Snowflake, User } from "discord.js";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import Timeout = NodeJS.Timeout;
+import * as process from "process";
 
 export interface ThrottleTimer {
   userId: Snowflake;
   timer: Timeout;
 }
-
-const PAUSE_BETWEEN_COMMANDS = +(process.env.PAUSE_BETWEEN_COMMANDS ?? 3000);
 
 @Singleton
 @OnlyInstantiableByContainer
@@ -19,9 +18,8 @@ export default class Throttle {
   }
 
   public async make(userId: Snowflake): Promise<boolean> {
-    if (await this.hasTimer(userId)) {
-      return true;
-    } else {
+    const t = await this.hasTimer(userId);
+    if (!t) {
       this._timers.push({
         userId,
         timer: setTimeout(
@@ -30,14 +28,14 @@ export default class Throttle {
               this._timers.findIndex((o) => o.userId === userId),
               1
             ),
-          PAUSE_BETWEEN_COMMANDS
+          +(process.env.PAUSE_BETWEEN_COMMANDS ?? 3000)
         ),
       });
     }
-    return false;
+    return t;
   }
 
   public async hasTimer(userId: Snowflake) {
-    return this._timers.find((t) => t.userId === userId);
+    return !!this._timers.find((t) => t.userId === userId);
   }
 }

@@ -1,13 +1,8 @@
-import {
-  Command,
-  CommandMessage,
-  Description,
-  Infos,
-  Rules,
-} from "@typeit/discord";
+import { Command, CommandMessage, Guard, Infos, Rules } from "@typeit/discord";
 import { GuildMember, MessageEmbed } from "discord.js";
 import * as console from "console";
 import { ServerDataItem, ThunderBot } from "../ThunderBot";
+import { NotBot, ThrottleMessage } from "../guards";
 
 export abstract class Online {
   @Command("guild")
@@ -18,6 +13,7 @@ export abstract class Online {
     coreCommand: true,
     usages: "guild",
   })
+  @Guard(NotBot(), ThrottleMessage())
   async runOnline(command: CommandMessage) {
     let onlineMembers = 0;
     let onlineActiveMembers = 0;

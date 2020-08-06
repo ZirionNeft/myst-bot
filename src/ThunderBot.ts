@@ -1,12 +1,10 @@
 import {
-  ArgsOf,
   Client,
   CommandMessage,
   Discord,
   ExpressionFunction,
-  Guard,
-  On,
   Once,
+  Rule,
 } from "@typeit/discord";
 import * as Path from "path";
 import config from "../config/config.json";
@@ -15,11 +13,6 @@ import * as process from "process";
 import { Snowflake } from "discord.js";
 import { Database } from "./database/Database";
 import { Models } from "./database/Models";
-import { NotBot } from "./guards/NotBot";
-import * as crypto from "crypto";
-import Throttle from "./logic/Throttle";
-import { Container } from "typescript-ioc";
-import { ThrottleMessage } from "./guards/ThrottleMessage";
 
 export interface ServerDataItem {
   readonly value: Snowflake | string;
@@ -42,12 +35,7 @@ const prefixBehaviour: ExpressionFunction = async (
   message?: CommandMessage,
   client?: Client
 ) => {
-  const throttle: Throttle = Container.get(Throttle);
-  if (message && (await throttle.hasTimer(message.author.id))) {
-    // Sets fake prefix for prevent command processing if user message was throttled
-    return crypto.randomBytes(2).toString("hex");
-  }
-  return DEFAULT_PREFIX;
+  return Rule().startWith("(?:!|testPrefix)"); //DEFAULT_PREFIX;
 };
 
 @Discord(prefixBehaviour, {
@@ -73,9 +61,8 @@ export class ThunderBot {
     console.log(Client.getCommands());
   }
 
-  @On("message")
-  @Guard(NotBot(), ThrottleMessage())
-  onMessage([message]: ArgsOf<"message">, client: Client) {}
+  // @On("message")
+  // onMessage([message]: ArgsOf<"message">, client: Client) {}
 
   static get config(): BotConfig {
     return config;

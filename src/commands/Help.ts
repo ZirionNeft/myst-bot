@@ -1,6 +1,7 @@
-import { Client, Command, CommandMessage, Infos } from "@typeit/discord";
+import { Client, Command, CommandMessage, Guard, Infos } from "@typeit/discord";
 import { MessageEmbed } from "discord.js";
 import * as process from "process";
+import { NotBot, ThrottleMessage } from "../guards";
 
 export type CommandsByCategories = {
   [P in Category]?: string[];
@@ -20,6 +21,7 @@ export abstract class Help {
     coreCommand: true,
     usages: "help [command]",
   })
+  @Guard(NotBot(), ThrottleMessage())
   async runHelp(command: CommandMessage) {
     const { hcommand }: { hcommand: string } = command.args;
 
