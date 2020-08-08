@@ -1,5 +1,5 @@
 import { GuardFunction } from "@typeit/discord";
-import { ThunderBot } from "../ThunderBot";
+import { MystBot } from "../MystBot";
 
 export const HasRole = (roleName: string) => {
   const guard: GuardFunction<"commandMessage"> = async (
@@ -9,8 +9,7 @@ export const HasRole = (roleName: string) => {
   ) => {
     if (
       message.member?.roles.cache.get(
-        ThunderBot.config.stuffRoles.find((v) => v.name === roleName)?.value ??
-          ""
+        MystBot.config.stuffRoles.find((v) => v.name === roleName)?.value ?? ""
       )
     )
       await next();

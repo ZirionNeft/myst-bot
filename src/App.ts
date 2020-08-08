@@ -19,8 +19,8 @@ export default class App {
       // In this case that's not necessary because the entry point of your application is this file.
       await this._client.login(
         process.env.DISCORD_TOKEN ?? "",
-        `${__dirname}/ThunderBot.ts`, // glob string to load the classes
-        `${__dirname}/ThunderBot.js` // If you compile your bot, the file extension will be .js
+        `${__dirname}/MystBot.ts`, // glob string to load the classes
+        `${__dirname}/MystBot.js` // If you compile your bot, the file extension will be .js
       );
     } catch (e) {
       console.error("Login failed!");

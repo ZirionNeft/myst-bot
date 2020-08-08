@@ -1,9 +1,10 @@
 import { Command, CommandMessage, Guard, Infos, Rules } from "@typeit/discord";
 import { GuildMember, MessageEmbed } from "discord.js";
 import * as console from "console";
-import { ServerDataItem, ThunderBot } from "../ThunderBot";
+import { ServerDataItem, MystBot } from "../MystBot";
 import { NotBot, ThrottleMessage } from "../guards";
 
+// TODO: refactor
 export abstract class Online {
   @Command("guild")
   @Rules("online")
@@ -22,7 +23,7 @@ export abstract class Online {
     const members = command.guild?.members.cache;
 
     const activeRoleSnowflake =
-      ThunderBot.config.roles.find(
+      MystBot.config.roles.find(
         (dataItem: ServerDataItem): boolean => dataItem.name === "active"
       )?.value ?? "-1";
 

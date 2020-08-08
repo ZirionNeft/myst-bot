@@ -1,10 +1,10 @@
 import { Command, CommandMessage, Guard, Infos, Rule } from "@typeit/discord";
 import { MessageEmbed, NewsChannel, TextChannel, User } from "discord.js";
-import { ThunderBot } from "../ThunderBot";
-import Economy from "../database/models/economy";
+import { MystBot } from "../MystBot";
+import UserModel from "../database/models/User";
 import { FieldsEmbed } from "discord-paginationembed";
 import { Database } from "../database/Database";
-import EconomyService from "../services/EconomyService";
+import UserService from "../services/UserService";
 import { Inject } from "typescript-ioc";
 import * as console from "console";
 import { NotBot, ThrottleMessage, WithoutSubCommands } from "../guards";
@@ -12,12 +12,12 @@ import { NotBot, ThrottleMessage, WithoutSubCommands } from "../guards";
 const COINS_TOP =
   "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";
 const COINS_EMOJI = () =>
-  ThunderBot.config.icons.find((e) => e.name === "coins")?.value;
+  MystBot.config.icons.find((e) => e.name === "coins")?.value;
 const SUB_COMMANDS = ["top", "give"];
 
 export abstract class Coins {
   @Inject
-  private economyService!: EconomyService;
+  private userService!: UserService;
 
   @Command("coins :member")
   @Infos<CommandInfo>({
@@ -29,29 +29,33 @@ export abstract class Coins {
   })
   @Guard(NotBot(), WithoutSubCommands(SUB_COMMANDS), ThrottleMessage())
   async runCoins(command: CommandMessage) {
-    const { member }: { member: string } = command.args;
-
     const messageEmbed = new MessageEmbed();
     const author = command.author;
+    const contextGuildId = command.guild?.id ?? "";
 
     const guildMember = command.mentions.members?.first() ?? command.member;
 
     const userId = guildMember?.user.id ?? author.id;
-    const memberModelInstance = await this.economyService.findOneOrCreate(
-      userId
-    );
+    try {
+      const memberModelInstance = await this.userService.findOneOrCreate(
+        userId,
+        contextGuildId
+      );
 
-    messageEmbed
-      .setAuthor(
-        `Монеты ${guildMember?.displayName ?? author.username}`,
-        guildMember?.user.avatarURL() || author?.avatarURL() || undefined
-      )
-      .setDescription(
-        `__Coins:__ ${memberModelInstance.coins} ${COINS_EMOJI()}`
-      )
-      .setColor("#FFFFFF");
+      messageEmbed
+        .setAuthor(
+          `Монеты ${guildMember?.displayName ?? author.username}`,
+          guildMember?.user.avatarURL() || author?.avatarURL() || undefined
+        )
+        .setDescription(
+          `__Coins:__ ${memberModelInstance.coins} ${COINS_EMOJI()}`
+        )
+        .setColor("#FFFFFF");
 
-    return await command.channel.send({ embed: messageEmbed });
+      return await command.channel.send({ embed: messageEmbed });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   @Command(Rule("coins").space("top").end())
@@ -62,9 +66,12 @@ export abstract class Coins {
   })
   @Guard(NotBot(), ThrottleMessage())
   async coinsTop(command: CommandMessage) {
-    const memberModels = await this.economyService.getAllPositiveCoins();
+    const contextGuildId = command.guild?.id ?? "";
+    const memberModels = await this.userService.getAllPositiveCoins(
+      contextGuildId
+    );
 
-    const coinsTopEmbed = new FieldsEmbed<Economy>();
+    const coinsTopEmbed = new FieldsEmbed<UserModel>();
 
     coinsTopEmbed.embed
       .setAuthor("Coins leaderboard", COINS_TOP)
@@ -75,7 +82,7 @@ export abstract class Coins {
       .setChannel(
         command.channel as Exclude<typeof command.channel, NewsChannel>
       )
-      .setClientAssets({ prompt: "Yo, {{user}}, describe the page!" })
+      .setClientAssets({ prompt: "Yo, {{user}}, pick number of page!" })
       .setArray(memberModels)
       .setElementsPerPage(10)
       .setPageIndicator(false)
@@ -83,10 +90,10 @@ export abstract class Coins {
         "#",
         (el) => 1 + memberModels.findIndex((v) => el.id === v.id)
       )
-      .formatField("User", (el) => `<@${el.memberSnowflake}>`)
+      .formatField("User", (el) => `<@${el.userId}>`)
       .formatField("Coins", (el) => el.coins)
       .setPage(1)
-      .setTimeout(69000)
+      .setTimeout(60000)
       .setNavigationEmojis({
         back: "◀",
         jump: "↗",
@@ -110,45 +117,50 @@ export abstract class Coins {
     const { coins }: { coins: string } = command.args;
     const target = command.guild?.member(command.mentions.users.first() ?? "");
     const amount = parseInt(coins);
+    const contextGuildId = command.guild?.id ?? "";
 
-    const targetModelInstance = await this.economyService.findOne(
-      target?.id ?? ""
+    const targetModelInstance = await this.userService.findOne(
+      target?.id ?? "",
+      contextGuildId
     );
 
     if (!target || !targetModelInstance)
       return command.channel.send(
-        `__${command.author.username}__, target user not found!`
+        `**${command.author.username}**, target user not found!`
       );
 
     if (!amount || amount <= 0)
       return command.channel.send(
-        `__${command.author.username}__, amount of icons specified not properly`
+        `**${command.author.username}**, amount of icons specified not properly`
       );
 
-    const authorModelInstance = await this.economyService.findOne(
-      command.author.id
+    const authorModelInstance = await this.userService.findOne(
+      command.author.id,
+      contextGuildId
     );
 
     if (!authorModelInstance || authorModelInstance.coins < amount)
       return command.channel.send(
-        `__${command.author.username}__, you are not rich enough to give so many coins`
+        `**${command.author.username}**, you are not rich enough to give so many coins`
       );
 
     if (command.author.id === target?.id)
       return command.channel.send(
-        `__${command.author.username}__, transferring coins to yourself will not work. It would be so simple...`
+        `**${command.author.username}**, transferring coins to yourself will not work. It would be so simple...`
       );
 
     try {
       await Database.instance.transaction(async (t) =>
         Promise.all([
-          this.economyService.update(
-            authorModelInstance,
+          this.userService.update(
+            authorModelInstance.userId,
+            contextGuildId,
             { coins: authorModelInstance.coins - amount },
             t
           ),
-          this.economyService.update(
-            targetModelInstance,
+          this.userService.update(
+            targetModelInstance.userId,
+            contextGuildId,
             { coins: targetModelInstance.coins + amount },
             t
           ),
@@ -161,17 +173,20 @@ export abstract class Coins {
       );
     }
 
-    return command.channel
-      .send(
-        `__${command.author.username}__ sends to __${
-          target.user.username
-        }__ ${amount} ${COINS_EMOJI()}`
-      )
-      .catch((r) => {
-        (command.guild?.channels.cache.get(
-          ThunderBot.config.channels.find((v) => v.name === "private")?.value ??
-            ""
-        ) as TextChannel).send(`${r.name}\n${r.message}`);
-      });
+    return (
+      command.channel
+        .send(
+          `__${command.author.username}__ sends to __${
+            target.user.username
+          }__ ${amount} ${COINS_EMOJI()}`
+        )
+        // TODO: refactor to utils.sendSystemErrorDM
+        .catch((r) => {
+          (command.guild?.channels.cache.get(
+            MystBot.config.channels.find((v) => v.name === "private")?.value ??
+              ""
+          ) as TextChannel).send(`${r.name}\n${r.message}`);
+        })
+    );
   }
 }

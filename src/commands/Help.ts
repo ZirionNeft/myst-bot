@@ -2,6 +2,7 @@ import { Client, Command, CommandMessage, Guard, Infos } from "@typeit/discord";
 import { MessageEmbed } from "discord.js";
 import * as process from "process";
 import { NotBot, ThrottleMessage } from "../guards";
+import { Utils } from "../Utils";
 
 export type CommandsByCategories = {
   [P in Category]?: string[];
@@ -38,7 +39,7 @@ export abstract class Help {
       : null;
 
     if (filteredCommands && filteredCommands.length) {
-      const prefix = filteredCommands[0].prefix;
+      const prefix = Utils.getGuildPrefix(command.guild?.id);
       const coreCommand = filteredCommands.find((v) => v.infos.coreCommand);
 
       messageEmbed

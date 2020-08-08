@@ -1,8 +1,10 @@
 import {
+  ArgsOf,
   Client,
   CommandMessage,
   Discord,
   ExpressionFunction,
+  On,
   Once,
   Rule,
 } from "@typeit/discord";
@@ -10,9 +12,12 @@ import * as Path from "path";
 import config from "../config/config.json";
 import * as console from "console";
 import * as process from "process";
-import { Snowflake } from "discord.js";
+import { MessageEmbed, Snowflake } from "discord.js";
 import { Database } from "./database/Database";
 import { Models } from "./database/Models";
+import { Container, Inject } from "typescript-ioc";
+import GuildService from "./services/GuildService";
+import { Utils } from "./Utils";
 
 export interface ServerDataItem {
   readonly value: Snowflake | string;
@@ -29,14 +34,15 @@ interface BotConfigKeys {
 
 export type BotConfig = Record<keyof BotConfigKeys, ServerDataItem[]>;
 
-const DEFAULT_PREFIX = process.env.COMMAND_PREFIX ?? "!";
-
 const prefixBehaviour: ExpressionFunction = async (
   message?: CommandMessage,
   client?: Client
 ) => {
-  return Rule().startWith("(?:!|testPrefix)"); //DEFAULT_PREFIX;
+  return Rule().startWith(await Utils.getGuildPrefix(message?.guild?.id)); //DEFAULT_PREFIX;
 };
+
+// TODO: InGuildOnly guard
+// TODO "Currently bot is in calibrating mod" feature
 
 @Discord(prefixBehaviour, {
   import: [
@@ -45,7 +51,10 @@ const prefixBehaviour: ExpressionFunction = async (
     Path.join(__dirname, "commands", "*.js"),
   ],
 })
-export class ThunderBot {
+export class MystBot {
+  @Inject
+  private guildService!: GuildService;
+
   @Once("ready")
   ready() {
     Database.init()
@@ -61,9 +70,18 @@ export class ThunderBot {
     console.log(Client.getCommands());
   }
 
+  @On("guildCreate")
+  async onGuildCreate([guild]: ArgsOf<"guildCreate">, client: Client) {
+    try {
+      await this.guildService.findOneOrCreate(guild.id);
+    } catch (e) {
+      console.error(e);
+      guild.owner ? await Utils.sendSystemErrorDM(guild.owner) : null;
+    }
+  }
+
   // @On("message")
   // onMessage([message]: ArgsOf<"message">, client: Client) {}
-
   static get config(): BotConfig {
     return config;
   }
