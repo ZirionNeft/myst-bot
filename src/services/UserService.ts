@@ -1,9 +1,8 @@
 import { Snowflake } from "discord.js";
-import { Cacheable } from "@type-cacheable/core";
+import { Cacheable, CacheClear } from "@type-cacheable/core";
 import User, { UserCreationAttributes } from "../database/models/User";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Op, Transaction } from "sequelize";
-import { Service } from "./Service";
 
 export interface IUserService {
   getAllPositiveCoins(guildId: Snowflake): Promise<User[]>;
@@ -11,9 +10,9 @@ export interface IUserService {
   update(
     id: Snowflake,
     guildDataId: Snowflake,
-    data: Partial<UserCreationAttributes>,
+    data: Omit<UserCreationAttributes, "guildId" | "userId">,
     transaction?: Transaction
-  ): Promise<User | undefined>;
+  ): Promise<number | User[] | undefined>;
 
   create(
     userId: Snowflake,
@@ -32,18 +31,30 @@ export interface IUserService {
 
 @Singleton
 @OnlyInstantiableByContainer
-export default class UserService extends Service implements IUserService {
-  static setCacheKey = (args: any[]) => `${args[0]}:${args[1]}`;
-  static allPositiveCoinsCacheKey = (args: any[]) =>
-    `all-positive-coins:${args[0]}`;
+export default class UserService implements IUserService {
+  static userCacheKey = (args: any[]) => `${args[0]}:${args[1]}`;
+  static allPositiveCoinsCacheKey = (args: any[]) => args[0];
 
+  @CacheClear({
+    cacheKey: UserService.userCacheKey,
+  })
   async update(
     userId: Snowflake,
     guildId: Snowflake,
-    data: Partial<UserCreationAttributes>,
+    data: Omit<UserCreationAttributes, "guildId" | "userId">,
     transaction?: Transaction
   ) {
-    return (await this.findOne(userId, guildId))?.update(data, { transaction });
+    return (
+      await User.update(data, {
+        where: {
+          [Op.and]: {
+            guildId,
+            userId,
+          },
+        },
+        transaction,
+      })
+    ).shift();
   }
 
   async create(
@@ -57,18 +68,32 @@ export default class UserService extends Service implements IUserService {
     });
   }
 
+  @Cacheable({
+    cacheKey: UserService.userCacheKey,
+    ttlSeconds: 60,
+  })
   async findOneOrCreate(
     userId: Snowflake,
     guildId: Snowflake,
     data?: UserCreationAttributes
   ) {
-    return (
-      (await this.findOne(userId, guildId)) ??
-      (await this.create(userId, guildId, data))
-    );
+    const [m] = await User.findCreateFind({
+      where: {
+        [Op.and]: {
+          userId,
+          guildId,
+        },
+      },
+      defaults: data,
+    });
+
+    return m;
   }
 
-  @Cacheable({ cacheKey: UserService.setCacheKey, ttlSeconds: 15 })
+  @Cacheable({
+    cacheKey: UserService.userCacheKey,
+    ttlSeconds: 60,
+  })
   async findOne(userId: Snowflake, guildId: Snowflake): Promise<User | null> {
     return await User.findOne({
       where: {
@@ -80,7 +105,11 @@ export default class UserService extends Service implements IUserService {
     });
   }
 
-  @Cacheable({ cacheKey: UserService.allPositiveCoinsCacheKey, ttlSeconds: 30 })
+  @Cacheable({
+    cacheKey: UserService.allPositiveCoinsCacheKey,
+    hashKey: "all-positive-coins",
+    ttlSeconds: 60,
+  })
   async getAllPositiveCoins(guildId: Snowflake): Promise<User[]> {
     return User.findAll({
       where: {

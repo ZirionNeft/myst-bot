@@ -11,11 +11,10 @@ import {
 import * as Path from "path";
 import config from "../config/config.json";
 import * as console from "console";
-import * as process from "process";
-import { MessageEmbed, Snowflake } from "discord.js";
+import { Snowflake } from "discord.js";
 import { Database } from "./database/Database";
 import { Models } from "./database/Models";
-import { Container, Inject } from "typescript-ioc";
+import { Inject } from "typescript-ioc";
 import GuildService from "./services/GuildService";
 import { Utils } from "./Utils";
 
@@ -42,6 +41,7 @@ const prefixBehaviour: ExpressionFunction = async (
 };
 
 // TODO: InGuildOnly guard
+// TODO: NotBotMention guard
 // TODO "Currently bot is in calibrating mod" feature
 
 @Discord(prefixBehaviour, {
@@ -59,10 +59,10 @@ export class MystBot {
   ready() {
     Database.init()
       .then((v): void => {
-        console.info(`${v.getDialect()}: Database successfully connected!`);
+        console.info(`${v.getDialect()}: Database is successfully connected!`);
 
         Models.init(v).then((): void => {
-          console.info("All models successfully synchronised!");
+          console.info("All models are successfully synchronised!");
         });
       })
       .catch((e: Error): void => console.error("Database init error\n" + e));

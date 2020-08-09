@@ -8,6 +8,7 @@ import UserService from "../services/UserService";
 import { Inject } from "typescript-ioc";
 import * as console from "console";
 import { NotBot, ThrottleMessage, WithoutSubCommands } from "../guards";
+import { Utils } from "../Utils";
 
 const COINS_TOP =
   "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";
@@ -71,36 +72,44 @@ export abstract class Coins {
       contextGuildId
     );
 
-    const coinsTopEmbed = new FieldsEmbed<UserModel>();
+    try {
+      const coinsTopEmbed = new FieldsEmbed<UserModel>();
 
-    coinsTopEmbed.embed
-      .setAuthor("Coins leaderboard", COINS_TOP)
-      .setColor("#FFFFFF");
+      coinsTopEmbed.embed
+        .setAuthor("Coins leaderboard", COINS_TOP)
+        .setColor("#FFFFFF");
 
-    return await coinsTopEmbed
-      .setAuthorizedUsers([command.author.id])
-      .setChannel(
-        command.channel as Exclude<typeof command.channel, NewsChannel>
-      )
-      .setClientAssets({ prompt: "Yo, {{user}}, pick number of page!" })
-      .setArray(memberModels)
-      .setElementsPerPage(10)
-      .setPageIndicator(false)
-      .formatField(
-        "#",
-        (el) => 1 + memberModels.findIndex((v) => el.id === v.id)
-      )
-      .formatField("User", (el) => `<@${el.userId}>`)
-      .formatField("Coins", (el) => el.coins)
-      .setPage(1)
-      .setTimeout(60000)
-      .setNavigationEmojis({
-        back: "◀",
-        jump: "↗",
-        forward: "▶",
-        delete: "🗑",
-      })
-      .build();
+      return await coinsTopEmbed
+        .setAuthorizedUsers([command.author.id])
+        .setChannel(
+          command.channel as Exclude<typeof command.channel, NewsChannel>
+        )
+        .setClientAssets({ prompt: "Yo, {{user}}, pick number of page!" })
+        .setArray(memberModels)
+        .setElementsPerPage(10)
+        .setPageIndicator(false)
+        .formatField(
+          "#",
+          (el) => 1 + memberModels.findIndex((v) => el.id === v.id)
+        )
+        .formatField("User", (el) => `<@${el.userId}>`)
+        .formatField("Coins", (el) => el.coins)
+        .setPage(1)
+        .setTimeout(60000)
+        .setNavigationEmojis({
+          back: "◀",
+          jump: "↗",
+          forward: "▶",
+          delete: "🗑",
+        })
+        .build();
+    } catch (e) {
+      console.error(e.message);
+      return await Utils.sendPublicError(
+        command.channel as TextChannel,
+        "I'm not enough permitted in this guild to perform that action :("
+      );
+    }
   }
 
   // @Command("coins award :member")
@@ -116,18 +125,19 @@ export abstract class Coins {
   async giveCoins(command: CommandMessage) {
     const { coins }: { coins: string } = command.args;
     const target = command.guild?.member(command.mentions.users.first() ?? "");
+    const targetId = target?.id || target?.user.id;
     const amount = parseInt(coins);
     const contextGuildId = command.guild?.id ?? "";
 
-    const targetModelInstance = await this.userService.findOne(
-      target?.id ?? "",
-      contextGuildId
-    );
-
-    if (!target || !targetModelInstance)
+    if (!target || !targetId)
       return command.channel.send(
         `**${command.author.username}**, target user not found!`
       );
+
+    const targetModelInstance = await this.userService.findOneOrCreate(
+      targetId,
+      contextGuildId
+    );
 
     if (!amount || amount <= 0)
       return command.channel.send(
@@ -144,7 +154,7 @@ export abstract class Coins {
         `**${command.author.username}**, you are not rich enough to give so many coins`
       );
 
-    if (command.author.id === target?.id)
+    if (command.author.id === targetId)
       return command.channel.send(
         `**${command.author.username}**, transferring coins to yourself will not work. It would be so simple...`
       );
@@ -167,6 +177,7 @@ export abstract class Coins {
         ])
       );
     } catch (e) {
+      // TODO: refactor to dm error
       console.error(e);
       return command.channel.send(
         `__${command.author.username}__, an error occurred while transferring coins. Contact the bot support`
@@ -176,9 +187,9 @@ export abstract class Coins {
     return (
       command.channel
         .send(
-          `__${command.author.username}__ sends to __${
+          `**${command.author.username}** sends to **${
             target.user.username
-          }__ ${amount} ${COINS_EMOJI()}`
+          }** ${amount} ${COINS_EMOJI()}`
         )
         // TODO: refactor to utils.sendSystemErrorDM
         .catch((r) => {

@@ -1,23 +1,47 @@
 import { Snowflake } from "discord.js";
-import { Cacheable } from "@type-cacheable/core";
-import User, { UserCreationAttributes } from "../database/models/User";
+import { Cacheable, CacheClear } from "@type-cacheable/core";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
-import { Op, Transaction } from "sequelize";
+import { Transaction } from "sequelize";
 import Guild, { GuildCreationAttributes } from "../database/models/Guild";
-import { IService, Service } from "./Service";
 
-export interface IGuildService
-  extends IService<Guild, GuildCreationAttributes> {}
+export interface IGuildService {
+  findOne(id: Snowflake): Promise<Guild | null>;
 
-@Singleton
-@OnlyInstantiableByContainer
-export default class GuildService extends Service implements IGuildService {
-  async update(
+  create(id: Snowflake, data?: GuildCreationAttributes): Promise<Guild>;
+
+  findOneOrCreate(
+    id: Snowflake,
+    data?: GuildCreationAttributes
+  ): Promise<Guild>;
+
+  update(
     id: Snowflake,
     data: Partial<GuildCreationAttributes>,
     transaction?: Transaction
+  ): Promise<number | Guild[] | undefined>;
+}
+
+@Singleton
+@OnlyInstantiableByContainer
+export default class GuildService implements IGuildService {
+  static setCacheKey = (args: any[]) => args[0];
+
+  @CacheClear({
+    cacheKey: GuildService.setCacheKey,
+  })
+  async update(
+    id: Snowflake,
+    data: Omit<GuildCreationAttributes, "guildId">,
+    transaction?: Transaction
   ) {
-    return (await this.findOne(id))?.update(data, { transaction });
+    return (
+      await Guild.update(data, {
+        where: {
+          guildId: id,
+        },
+        transaction,
+      })
+    ).shift();
   }
 
   async create(id: Snowflake, data?: GuildCreationAttributes) {
@@ -27,11 +51,18 @@ export default class GuildService extends Service implements IGuildService {
     });
   }
 
+  @Cacheable({ cacheKey: GuildService.setCacheKey, ttlSeconds: 60 })
   async findOneOrCreate(id: Snowflake, data?: GuildCreationAttributes) {
-    return (await this.findOne(id)) ?? (await this.create(id, data));
+    const [m] = await Guild.findCreateFind({
+      where: {
+        guildId: id,
+      },
+      defaults: data,
+    });
+    return m;
   }
 
-  @Cacheable({ cacheKey: GuildService.setCacheKey, ttlSeconds: 15 })
+  @Cacheable({ cacheKey: GuildService.setCacheKey, ttlSeconds: 60 })
   async findOne(id: Snowflake): Promise<Guild | null> {
     return await Guild.findOne({
       where: {
