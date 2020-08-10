@@ -7,13 +7,18 @@ import { Database } from "../database/Database";
 import UserService from "../services/UserService";
 import { Inject } from "typescript-ioc";
 import * as console from "console";
-import { NotBot, ThrottleMessage, WithoutSubCommands } from "../guards";
+import {
+  InGuildOnly,
+  NotBot,
+  NotBotMentionInArgs,
+  ThrottleMessage,
+  WithoutSubCommands,
+} from "../guards";
 import { Utils } from "../Utils";
 
 const COINS_TOP =
   "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";
-const COINS_EMOJI = () =>
-  MystBot.config.icons.find((e) => e.name === "coins")?.value;
+const COINS_EMOJI = "<:coin:742364602662125648>";
 const SUB_COMMANDS = ["top", "give"];
 
 export abstract class Coins {
@@ -28,7 +33,13 @@ export abstract class Coins {
     category: "Economy",
     coreCommand: true,
   })
-  @Guard(NotBot(), WithoutSubCommands(SUB_COMMANDS), ThrottleMessage())
+  @Guard(
+    NotBot(),
+    InGuildOnly(),
+    WithoutSubCommands(SUB_COMMANDS),
+    ThrottleMessage(),
+    NotBotMentionInArgs()
+  )
   async runCoins(command: CommandMessage) {
     const messageEmbed = new MessageEmbed();
     const author = command.author;
@@ -45,13 +56,13 @@ export abstract class Coins {
 
       messageEmbed
         .setAuthor(
-          `Монеты ${guildMember?.displayName ?? author.username}`,
+          `${guildMember?.displayName ?? author.username}'s currency info`,
           guildMember?.user.avatarURL() || author?.avatarURL() || undefined
         )
         .setDescription(
-          `__Coins:__ ${memberModelInstance.coins} ${COINS_EMOJI()}`
+          `__Coins:__ ${memberModelInstance.coins} ${COINS_EMOJI}`
         )
-        .setColor("#FFFFFF");
+        .setColor("YELLOW");
 
       return await command.channel.send({ embed: messageEmbed });
     } catch (e) {
@@ -65,7 +76,7 @@ export abstract class Coins {
     usages: "coins top",
     category: "Economy",
   })
-  @Guard(NotBot(), ThrottleMessage())
+  @Guard(NotBot(), InGuildOnly(), ThrottleMessage())
   async coinsTop(command: CommandMessage) {
     const contextGuildId = command.guild?.id ?? "";
     const memberModels = await this.userService.getAllPositiveCoins(
@@ -121,27 +132,41 @@ export abstract class Coins {
     usages: "coins give <@member> <amount>",
     category: "Economy",
   })
-  @Guard(NotBot(), ThrottleMessage())
+  @Guard(NotBot(), InGuildOnly(), ThrottleMessage(), NotBotMentionInArgs())
   async giveCoins(command: CommandMessage) {
     const { coins }: { coins: string } = command.args;
     const target = command.guild?.member(command.mentions.users.first() ?? "");
     const targetId = target?.id || target?.user.id;
     const amount = parseInt(coins);
-    const contextGuildId = command.guild?.id ?? "";
+    const contextGuildId = command.member?.guild?.id;
 
     if (!target || !targetId)
-      return command.channel.send(
-        `**${command.author.username}**, target user not found!`
-      );
+      return Utils.sendPublicNote(command, "target user not found!");
 
-    const targetModelInstance = await this.userService.findOneOrCreate(
-      targetId,
-      contextGuildId
-    );
+    let targetModelInstance;
+    try {
+      if (!contextGuildId) throw new Error("Guild id cannot be null");
+      targetModelInstance = await this.userService.findOneOrCreate(
+        targetId,
+        contextGuildId
+      );
+    } catch (e) {
+      console.error(e);
+      return (
+        command.member &&
+        (await Utils.sendSystemErrorDM(command.member, [
+          {
+            name: "Command",
+            value: `${command.commandName} ${command.commandContent}`,
+          },
+        ]))
+      );
+    }
 
     if (!amount || amount <= 0)
-      return command.channel.send(
-        `**${command.author.username}**, amount of icons specified not properly`
+      return Utils.sendPublicNote(
+        command,
+        "amount of icons specified not properly"
       );
 
     const authorModelInstance = await this.userService.findOne(
@@ -177,27 +202,20 @@ export abstract class Coins {
         ])
       );
     } catch (e) {
-      // TODO: refactor to dm error
       console.error(e);
-      return command.channel.send(
-        `__${command.author.username}__, an error occurred while transferring coins. Contact the bot support`
+      return (
+        command.member &&
+        (await Utils.sendSystemErrorDM(command.member, [
+          {
+            name: "Command",
+            value: `${command.commandName} ${command.commandContent}`,
+          },
+        ]))
       );
     }
 
-    return (
-      command.channel
-        .send(
-          `**${command.author.username}** sends to **${
-            target.user.username
-          }** ${amount} ${COINS_EMOJI()}`
-        )
-        // TODO: refactor to utils.sendSystemErrorDM
-        .catch((r) => {
-          (command.guild?.channels.cache.get(
-            MystBot.config.channels.find((v) => v.name === "private")?.value ??
-              ""
-          ) as TextChannel).send(`${r.name}\n${r.message}`);
-        })
+    return command.channel.send(
+      `**${command.author.username}** sends to **${target.user.username}** ${amount} Coins ${COINS_EMOJI}`
     );
   }
 }

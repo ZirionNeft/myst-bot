@@ -1,20 +1,19 @@
-import { Command, CommandMessage, Guard, Infos, Rules } from "@typeit/discord";
+import { Command, CommandMessage, Guard, Infos } from "@typeit/discord";
 import { GuildMember, MessageEmbed } from "discord.js";
 import * as console from "console";
-import { ServerDataItem, MystBot } from "../MystBot";
-import { NotBot, ThrottleMessage } from "../guards";
+import { MystBot, ServerDataItem } from "../MystBot";
+import { InGuildOnly, NotBot, ThrottleMessage } from "../guards";
 
 // TODO: refactor
-export abstract class Online {
+export abstract class Guild {
   @Command("guild")
-  @Rules("online")
   @Infos<CommandInfo>({
     description: "todo",
     category: "Guild",
     coreCommand: true,
     usages: "guild",
   })
-  @Guard(NotBot(), ThrottleMessage())
+  @Guard(NotBot(), InGuildOnly(), ThrottleMessage())
   async runOnline(command: CommandMessage) {
     let onlineMembers = 0;
     let onlineActiveMembers = 0;

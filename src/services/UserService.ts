@@ -84,7 +84,7 @@ export default class UserService implements IUserService {
           guildId,
         },
       },
-      defaults: data,
+      defaults: { ...data, guildId, userId } as UserCreationAttributes,
     });
 
     return m;

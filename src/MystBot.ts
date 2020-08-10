@@ -37,12 +37,13 @@ const prefixBehaviour: ExpressionFunction = async (
   message?: CommandMessage,
   client?: Client
 ) => {
-  return Rule().startWith(await Utils.getGuildPrefix(message?.guild?.id)); //DEFAULT_PREFIX;
+  return Rule().startWith(await Utils.getGuildPrefix(message?.guild?.id));
 };
 
-// TODO: InGuildOnly guard
-// TODO: NotBotMention guard
+// TODO: NotBotInMentionArgs guard
 // TODO "Currently bot is in calibrating mod" feature
+// TODO: coins multiplier
+// Format emoji <:rgd_coin_rgd:518875768814829568>
 
 @Discord(prefixBehaviour, {
   import: [
@@ -82,6 +83,7 @@ export class MystBot {
 
   // @On("message")
   // onMessage([message]: ArgsOf<"message">, client: Client) {}
+
   static get config(): BotConfig {
     return config;
   }

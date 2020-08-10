@@ -57,7 +57,7 @@ export default class GuildService implements IGuildService {
       where: {
         guildId: id,
       },
-      defaults: data,
+      defaults: { ...data, guildId: id } as GuildCreationAttributes,
     });
     return m;
   }

@@ -39,7 +39,7 @@ export abstract class Help {
       : null;
 
     if (filteredCommands && filteredCommands.length) {
-      const prefix = Utils.getGuildPrefix(command.guild?.id);
+      const prefix = await Utils.getGuildPrefix(command.guild?.id);
       const coreCommand = filteredCommands.find((v) => v.infos.coreCommand);
 
       messageEmbed
