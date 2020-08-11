@@ -1,18 +1,13 @@
 import { GuardFunction } from "@typeit/discord";
-import { MystBot } from "../MystBot";
+import { Snowflake } from "discord.js";
 
-export const HasRole = (roleName: string) => {
+export const HasRole = (roleId: Snowflake) => {
   const guard: GuardFunction<"commandMessage"> = async (
     [message],
     client,
     next
   ) => {
-    if (
-      message.member?.roles.cache.get(
-        MystBot.config.stuffRoles.find((v) => v.name === roleName)?.value ?? ""
-      )
-    )
-      await next();
+    if (message.member?.roles.cache.find((r) => r.id === roleId)) await next();
   };
 
   return guard;

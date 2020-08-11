@@ -14,7 +14,7 @@ import {
   ThrottleMessage,
   WithoutSubCommands,
 } from "../guards";
-import { Utils } from "../Utils";
+import { MessageHelpers } from "../utils/MessageHelpers";
 
 const COINS_TOP =
   "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";
@@ -41,11 +41,15 @@ export abstract class Coins {
     NotBotMentionInArgs()
   )
   async runCoins(command: CommandMessage) {
+    const { member }: { member: string } = command.args;
+
     const messageEmbed = new MessageEmbed();
     const author = command.author;
     const contextGuildId = command.guild?.id ?? "";
 
-    const guildMember = command.mentions.members?.first() ?? command.member;
+    const id = await MessageHelpers.getUserIdFromMention(member);
+    const guildMember =
+      command.guild?.members.cache.find((m) => m.id === id) ?? command.member;
 
     const userId = guildMember?.user.id ?? author.id;
     try {
@@ -116,7 +120,7 @@ export abstract class Coins {
         .build();
     } catch (e) {
       console.error(e.message);
-      return await Utils.sendPublicError(
+      return await MessageHelpers.sendPublicError(
         command.channel as TextChannel,
         "I'm not enough permitted in this guild to perform that action :("
       );
@@ -126,7 +130,7 @@ export abstract class Coins {
   // @Command("coins award :member")
   // async adminAddCoins(command: CommandMessage) {}
 
-  @Command("coins give :mention :coins")
+  @Command("coins give :member :coins")
   @Infos<CommandInfo>({
     description: "Allows you to give some coins to mentioned member",
     usages: "coins give <@member> <amount>",
@@ -134,14 +138,14 @@ export abstract class Coins {
   })
   @Guard(NotBot(), InGuildOnly(), ThrottleMessage(), NotBotMentionInArgs())
   async giveCoins(command: CommandMessage) {
-    const { coins }: { coins: string } = command.args;
-    const target = command.guild?.member(command.mentions.users.first() ?? "");
-    const targetId = target?.id || target?.user.id;
+    const { member, coins }: { member: string; coins: string } = command.args;
+    const targetId = await MessageHelpers.getUserIdFromMention(member);
+    const target = command.guild?.members.cache.find((m) => m.id === targetId);
     const amount = parseInt(coins);
     const contextGuildId = command.member?.guild?.id;
 
     if (!target || !targetId)
-      return Utils.sendPublicNote(command, "target user not found!");
+      return MessageHelpers.sendPublicNote(command, "target user not found!");
 
     let targetModelInstance;
     try {
@@ -154,7 +158,7 @@ export abstract class Coins {
       console.error(e);
       return (
         command.member &&
-        (await Utils.sendSystemErrorDM(command.member, [
+        (await MessageHelpers.sendSystemErrorDM(command.member, [
           {
             name: "Command",
             value: `${command.commandName} ${command.commandContent}`,
@@ -164,7 +168,7 @@ export abstract class Coins {
     }
 
     if (!amount || amount <= 0)
-      return Utils.sendPublicNote(
+      return MessageHelpers.sendPublicNote(
         command,
         "amount of icons specified not properly"
       );
@@ -205,7 +209,7 @@ export abstract class Coins {
       console.error(e);
       return (
         command.member &&
-        (await Utils.sendSystemErrorDM(command.member, [
+        (await MessageHelpers.sendSystemErrorDM(command.member, [
           {
             name: "Command",
             value: `${command.commandName} ${command.commandContent}`,

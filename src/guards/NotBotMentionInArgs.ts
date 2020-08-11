@@ -1,5 +1,5 @@
 import { GuardFunction } from "@typeit/discord";
-import { Utils } from "../Utils";
+import { MessageHelpers } from "../utils/MessageHelpers";
 
 export const NotBotMentionInArgs = () => {
   const guard: GuardFunction<"commandMessage"> = async (
@@ -12,7 +12,11 @@ export const NotBotMentionInArgs = () => {
       !(message.commandContent && message.mentions.users.some((v) => v.bot))
     )
       await next();
-    else await Utils.sendPublicNote(message, "bots can't be used in commands");
+    else
+      await MessageHelpers.sendPublicNote(
+        message,
+        "bots can't be used in commands"
+      );
   };
 
   return guard;

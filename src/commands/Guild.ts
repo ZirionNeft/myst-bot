@@ -1,7 +1,6 @@
 import { Command, CommandMessage, Guard, Infos } from "@typeit/discord";
 import { GuildMember, MessageEmbed } from "discord.js";
 import * as console from "console";
-import { MystBot, ServerDataItem } from "../MystBot";
 import { InGuildOnly, NotBot, ThrottleMessage } from "../guards";
 
 // TODO: refactor
@@ -21,10 +20,8 @@ export abstract class Guild {
 
     const members = command.guild?.members.cache;
 
-    const activeRoleSnowflake =
-      MystBot.config.roles.find(
-        (dataItem: ServerDataItem): boolean => dataItem.name === "active"
-      )?.value ?? "-1";
+    // TODO: rework role counter
+    const activeRoleSnowflake = "";
 
     try {
       members?.forEach((member: GuildMember): void => {
