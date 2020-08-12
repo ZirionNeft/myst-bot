@@ -13,6 +13,5 @@ Start.bat
 package-lock.json
 yarn.lock
 /.env
-/js_old/
 /build/
 *.sqlite
