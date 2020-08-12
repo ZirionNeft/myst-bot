@@ -28,6 +28,7 @@ const prefixBehaviour = async (message?: CommandMessage, client?: Client) => {
 
 // TODO "Currently bot is in calibrating mod" feature
 // TODO: coins multiplier
+// TODO: user impact in server (exp); server level, server top; server oriented leveling and exp;
 
 @Discord(prefixBehaviour, {
   import: [

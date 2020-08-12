@@ -67,4 +67,8 @@ export abstract class MessageHelpers {
     }
     return undefined;
   }
+
+  static capitalize(s: string | undefined): string | undefined {
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : undefined;
+  }
 }

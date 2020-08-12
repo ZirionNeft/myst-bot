@@ -1,11 +1,11 @@
-import { Command, CommandMessage, Guard, Infos } from "@typeit/discord";
-import { GuildMember, MessageEmbed } from "discord.js";
-import * as console from "console";
+import { Command, CommandMessage, Guard, Infos, Rules } from "@typeit/discord";
+import { MessageEmbed } from "discord.js";
 import { InGuildOnly, NotBot, ThrottleMessage } from "../guards";
+import { MessageHelpers } from "../utils/MessageHelpers";
 
-// TODO: refactor
 export abstract class Guild {
   @Command("guild")
+  @Rules("server")
   @Infos<CommandInfo>({
     description: "todo",
     category: "Guild",
@@ -13,45 +13,29 @@ export abstract class Guild {
     usages: "guild",
   })
   @Guard(NotBot(), InGuildOnly(), ThrottleMessage())
-  async runOnline(command: CommandMessage) {
-    let onlineMembers = 0;
-    let onlineActiveMembers = 0;
-    let allActiveMembers = 0;
+  async runGuild(command: CommandMessage) {
+    const messageEmbed = new MessageEmbed();
 
-    const members = command.guild?.members.cache;
+    const u = "[unknown]";
+    const guild = command.guild;
+    const owner = guild?.owner;
 
-    // TODO: rework role counter
-    const activeRoleSnowflake = "";
-
-    try {
-      members?.forEach((member: GuildMember): void => {
-        if (member.presence.status !== "offline") {
-          onlineMembers++;
-          if (member.roles.cache.has(activeRoleSnowflake)) {
-            onlineActiveMembers++;
-          }
-        }
-        if (member.roles.cache.has(activeRoleSnowflake)) {
-          allActiveMembers++;
-        }
-      });
-    } catch (e) {
-      console.error(e);
-    }
-
-    const messageEmbed = new MessageEmbed()
-      .setTitle(`${command.guild?.name} stats`)
+    messageEmbed
+      .setTitle(guild?.name ?? "[server name is unknown]")
+      .setColor("PURPLE")
+      .setDescription(`\`\`\`Guild ID: ${guild?.id ?? u}\`\`\``)
+      .setThumbnail(guild?.iconURL() ?? "")
+      .addField("Region", MessageHelpers.capitalize(guild?.region) ?? u, true)
+      .addField("Members", guild?.memberCount ?? u, true)
+      .addField("Roles", guild?.roles.cache.size ?? u, true)
+      .addField("Shard", guild?.shard.id ?? u, true)
+      .addField("Channels", guild?.channels.cache.size ?? u, true)
       .addField(
-        "Members",
-        `All: ${members?.size ?? -1}\nOnline: ${onlineMembers}`,
+        "Owner",
+        `${owner ? `${owner.user.username}#${owner.user.discriminator}` : u}`,
         true
       )
-      .addField(
-        "Active",
-        `All: ${allActiveMembers}\nOnline: ${onlineActiveMembers}`,
-        true
-      )
-      .setColor("#FFFFFF");
+      .addField("When Created", guild?.createdAt.toUTCString() ?? u, false);
 
     return await command.channel.send({ embed: messageEmbed });
   }
