@@ -7,7 +7,7 @@ export abstract class Guild {
   @Command("guild")
   @Rules("server")
   @Infos<CommandInfo>({
-    description: "todo",
+    description: "Information about server",
     category: "Guild",
     coreCommand: true,
     usages: "guild",
