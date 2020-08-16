@@ -1,6 +1,7 @@
 import { Client } from "@typeit/discord";
 import { Container } from "typescript-ioc";
 import Throttle from "./logic/Throttle";
+import EmojiCountManager from "./logic/EmojiCountManager";
 
 export default class App {
   private static _client: Client;
@@ -12,7 +13,7 @@ export default class App {
   static async start(): Promise<void> {
     this._client = new Client();
 
-    Container.bind(Throttle);
+    await this.bindings();
 
     try {
       // In the login method, you must specify the glob string to load your classes (for the framework).
@@ -25,5 +26,9 @@ export default class App {
     } catch (e) {
       console.error("Login failed!");
     }
+  }
+
+  private static async bindings() {
+    Container.bind(Throttle);
   }
 }

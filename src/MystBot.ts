@@ -4,19 +4,24 @@ import {
   CommandMessage,
   Discord,
   ExpressionFunction,
+  Guard,
   On,
   Once,
   Rule,
 } from "@typeit/discord";
 import * as Path from "path";
 import * as console from "console";
-import { Snowflake } from "discord.js";
+import { MessageEmbed, Snowflake } from "discord.js";
 import { Database } from "./database/Database";
 import { Models } from "./database/Models";
 import { Inject } from "typescript-ioc";
 import GuildService from "./services/GuildService";
 import { MessageHelpers } from "./utils/MessageHelpers";
 import BotHelpers from "./utils/BotHelpers";
+import { EmojiScanner } from "./middlewares/EmojiScanner";
+import { GuardData } from "./globals";
+import EmojiCountManager from "./logic/EmojiCountManager";
+import Emoji from "./database/models/Emoji";
 
 const prefixBehaviour = async (message?: CommandMessage, client?: Client) => {
   return Rule().startWith(
@@ -40,6 +45,9 @@ const prefixBehaviour = async (message?: CommandMessage, client?: Client) => {
 export class MystBot {
   @Inject
   private _guildService!: GuildService;
+
+  @Inject
+  private _emojiCountManager!: EmojiCountManager;
 
   private static _clientId?: Snowflake;
 
@@ -74,6 +82,36 @@ export class MystBot {
     }
   }
 
-  // @On("message")
-  // onMessage([message]: ArgsOf<"message">, client: Client) {}
+  @On("message")
+  @Guard(EmojiScanner())
+  async onMessage(
+    [message]: ArgsOf<"message">,
+    client: Client,
+    guardData: GuardData
+  ) {
+    try {
+      if (message.guild?.id && guardData.emojis.length) {
+        const gId = message.guild.id;
+        this._emojiCountManager
+          .add(
+            ...guardData.emojis.map((e) => ({
+              guildId: gId,
+              emojiId: e.id,
+              name: e.name,
+            }))
+          )
+          .then((l) => console.info(`Emojis added: ${l}`));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    // await message.channel.send({
+    //   embed: new MessageEmbed()
+    //     .addField("<:coin:742364602662125648>", "**424**", true)
+    //     .addField("<:coin:742364602662125648>", "**424**", true)
+    //     .addField("<:coin:742364602662125648>", "**424**", true)
+    //     .addField("<:coin:742364602662125648>", "**424**", true),
+    // });
+  }
 }

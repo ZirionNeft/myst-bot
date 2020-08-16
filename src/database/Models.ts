@@ -1,6 +1,16 @@
-import { Sequelize, DataTypes } from "sequelize";
+import {
+  Sequelize,
+  DataTypes,
+  InstanceUpdateOptions,
+  BulkCreateOptions,
+} from "sequelize";
 import Guild from "./models/Guild";
 import User from "./models/User";
+import Emoji, {
+  EmojiAttributes,
+  EmojiCreationAttributes,
+} from "./models/Emoji";
+import { HookReturn } from "sequelize/types/lib/hooks";
 
 export abstract class Models {
   // Initialising of tables from models and sync them when app is starting up
@@ -8,15 +18,79 @@ export abstract class Models {
     return Promise.all([
       this._usersTableInit(sequelize),
       this._guildsTableInit(sequelize),
+      this._emojiTableInit(sequelize),
     ]);
   }
 
+  private static _emojiTableInit(sequelize: Sequelize): Promise<Emoji> {
+    Emoji.init(
+      {
+        id: {
+          type: new DataTypes.INTEGER(),
+          autoIncrement: true,
+          primaryKey: true,
+        },
+        guildId: {
+          type: new DataTypes.STRING(32),
+          allowNull: false,
+        },
+        emojiId: {
+          type: new DataTypes.STRING(32),
+          allowNull: false,
+          unique: true,
+        },
+        name: {
+          type: new DataTypes.STRING(32),
+        },
+        counter: {
+          type: new DataTypes.INTEGER(),
+          allowNull: false,
+          defaultValue: 0,
+        },
+      },
+      {
+        tableName: "emojis",
+        sequelize,
+      }
+    );
+
+    Emoji.addHook(
+      "afterBulkCreate",
+      (
+        emojis,
+        options: {
+          rawInstances?: EmojiCreationAttributes[];
+        } & BulkCreateOptions<EmojiAttributes>
+      ) => {
+        try {
+          for (let emojiInstance of emojis) {
+            const rawEmoji = options.rawInstances?.find(
+              (e) => emojiInstance.get().emojiId === e.emojiId
+            );
+            if (!rawEmoji) continue;
+            emojiInstance
+              .increment("counter", {
+                by: rawEmoji.counter,
+              })
+              .then();
+          }
+        } catch (e) {
+          console.error(
+            `Emoji incrementing error! More info available in debug mode`
+          );
+          if (process.env.DEBUG) console.error(e);
+        }
+      }
+    );
+
+    return Emoji.sync();
+  }
+
   private static _usersTableInit(sequelize: Sequelize): Promise<User> {
-    // User table fields
     User.init(
       {
         id: {
-          type: DataTypes.INTEGER.UNSIGNED,
+          type: new DataTypes.INTEGER(),
           autoIncrement: true,
           primaryKey: true,
         },
@@ -51,7 +125,7 @@ export abstract class Models {
     Guild.init(
       {
         id: {
-          type: DataTypes.INTEGER.UNSIGNED,
+          type: new DataTypes.INTEGER(),
           autoIncrement: true,
           primaryKey: true,
         },

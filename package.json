@@ -28,8 +28,9 @@
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "node-cache": "^5.1.2",
+    "pg": "^8.3.0",
+    "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.1",
-    "sqlite3": "^5.0.0",
     "typescript-ioc": "^3.2.2"
   },
   "devDependencies": {

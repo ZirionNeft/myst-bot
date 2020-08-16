@@ -16,7 +16,7 @@ export interface IGuildService {
 
   update(
     id: Snowflake,
-    data: Partial<GuildCreationAttributes>,
+    data: Omit<GuildCreationAttributes, "guildId">,
     transaction?: Transaction
   ): Promise<number | Guild[] | undefined>;
 }

@@ -1,6 +1,5 @@
 import { Command, CommandMessage, Guard, Infos, Rule } from "@typeit/discord";
 import { MessageEmbed, NewsChannel, TextChannel, User } from "discord.js";
-import { MystBot } from "../MystBot";
 import UserModel from "../database/models/User";
 import { FieldsEmbed } from "discord-paginationembed";
 import { Database } from "../database/Database";
@@ -15,6 +14,7 @@ import {
   WithoutSubCommands,
 } from "../guards";
 import { MessageHelpers } from "../utils/MessageHelpers";
+import { StringHelpers } from "../utils/StringHelpers";
 
 const COINS_TOP =
   "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";
@@ -47,7 +47,7 @@ export abstract class Coins {
     const author = command.author;
     const contextGuildId = command.guild?.id ?? "";
 
-    const id = await MessageHelpers.getUserIdFromMention(member);
+    const id = StringHelpers.getUserIdFromMention(member);
     const guildMember =
       command.guild?.members.cache.find((m) => m.id === id) ?? command.member;
 
@@ -139,7 +139,7 @@ export abstract class Coins {
   @Guard(NotBot(), InGuildOnly(), ThrottleMessage(), NotBotMentionInArgs())
   async giveCoins(command: CommandMessage) {
     const { member, coins }: { member: string; coins: string } = command.args;
-    const targetId = await MessageHelpers.getUserIdFromMention(member);
+    const targetId = StringHelpers.getUserIdFromMention(member);
     const target = command.guild?.members.cache.find((m) => m.id === targetId);
     const amount = parseInt(coins);
     const contextGuildId = command.member?.guild?.id;

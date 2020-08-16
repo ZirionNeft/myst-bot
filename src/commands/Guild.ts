@@ -1,7 +1,7 @@
 import { Command, CommandMessage, Guard, Infos, Rules } from "@typeit/discord";
 import { MessageEmbed } from "discord.js";
 import { InGuildOnly, NotBot, ThrottleMessage } from "../guards";
-import { MessageHelpers } from "../utils/MessageHelpers";
+import { StringHelpers } from "../utils/StringHelpers";
 
 export abstract class Guild {
   @Command("guild")
@@ -25,7 +25,7 @@ export abstract class Guild {
       .setColor("PURPLE")
       .setDescription(`\`\`\`Guild ID: ${guild?.id ?? u}\`\`\``)
       .setThumbnail(guild?.iconURL() ?? "")
-      .addField("Region", MessageHelpers.capitalize(guild?.region) ?? u, true)
+      .addField("Region", StringHelpers.capitalize(guild?.region) ?? u, true)
       .addField("Members", guild?.memberCount ?? u, true)
       .addField("Roles", guild?.roles.cache.size ?? u, true)
       .addField("Shard", guild?.shard.id ?? u, true)

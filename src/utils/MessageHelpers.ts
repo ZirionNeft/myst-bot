@@ -2,7 +2,6 @@ import {
   EmbedFieldData,
   GuildMember,
   MessageEmbed,
-  Snowflake,
   TextChannel,
 } from "discord.js";
 import process from "process";
@@ -49,26 +48,5 @@ export abstract class MessageHelpers {
     return commandMessage.channel.send(
       `<:o:742022518277144647> **${commandMessage.author.username}**, ${message}`
     );
-  }
-
-  static async getUserIdFromMention(
-    mention: string
-  ): Promise<Snowflake | undefined> {
-    if (!mention) return undefined;
-
-    if (mention.startsWith("<@") && mention.endsWith(">")) {
-      mention = mention.slice(2, -1);
-
-      if (mention.startsWith("!")) {
-        mention = mention.slice(1);
-      }
-
-      return mention;
-    }
-    return undefined;
-  }
-
-  static capitalize(s: string | undefined): string | undefined {
-    return s ? s.charAt(0).toUpperCase() + s.slice(1) : undefined;
   }
 }
