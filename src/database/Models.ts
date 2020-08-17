@@ -33,11 +33,12 @@ export abstract class Models {
         guildId: {
           type: new DataTypes.STRING(32),
           allowNull: false,
+          unique: "compositeIndex",
         },
         emojiId: {
           type: new DataTypes.STRING(32),
           allowNull: false,
-          unique: true,
+          unique: "compositeIndex",
         },
         name: {
           type: new DataTypes.STRING(32),
@@ -49,6 +50,22 @@ export abstract class Models {
         },
       },
       {
+        scopes: {
+          guild(id) {
+            return {
+              where: {
+                guildId: id,
+              },
+            };
+          },
+          emoji(id) {
+            return {
+              where: {
+                emojiId: id,
+              },
+            };
+          },
+        },
         tableName: "emojis",
         sequelize,
       }
@@ -62,6 +79,7 @@ export abstract class Models {
           rawInstances?: EmojiCreationAttributes[];
         } & BulkCreateOptions<EmojiAttributes>
       ) => {
+        // TODO: +1 count when new row inserted - BUG
         try {
           for (let emojiInstance of emojis) {
             const rawEmoji = options.rawInstances?.find(

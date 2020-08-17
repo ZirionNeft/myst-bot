@@ -100,18 +100,10 @@ export class MystBot {
               name: e.name,
             }))
           )
-          .then((l) => console.info(`Emojis added: ${l}`));
+          .then((l) => console.info(`Emojis accumulated: ${l}`));
       }
     } catch (e) {
       console.error(e);
     }
-
-    // await message.channel.send({
-    //   embed: new MessageEmbed()
-    //     .addField("<:coin:742364602662125648>", "**424**", true)
-    //     .addField("<:coin:742364602662125648>", "**424**", true)
-    //     .addField("<:coin:742364602662125648>", "**424**", true)
-    //     .addField("<:coin:742364602662125648>", "**424**", true),
-    // });
   }
 }

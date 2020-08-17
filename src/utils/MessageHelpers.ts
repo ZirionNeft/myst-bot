@@ -3,12 +3,16 @@ import {
   GuildMember,
   MessageEmbed,
   TextChannel,
+  User,
 } from "discord.js";
 import process from "process";
 import { CommandMessage } from "@typeit/discord";
 
 export abstract class MessageHelpers {
-  static async sendSystemErrorDM(member: GuildMember, data?: EmbedFieldData[]) {
+  static async sendSystemErrorDM(
+    member: GuildMember | User,
+    data?: EmbedFieldData[]
+  ) {
     const s = `https://discord.gg/${process.env.BOT_SUPPORT_SERVER}`;
     const m = new MessageEmbed();
 
@@ -23,7 +27,13 @@ export abstract class MessageHelpers {
         )
         .addField("Support server", s, true)
         .addField("Timestamp", Date.now(), true)
-        .addField("Guild", `${member?.guild.name}\n<${member?.guild.id}>`, true)
+        .addField(
+          "Guild",
+          member instanceof GuildMember
+            ? `${member?.guild.name}\n<${member?.guild.id}>`
+            : "[none]",
+          true
+        )
         .setURL(s)
 
       // TODO: leave check Reaction to send data about error to support

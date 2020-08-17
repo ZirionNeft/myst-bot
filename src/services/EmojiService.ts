@@ -22,6 +22,10 @@ export interface IEmojiService {
   ): Promise<number | Emoji[] | undefined>;
 
   bulkUpdateOrCreate(...models: Emoji[]): Promise<Emoji[]>;
+
+  guildScoped(id: Snowflake): Promise<Emoji[]>;
+
+  emojiScoped(id: Snowflake): Promise<Emoji[]>;
 }
 
 @Singleton
@@ -45,6 +49,14 @@ export default class EmojiService implements IEmojiService {
         transaction,
       })
     ).shift();
+  }
+
+  async guildScoped(id: Snowflake) {
+    return Emoji.scope({ method: ["guild", id] }).findAll();
+  }
+
+  async emojiScoped(id: Snowflake) {
+    return Emoji.scope({ method: ["emoji", id] }).findAll();
   }
 
   async create(id: Snowflake, data: EmojiCreationAttributes) {
@@ -76,8 +88,8 @@ export default class EmojiService implements IEmojiService {
 
   async bulkUpdateOrCreate(...models: EmojiCreationAttributes[]) {
     return await Emoji.bulkCreate(models, {
-      updateOnDuplicate: ["emojiId", "name"],
-      fields: ["guildId", "emojiId", "name", "counter"], // Fields to insert
+      updateOnDuplicate: ["name"],
+      fields: ["guildId", "emojiId", "name"], // Fields to insert
       // Note: Sequelize with typescript doesn't support custom options in hooks
       //@ts-ignore
       rawInstances: [...models],
