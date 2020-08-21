@@ -1,8 +1,10 @@
 import { Sequelize } from "sequelize";
 import * as process from "process";
-import * as console from "console";
+import Logger from "../utils/logger/Logger";
 
 export abstract class Database {
+  private static _logger = Logger.get(Database);
+
   public static async init(): Promise<Sequelize> {
     const dbPass = process.env.DB_PASS;
     const dbUser = process.env.DB_USER;
@@ -13,12 +15,12 @@ export abstract class Database {
       this._dbInstance = new Sequelize(
         `postgres://${dbUser}:${dbPass}@${dbHost}/${dbDatabase}`,
         {
-          logging: process.env.DEBUG === "true" ? console.log : false,
+          logging: process.env.DEBUG === "true" ? this._logger.trace : false,
         }
       );
       return Promise.resolve(this._dbInstance);
     } catch (e) {
-      console.error(e);
+      this._logger.error(e);
       return Promise.reject(e);
     }
   }

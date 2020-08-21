@@ -3,15 +3,13 @@ import {
   Client,
   CommandMessage,
   Discord,
-  ExpressionFunction,
   Guard,
   On,
   Once,
   Rule,
 } from "@typeit/discord";
 import * as Path from "path";
-import * as console from "console";
-import { MessageEmbed, Snowflake } from "discord.js";
+import { Snowflake } from "discord.js";
 import { Database } from "./database/Database";
 import { Models } from "./database/Models";
 import { Inject } from "typescript-ioc";
@@ -21,7 +19,7 @@ import BotHelpers from "./utils/BotHelpers";
 import { EmojiScanner } from "./middlewares/EmojiScanner";
 import { GuardData } from "./globals";
 import EmojiCountManager from "./logic/EmojiCountManager";
-import Emoji from "./database/models/Emoji";
+import Logger from "./utils/logger/Logger";
 
 const prefixBehaviour = async (message?: CommandMessage, client?: Client) => {
   return Rule().startWith(
@@ -51,6 +49,8 @@ export class MystBot {
 
   private static _clientId?: Snowflake;
 
+  private static _logger = Logger.get(MystBot);
+
   static get clientId(): Snowflake | undefined {
     return MystBot._clientId;
   }
@@ -61,15 +61,19 @@ export class MystBot {
 
     Database.init()
       .then((v): void => {
-        console.info(`${v.getDialect()}: Database is successfully connected!`);
+        MystBot._logger.info(
+          `${v.getDialect()}: Database is successfully connected!`
+        );
 
         Models.init(v).then((): void => {
-          console.info("All models are successfully synchronised!");
+          MystBot._logger.info("All models are successfully synchronised!");
         });
       })
-      .catch((e: Error): void => console.error("Database init error\n" + e));
+      .catch((e: Error): void =>
+        MystBot._logger.error("Database init error\n" + e)
+      );
 
-    console.log(Client.getCommands());
+    MystBot._logger.debug(Client.getCommands());
   }
 
   @On("guildCreate")
@@ -77,7 +81,7 @@ export class MystBot {
     try {
       await this._guildService.findOneOrCreate(guild.id);
     } catch (e) {
-      console.error(e);
+      MystBot._logger.error(e);
       guild.owner ? await MessageHelpers.sendSystemErrorDM(guild.owner) : null;
     }
   }
@@ -100,10 +104,10 @@ export class MystBot {
               name: e.name,
             }))
           )
-          .then((l) => console.info(`Emojis accumulated: ${l}`));
+          .then((l) => MystBot._logger.info(`Emojis accumulated: ${l}`));
       }
     } catch (e) {
-      console.error(e);
+      MystBot._logger.error(e);
     }
   }
 }

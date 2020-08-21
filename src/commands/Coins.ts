@@ -5,7 +5,6 @@ import { FieldsEmbed } from "discord-paginationembed";
 import { Database } from "../database/Database";
 import UserService from "../services/UserService";
 import { Inject } from "typescript-ioc";
-import * as console from "console";
 import {
   InGuildOnly,
   NotBot,
@@ -15,6 +14,7 @@ import {
 } from "../guards";
 import { MessageHelpers } from "../utils/MessageHelpers";
 import { StringHelpers } from "../utils/StringHelpers";
+import Logger from "../utils/logger/Logger";
 
 const COINS_TOP =
   "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";
@@ -22,6 +22,8 @@ const COINS_EMOJI = "<:coin:742364602662125648>";
 const SUB_COMMANDS = ["top", "give"];
 
 export abstract class Coins {
+  private static _logger = Logger.get(Logger);
+
   @Inject
   private userService!: UserService;
 
@@ -70,7 +72,7 @@ export abstract class Coins {
 
       return await command.channel.send({ embed: messageEmbed });
     } catch (e) {
-      console.error(e);
+      Coins._logger.error(e);
     }
   }
 
@@ -119,7 +121,7 @@ export abstract class Coins {
         })
         .build();
     } catch (e) {
-      console.error(e.message);
+      Coins._logger.error(e.message);
       return await MessageHelpers.sendPublicError(
         command.channel as TextChannel,
         "I'm not enough permitted in this guild to perform that action :("
@@ -155,7 +157,7 @@ export abstract class Coins {
         contextGuildId
       );
     } catch (e) {
-      console.error(e);
+      Coins._logger.error(e);
       return (
         command.member &&
         (await MessageHelpers.sendSystemErrorDM(command.member, [
@@ -206,7 +208,7 @@ export abstract class Coins {
         ])
       );
     } catch (e) {
-      console.error(e);
+      Coins._logger.error(e);
       return (
         command.member &&
         (await MessageHelpers.sendSystemErrorDM(command.member, [

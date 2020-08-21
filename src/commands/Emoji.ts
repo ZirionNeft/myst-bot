@@ -6,6 +6,7 @@ import { Inject } from "typescript-ioc";
 import EmojiService from "../services/EmojiService";
 import { MessageHelpers } from "../utils/MessageHelpers";
 import { Embeds, PaginationEmbed } from "discord-paginationembed";
+import Logger from "../utils/logger/Logger";
 
 //https://discord.com/oauth2/authorize?client_id=729372307897712740&scope=bot&permissions=1494608983
 
@@ -16,6 +17,8 @@ interface EmojiDTO {
 }
 
 export abstract class Emoji {
+  private static _logger = Logger.get(Emoji);
+
   @Inject
   private _emojiService!: EmojiService;
 
@@ -80,7 +83,7 @@ export abstract class Emoji {
 
       return await paginatedEmbeds.build();
     } catch (e) {
-      console.error(e);
+      Emoji._logger.error(e);
       return (
         command.member &&
         MessageHelpers.sendSystemErrorDM(command.member, [

@@ -1,9 +1,9 @@
 import { Inject, OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Snowflake } from "discord.js";
 import EmojiService from "../services/EmojiService";
-import Emoji, { EmojiCreationAttributes } from "../database/models/Emoji";
+import { EmojiCreationAttributes } from "../database/models/Emoji";
+import Logger from "../utils/logger/Logger";
 import Timeout = NodeJS.Timeout;
-import Sequelize from "sequelize";
 
 const LOAD_INTERVAL = 5000;
 
@@ -22,6 +22,8 @@ export type FullEmojiDTO = EmojiDTO & Counter;
 @Singleton
 @OnlyInstantiableByContainer
 export default class EmojiCountManager {
+  private static _logger = Logger.get(EmojiCountManager);
+
   @Inject
   private _emojiService!: EmojiService;
 
@@ -76,18 +78,18 @@ export default class EmojiCountManager {
         );
         await this._emojiService.bulkUpdateOrCreate(...v);
 
-        console.info(`Emojis sent to Database: ${size}`);
+        EmojiCountManager._logger.info(`Emojis sent to Database: %d`, size);
 
         this._clear();
       }
     } catch (e) {
-      console.error(e);
+      EmojiCountManager._logger.error(e);
       this._clear();
     }
   }
 
   private _clear() {
     this._emojiAccumulator.clear();
-    console.info("Emojis accumulator has been cleaned!");
+    EmojiCountManager._logger.info("Emojis accumulator has been cleaned!");
   }
 }

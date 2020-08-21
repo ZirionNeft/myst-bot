@@ -11,8 +11,11 @@ import Emoji, {
   EmojiCreationAttributes,
 } from "./models/Emoji";
 import { HookReturn } from "sequelize/types/lib/hooks";
+import Logger from "../utils/logger/Logger";
 
 export abstract class Models {
+  private static _logger = Logger.get(Models);
+
   // Initialising of tables from models and sync them when app is starting up
   public static init(sequelize: Sequelize) {
     return Promise.all([
@@ -93,10 +96,10 @@ export abstract class Models {
               .then();
           }
         } catch (e) {
-          console.error(
+          Models._logger.error(
             `Emoji incrementing error! More info available in debug mode`
           );
-          if (process.env.DEBUG) console.error(e);
+          if (process.env.DEBUG) Models._logger.error(e);
         }
       }
     );
