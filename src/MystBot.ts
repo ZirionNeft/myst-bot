@@ -19,7 +19,7 @@ import BotHelpers from "./utils/BotHelpers";
 import { EmojiScanner } from "./middlewares/EmojiScanner";
 import { GuardData } from "./globals";
 import EmojiCountManager from "./logic/EmojiCountManager";
-import Logger from "./utils/logger/Logger";
+import Logger from "./utils/Logger";
 
 const prefixBehaviour = async (message?: CommandMessage, client?: Client) => {
   return Rule().startWith(
@@ -72,14 +72,13 @@ export class MystBot {
       .catch((e: Error): void =>
         MystBot._logger.error("Database init error\n" + e)
       );
-
-    MystBot._logger.debug(Client.getCommands());
   }
 
   @On("guildCreate")
   async onGuildCreate([guild]: ArgsOf<"guildCreate">, client: Client) {
     try {
       await this._guildService.findOneOrCreate(guild.id);
+      MystBot._logger.info("New Guild obtained: <%s>", guild.id);
     } catch (e) {
       MystBot._logger.error(e);
       guild.owner ? await MessageHelpers.sendSystemErrorDM(guild.owner) : null;

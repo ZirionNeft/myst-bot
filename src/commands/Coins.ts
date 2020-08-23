@@ -14,7 +14,7 @@ import {
 } from "../guards";
 import { MessageHelpers } from "../utils/MessageHelpers";
 import { StringHelpers } from "../utils/StringHelpers";
-import Logger from "../utils/logger/Logger";
+import Logger from "../utils/Logger";
 
 const COINS_TOP =
   "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";

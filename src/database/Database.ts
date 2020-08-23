@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import * as process from "process";
-import Logger from "../utils/logger/Logger";
+import Logger from "../utils/Logger";
 
 export abstract class Database {
   private static _logger = Logger.get(Database);
@@ -15,7 +15,13 @@ export abstract class Database {
       this._dbInstance = new Sequelize(
         `postgres://${dbUser}:${dbPass}@${dbHost}/${dbDatabase}`,
         {
-          logging: process.env.DEBUG === "true" ? this._logger.trace : false,
+          logging: (sql, t) =>
+            process.env.DEBUG === "true"
+              ? this._logger.trace(
+                  sql,
+                  typeof t === "number" ? `Elapsed time: ${t}ms` : ""
+                )
+              : false,
         }
       );
       return Promise.resolve(this._dbInstance);

@@ -1,17 +1,11 @@
-import {
-  Sequelize,
-  DataTypes,
-  InstanceUpdateOptions,
-  BulkCreateOptions,
-} from "sequelize";
+import { BulkCreateOptions, DataTypes, Sequelize } from "sequelize";
 import Guild from "./models/Guild";
 import User from "./models/User";
 import Emoji, {
   EmojiAttributes,
   EmojiCreationAttributes,
 } from "./models/Emoji";
-import { HookReturn } from "sequelize/types/lib/hooks";
-import Logger from "../utils/logger/Logger";
+import Logger from "../utils/Logger";
 
 export abstract class Models {
   private static _logger = Logger.get(Models);

@@ -1,8 +1,7 @@
 import { Client } from "@typeit/discord";
 import { Container } from "typescript-ioc";
 import Throttle from "./logic/Throttle";
-import EmojiCountManager from "./logic/EmojiCountManager";
-import Logger from "./utils/logger/Logger";
+import Logger from "./utils/Logger";
 
 export default class App {
   private static _client: Client;
@@ -16,6 +15,8 @@ export default class App {
   static async start(): Promise<void> {
     this._client = new Client();
 
+    this._logger.info("Logger level: %s", this._logger.level);
+
     await this.bindings();
 
     try {
@@ -23,8 +24,8 @@ export default class App {
       // In this case that's not necessary because the entry point of your application is this file.
       await this._client.login(
         process.env.DISCORD_TOKEN ?? "",
-        `${__dirname}/MystBot.ts`, // glob string to load the classes
-        `${__dirname}/MystBot.js` // If you compile your bot, the file extension will be .js
+        `${__dirname}/${process.env.BOT_NAME}Bot.ts`, // glob string to load the classes
+        `${__dirname}/${process.env.BOT_NAME}Bot.js` // If you compile your bot, the file extension will be .js
       );
     } catch (e) {
       App._logger.error("Login failed!");
