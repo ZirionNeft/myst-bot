@@ -1,6 +1,7 @@
 import { GuardFunction } from "@typeit/discord";
 import Throttle from "../logic/Throttle";
 import { Container } from "typescript-ioc";
+import { MessageHelpers } from "../utils/MessageHelpers";
 
 export const ThrottleMessage = (excludedSubCommands?: string[]) => {
   const guard: GuardFunction<"commandMessage"> = async (
@@ -11,7 +12,7 @@ export const ThrottleMessage = (excludedSubCommands?: string[]) => {
     const throttle: Throttle = Container.get(Throttle);
 
     if (await throttle.make(message.author.id)) {
-      await message.channel.send("> Please cool down, sir!");
+      await MessageHelpers.sendAndDelete(message, "> Please cool down!");
     } else await next();
   };
 

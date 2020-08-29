@@ -181,13 +181,15 @@ export abstract class Coins {
     );
 
     if (!authorModelInstance || authorModelInstance.coins < amount)
-      return command.channel.send(
-        `**${command.author.username}**, you are not rich enough to give so many coins`
+      return MessageHelpers.sendPublicNote(
+        command,
+        "you are not rich enough to give so many coins"
       );
 
     if (command.author.id === targetId)
-      return command.channel.send(
-        `**${command.author.username}**, transferring coins to yourself will not work. It would be so simple...`
+      return MessageHelpers.sendPublicNote(
+        command,
+        "transferring coins to yourself will not work. It would be so simple..."
       );
 
     try {

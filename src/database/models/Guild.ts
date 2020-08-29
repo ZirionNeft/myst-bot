@@ -11,7 +11,7 @@ import {
 import { Snowflake } from "discord.js";
 import User from "./User";
 
-interface GuildAttributes {
+export interface GuildAttributes {
   id: number;
   guildId: Snowflake;
   prefix: string;

@@ -32,11 +32,11 @@ export interface IUserService {
 @Singleton
 @OnlyInstantiableByContainer
 export default class UserService implements IUserService {
-  static userCacheKey = (args: any[]) => `${args[0]}:${args[1]}`;
-  static allPositiveCoinsCacheKey = (args: any[]) => args[0];
+  private _userCacheKey = (args: any[]) => `${args[0]}:${args[1]}`;
+  private _allPositiveCoinsCacheKey = (args: any[]) => args[0];
 
   @CacheClear({
-    cacheKey: UserService.userCacheKey,
+    cacheKey: this._userCacheKey,
   })
   async update(
     userId: Snowflake,
@@ -69,7 +69,7 @@ export default class UserService implements IUserService {
   }
 
   @Cacheable({
-    cacheKey: UserService.userCacheKey,
+    cacheKey: this._userCacheKey,
     ttlSeconds: 60,
   })
   async findOneOrCreate(
@@ -91,7 +91,7 @@ export default class UserService implements IUserService {
   }
 
   @Cacheable({
-    cacheKey: UserService.userCacheKey,
+    cacheKey: this._userCacheKey,
     ttlSeconds: 60,
   })
   async findOne(userId: Snowflake, guildId: Snowflake): Promise<User | null> {
@@ -106,7 +106,7 @@ export default class UserService implements IUserService {
   }
 
   @Cacheable({
-    cacheKey: UserService.allPositiveCoinsCacheKey,
+    cacheKey: this._allPositiveCoinsCacheKey,
     hashKey: "all-positive-coins",
     ttlSeconds: 60,
   })

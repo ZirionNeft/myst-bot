@@ -31,10 +31,10 @@ export interface IEmojiService {
 @Singleton
 @OnlyInstantiableByContainer
 export default class EmojiService implements IEmojiService {
-  static setCacheKey = (args: any[]) => args[0];
+  private _setCacheKey = (args: any[]) => args[0];
 
   @CacheClear({
-    cacheKey: EmojiService.setCacheKey,
+    cacheKey: this._setCacheKey,
   })
   async update(
     id: Snowflake,
@@ -66,7 +66,7 @@ export default class EmojiService implements IEmojiService {
     });
   }
 
-  @Cacheable({ cacheKey: EmojiService.setCacheKey, ttlSeconds: 300 })
+  @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 300 })
   async findOneOrCreate(id: Snowflake, data?: EmojiCreationAttributes) {
     const [m] = await Emoji.findCreateFind({
       where: {
@@ -77,7 +77,7 @@ export default class EmojiService implements IEmojiService {
     return m;
   }
 
-  @Cacheable({ cacheKey: EmojiService.setCacheKey, ttlSeconds: 300 })
+  @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 300 })
   async findOne(id: Snowflake): Promise<Emoji | null> {
     return await Emoji.findOne({
       where: {

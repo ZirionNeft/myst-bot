@@ -24,10 +24,10 @@ export interface IGuildService {
 @Singleton
 @OnlyInstantiableByContainer
 export default class GuildService implements IGuildService {
-  static setCacheKey = (args: any[]) => args[0];
+  private _setCacheKey = (args: any[]) => args[0];
 
   @CacheClear({
-    cacheKey: GuildService.setCacheKey,
+    cacheKey: this._setCacheKey,
   })
   async update(
     id: Snowflake,
@@ -51,7 +51,7 @@ export default class GuildService implements IGuildService {
     });
   }
 
-  @Cacheable({ cacheKey: GuildService.setCacheKey, ttlSeconds: 60 })
+  @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 60 })
   async findOneOrCreate(id: Snowflake, data?: GuildCreationAttributes) {
     const [m] = await Guild.findCreateFind({
       where: {
@@ -62,7 +62,7 @@ export default class GuildService implements IGuildService {
     return m;
   }
 
-  @Cacheable({ cacheKey: GuildService.setCacheKey, ttlSeconds: 60 })
+  @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 60 })
   async findOne(id: Snowflake): Promise<Guild | null> {
     return await Guild.findOne({
       where: {

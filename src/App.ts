@@ -2,6 +2,7 @@ import { Client } from "@typeit/discord";
 import { Container } from "typescript-ioc";
 import Throttle from "./logic/Throttle";
 import Logger from "./utils/Logger";
+import GuildService from "./services/GuildService";
 
 export default class App {
   private static _client: Client;
@@ -34,5 +35,6 @@ export default class App {
 
   private static async bindings() {
     Container.bind(Throttle);
+    Container.bind(GuildService);
   }
 }

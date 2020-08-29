@@ -78,7 +78,6 @@ export class MystBot {
   async onGuildCreate([guild]: ArgsOf<"guildCreate">, client: Client) {
     try {
       await this._guildService.findOneOrCreate(guild.id);
-      MystBot._logger.info("New Guild obtained: <%s>", guild.id);
     } catch (e) {
       MystBot._logger.error(e);
       guild.owner ? await MessageHelpers.sendSystemErrorDM(guild.owner) : null;

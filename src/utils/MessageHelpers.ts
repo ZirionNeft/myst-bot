@@ -7,6 +7,7 @@ import {
 } from "discord.js";
 import process from "process";
 import { CommandMessage } from "@typeit/discord";
+import ChatCleaner from "../logic/ChatCleaner";
 
 export abstract class MessageHelpers {
   static async sendSystemErrorDM(
@@ -55,8 +56,20 @@ export abstract class MessageHelpers {
   }
 
   static async sendPublicNote(commandMessage: CommandMessage, message: string) {
-    return commandMessage.channel.send(
-      `<:o:742022518277144647> **${commandMessage.author.username}**, ${message}`
+    return this.sendAndDelete(
+      commandMessage,
+      `**${commandMessage.author.username}**, ${message}`,
+      10
     );
+  }
+
+  static async sendAndDelete(
+    commandMessage: CommandMessage,
+    message: string,
+    deleteDelay?: number
+  ) {
+    return commandMessage.channel
+      .send(message)
+      .then((m) => ChatCleaner.clean({ message: m, sec: deleteDelay }));
   }
 }

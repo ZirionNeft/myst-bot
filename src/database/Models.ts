@@ -76,7 +76,6 @@ export abstract class Models {
           rawInstances?: EmojiCreationAttributes[];
         } & BulkCreateOptions<EmojiAttributes>
       ) => {
-        // TODO: +1 count when new row inserted - BUG
         try {
           for (let emojiInstance of emojis) {
             const rawEmoji = options.rawInstances?.find(
@@ -90,10 +89,11 @@ export abstract class Models {
               .then();
           }
         } catch (e) {
-          Models._logger.error(
-            `Emoji incrementing error! More info available in debug mode`
-          );
           if (process.env.DEBUG) Models._logger.error(e);
+          else
+            Models._logger.error(
+              `Emoji incrementing error! More info available in debug mode`
+            );
         }
       }
     );
@@ -168,6 +168,13 @@ export abstract class Models {
       },
       as: "users",
     });
+
+    Guild.addHook("afterCreate", (guild) =>
+      Models._logger.info(
+        `New Guild added in Database: <%s>`,
+        guild.get().guildId
+      )
+    );
 
     return Guild.sync();
   }
