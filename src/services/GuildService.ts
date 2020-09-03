@@ -2,23 +2,25 @@ import { Snowflake } from "discord.js";
 import { Cacheable, CacheClear } from "@type-cacheable/core";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Transaction } from "sequelize";
-import Guild, { GuildCreationAttributes } from "../database/models/Guild";
+import GuildModel, {
+  GuildCreationAttributes,
+} from "../database/models/Guild.model";
 
 export interface IGuildService {
-  findOne(id: Snowflake): Promise<Guild | null>;
+  findOne(id: Snowflake): Promise<GuildModel | null>;
 
-  create(id: Snowflake, data?: GuildCreationAttributes): Promise<Guild>;
+  create(id: Snowflake, data?: GuildCreationAttributes): Promise<GuildModel>;
 
   findOneOrCreate(
     id: Snowflake,
     data?: GuildCreationAttributes
-  ): Promise<Guild>;
+  ): Promise<GuildModel>;
 
   update(
     id: Snowflake,
     data: Omit<GuildCreationAttributes, "guildId">,
     transaction?: Transaction
-  ): Promise<number | Guild[] | undefined>;
+  ): Promise<number | GuildModel[] | undefined>;
 }
 
 @Singleton
@@ -35,7 +37,7 @@ export default class GuildService implements IGuildService {
     transaction?: Transaction
   ) {
     return (
-      await Guild.update(data, {
+      await GuildModel.update(data, {
         where: {
           guildId: id,
         },
@@ -45,7 +47,7 @@ export default class GuildService implements IGuildService {
   }
 
   async create(id: Snowflake, data?: GuildCreationAttributes) {
-    return await Guild.create({
+    return await GuildModel.create({
       ...{ guildId: id },
       ...data,
     });
@@ -53,7 +55,7 @@ export default class GuildService implements IGuildService {
 
   @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 60 })
   async findOneOrCreate(id: Snowflake, data?: GuildCreationAttributes) {
-    const [m] = await Guild.findCreateFind({
+    const [m] = await GuildModel.findCreateFind({
       where: {
         guildId: id,
       },
@@ -63,8 +65,8 @@ export default class GuildService implements IGuildService {
   }
 
   @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 60 })
-  async findOne(id: Snowflake): Promise<Guild | null> {
-    return await Guild.findOne({
+  async findOne(id: Snowflake): Promise<GuildModel | null> {
+    return await GuildModel.findOne({
       where: {
         guildId: id,
       },

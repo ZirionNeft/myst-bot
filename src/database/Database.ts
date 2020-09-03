@@ -1,39 +1,72 @@
-import { Sequelize } from "sequelize";
-import * as process from "process";
+import { Options, Sequelize } from "sequelize";
 import Logger from "../utils/Logger";
+import Models from "./Models";
+import process from "process";
+import { config } from "node-config-ts";
 
-export abstract class Database {
+export type TDatabase = Database;
+
+class Database {
   private static _logger = Logger.get(Database);
 
-  public static async init(): Promise<Sequelize> {
-    const dbPass = process.env.DB_PASS;
-    const dbUser = process.env.DB_USER;
-    const dbDatabase = process.env.DB_DATABASE;
-    const dbHost = process.env.DB_HOST;
+  public readonly _modelConstructors = Models.load();
 
-    try {
-      this._dbInstance = new Sequelize(
-        `postgres://${dbUser}:${dbPass}@${dbHost}/${dbDatabase}`,
-        {
-          logging: (sql, t) =>
-            process.env.DEBUG === "true"
-              ? this._logger.trace(
-                  sql,
-                  typeof t === "number" ? `Elapsed time: ${t}ms` : ""
-                )
-              : false,
-        }
+  private readonly _sequelize: Sequelize;
+
+  constructor() {
+    Database._logger.debug(config.database.username);
+
+    this._sequelize = new Sequelize({
+      ...config.database,
+      logging: sequelizeLogging,
+    } as Options);
+
+    // init every model
+    Object.keys(this._modelConstructors).forEach((modelName) => {
+      this._modelConstructors[modelName].prepareInit(this._sequelize);
+    });
+
+    // call (create) associations for each model
+    Object.keys(this._modelConstructors).forEach((modelName) => {
+      this._modelConstructors[modelName].setAssociations(
+        this._modelConstructors
       );
-      return Promise.resolve(this._dbInstance);
+    });
+
+    // create hooks for each model
+    Object.keys(this._modelConstructors).forEach((modelName) => {
+      this._modelConstructors[modelName].setHooks(this._modelConstructors);
+    });
+  }
+
+  public async prepare() {
+    try {
+      // return await to catch error if thrown
+      return await this._sequelize.authenticate();
+      // do not sync otherwise current data in database will be emptied out (Dropping all tables and recreating them)
+      // return await this._sequelize.sync();
     } catch (e) {
-      this._logger.error(e);
-      return Promise.reject(e);
+      Database._logger.fatal("Database init error!\n", e);
+      process.exit(1);
     }
   }
 
-  static get instance(): Sequelize {
-    return this._dbInstance;
+  get sequelize(): Sequelize {
+    return this._sequelize;
   }
-
-  private static _dbInstance: Sequelize;
 }
+
+export const getDatabase = async () => {
+  const database = new Database();
+  await database.prepare();
+
+  return database;
+};
+
+export const sequelizeLogging = (sql, t) =>
+  process.env.DEBUG === "true"
+    ? Logger.get(Database).trace(
+        sql,
+        typeof t === "number" ? `Elapsed time: ${t}ms` : ""
+      )
+    : false;

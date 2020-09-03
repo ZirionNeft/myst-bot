@@ -1,7 +1,7 @@
 import { Inject, OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Snowflake } from "discord.js";
 import EmojiService from "../services/EmojiService";
-import { EmojiCreationAttributes } from "../database/models/Emoji";
+import { EmojiCreationAttributes } from "../database/models/Emoji.model";
 import Logger from "../utils/Logger";
 import Timeout = NodeJS.Timeout;
 

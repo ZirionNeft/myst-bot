@@ -10,8 +10,7 @@ import {
 } from "@typeit/discord";
 import * as Path from "path";
 import { Snowflake } from "discord.js";
-import { Database } from "./database/Database";
-import { Models } from "./database/Models";
+import { getDatabase, TDatabase } from "./database/Database";
 import { Inject } from "typescript-ioc";
 import GuildService from "./services/GuildService";
 import { MessageHelpers } from "./utils/MessageHelpers";
@@ -29,10 +28,6 @@ const prefixBehaviour = async (message?: CommandMessage, client?: Client) => {
   );
 };
 
-// TODO "Currently bot is in calibrating mod" feature
-// TODO: coins multiplier
-// TODO: user impact in server (exp); server level, server top; server oriented leveling and exp;
-
 @Discord(prefixBehaviour, {
   import: [
     // replace extension with *.ts when the bot launch by ts-node,
@@ -49,29 +44,23 @@ export class MystBot {
 
   private static _clientId?: Snowflake;
 
+  private static _database: TDatabase;
+
   private static _logger = Logger.get(MystBot);
 
   static get clientId(): Snowflake | undefined {
     return MystBot._clientId;
   }
 
+  static get database() {
+    return this._database;
+  }
+
   @Once("ready")
-  ready([]: ArgsOf<"ready">, client: Client) {
+  async ready([]: ArgsOf<"ready">, client: Client) {
     MystBot._clientId = client.user?.id;
 
-    Database.init()
-      .then((v): void => {
-        MystBot._logger.info(
-          `${v.getDialect()}: Database is successfully connected!`
-        );
-
-        Models.init(v).then((): void => {
-          MystBot._logger.info("All models are successfully synchronised!");
-        });
-      })
-      .catch((e: Error): void =>
-        MystBot._logger.error("Database init error\n" + e)
-      );
+    MystBot._database = await getDatabase();
   }
 
   @On("guildCreate")

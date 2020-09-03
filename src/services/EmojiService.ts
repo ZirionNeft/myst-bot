@@ -2,30 +2,31 @@ import { Snowflake } from "discord.js";
 import { Cacheable, CacheClear } from "@type-cacheable/core";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Transaction } from "sequelize";
-import Emoji, { EmojiCreationAttributes } from "../database/models/Emoji";
-import { Database } from "../database/Database";
+import EmojiModel, {
+  EmojiCreationAttributes,
+} from "../database/models/Emoji.model";
 
 export interface IEmojiService {
-  findOne(id: Snowflake): Promise<Emoji | null>;
+  findOne(id: Snowflake): Promise<EmojiModel | null>;
 
-  create(id: Snowflake, data: EmojiCreationAttributes): Promise<Emoji>;
+  create(id: Snowflake, data: EmojiCreationAttributes): Promise<EmojiModel>;
 
   findOneOrCreate(
     id: Snowflake,
     data?: EmojiCreationAttributes
-  ): Promise<Emoji>;
+  ): Promise<EmojiModel>;
 
   update(
     id: Snowflake,
     data: Partial<EmojiCreationAttributes>,
     transaction?: Transaction
-  ): Promise<number | Emoji[] | undefined>;
+  ): Promise<number | EmojiModel[] | undefined>;
 
-  bulkUpdateOrCreate(...models: Emoji[]): Promise<Emoji[]>;
+  bulkUpdateOrCreate(...models: EmojiModel[]): Promise<EmojiModel[]>;
 
-  guildScoped(id: Snowflake): Promise<Emoji[]>;
+  guildScoped(id: Snowflake): Promise<EmojiModel[]>;
 
-  emojiScoped(id: Snowflake): Promise<Emoji[]>;
+  emojiScoped(id: Snowflake): Promise<EmojiModel[]>;
 }
 
 @Singleton
@@ -42,7 +43,7 @@ export default class EmojiService implements IEmojiService {
     transaction?: Transaction
   ) {
     return (
-      await Emoji.update(data, {
+      await EmojiModel.update(data, {
         where: {
           emojiId: id,
         },
@@ -52,15 +53,15 @@ export default class EmojiService implements IEmojiService {
   }
 
   async guildScoped(id: Snowflake) {
-    return Emoji.scope({ method: ["guild", id] }).findAll();
+    return EmojiModel.scope({ method: ["guild", id] }).findAll();
   }
 
   async emojiScoped(id: Snowflake) {
-    return Emoji.scope({ method: ["emoji", id] }).findAll();
+    return EmojiModel.scope({ method: ["emoji", id] }).findAll();
   }
 
   async create(id: Snowflake, data: EmojiCreationAttributes) {
-    return await Emoji.create({
+    return await EmojiModel.create({
       ...{ emojiId: id },
       ...data,
     });
@@ -68,7 +69,7 @@ export default class EmojiService implements IEmojiService {
 
   @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 300 })
   async findOneOrCreate(id: Snowflake, data?: EmojiCreationAttributes) {
-    const [m] = await Emoji.findCreateFind({
+    const [m] = await EmojiModel.findCreateFind({
       where: {
         emojiId: id,
       },
@@ -78,8 +79,8 @@ export default class EmojiService implements IEmojiService {
   }
 
   @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 300 })
-  async findOne(id: Snowflake): Promise<Emoji | null> {
-    return await Emoji.findOne({
+  async findOne(id: Snowflake): Promise<EmojiModel | null> {
+    return await EmojiModel.findOne({
       where: {
         emojiId: id,
       },
@@ -87,7 +88,7 @@ export default class EmojiService implements IEmojiService {
   }
 
   async bulkUpdateOrCreate(...models: EmojiCreationAttributes[]) {
-    return await Emoji.bulkCreate(models, {
+    return await EmojiModel.bulkCreate(models, {
       updateOnDuplicate: ["name"],
       fields: ["guildId", "emojiId", "name"], // Fields to insert
       // Note: Sequelize with typescript doesn't support custom options in hooks

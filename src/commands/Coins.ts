@@ -1,8 +1,7 @@
 import { Command, CommandMessage, Guard, Infos, Rule } from "@typeit/discord";
 import { MessageEmbed, NewsChannel, TextChannel, User } from "discord.js";
-import UserModel from "../database/models/User";
+import UserModel from "../database/models/User.model";
 import { FieldsEmbed } from "discord-paginationembed";
-import { Database } from "../database/Database";
 import UserService from "../services/UserService";
 import { Inject } from "typescript-ioc";
 import {
@@ -15,6 +14,7 @@ import {
 import { MessageHelpers } from "../utils/MessageHelpers";
 import { StringHelpers } from "../utils/StringHelpers";
 import Logger from "../utils/Logger";
+import { MystBot } from "../MystBot";
 
 const COINS_TOP =
   "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png";
@@ -193,7 +193,7 @@ export abstract class Coins {
       );
 
     try {
-      await Database.instance.transaction(async (t) =>
+      await MystBot.database.sequelize.transaction(async (t) =>
         Promise.all([
           this.userService.update(
             authorModelInstance.userId,

@@ -1,0 +1,32 @@
+{
+  "bot": {},
+  "general": {
+    "debug": false,
+    "loglevel": "error"
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "username": "default_user",
+    "password": "default_pass",
+    "database": "default_db",
+    "dialect": "postgres",
+    "sync": {
+      "force": false,
+      "logging": false,
+      "alter": false
+    },
+    "define": {
+      "paranoid": true,
+      "timestamps": true,
+      "underscored": false,
+      "freezeTableName": true,
+      "createdAt": "createdAt",
+      "updatedAt": "updatedAt",
+      "deletedAt": "deletedAt",
+      "charset": "utf8",
+      "schema": "public"
+    },
+    "timezone": "UTC"
+  }
+}

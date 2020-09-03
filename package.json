@@ -1,34 +1,35 @@
 {
-  "name": "rgd_bot",
-  "version": "3.0.0",
-  "description": "Russian Gamedev Original Bot",
+  "name": "myst_bot",
+  "version": "1.0.0",
+  "description": "Myst Bot",
   "main": "build/index.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'babel-node' build/index.js",
-    "build": "tsc",
-    "start": "node build/index.js"
+    "start": "node build/index.js",
+    "clean": "rm -rf build",
+    "build": "yarn clean && tsc",
+    "migrate": "yarn build && node_modules/.bin/sequelize db:migrate --env development",
+    "migrate:undo": "yarn build && node_modules/.bin/sequelize db:migrate:undo --env development",
+    "migrate:undo:all": "yarn build && node_modules/.bin/sequelize db:migrate:undo:all --env development",
+    "postinstall": "node-config-ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ZirionNeft/rgd-bot.git"
+    "url": "git+https://github.com/ZirionNeft/myst-bot.git"
   },
-  "author": "RGD-Team",
+  "author": "ZirionNeft",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ZirionNeft/rgd-bot/issues"
-  },
-  "homepage": "https://github.com/ZirionNeft/rgd-bot",
   "dependencies": {
     "@type-cacheable/core": "^6.2.0",
     "@type-cacheable/node-cache-adapter": "^6.2.0",
     "@typeit/discord": "^4.0.8",
-    "@types/pino": "^6.3.0",
-    "@types/validator": "^13.1.0",
     "discord-paginationembed": "^2.1.0",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "node-cache": "^5.1.2",
+    "node-config-ts": "^3.0.4",
     "pg": "^8.3.0",
     "pg-hstore": "^2.3.3",
     "pino": "^6.5.1",
@@ -42,8 +43,11 @@
     "@babel/node": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
     "@types/node": "^14.0.22",
+    "@types/pino": "^6.3.0",
+    "@types/validator": "^13.1.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
+    "sequelize-cli": "^6.2.0",
     "tslib": "^2.0.0",
     "typescript": "^3.9.6"
   }
