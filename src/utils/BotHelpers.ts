@@ -3,6 +3,7 @@ import { Snowflake } from "discord.js";
 import GuildService from "../services/GuildService";
 import { Container } from "typescript-ioc";
 import process from "process";
+import { config } from "node-config-ts";
 
 export default abstract class BotHelpers {
   // TODO: clearing cache when prefix has updated
@@ -11,8 +12,8 @@ export default abstract class BotHelpers {
     const guildService: GuildService = Container.get(GuildService);
     return (
       (guildId ? await guildService.findOne(guildId) : undefined)?.prefix ??
-      process.env.COMMAND_PREFIX ??
-      "!"
+      config.bot.prefix ??
+      "m!"
     );
   }
 }

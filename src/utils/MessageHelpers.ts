@@ -5,22 +5,23 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import process from "process";
 import { CommandMessage } from "@typeit/discord";
 import ChatCleaner from "../logic/ChatCleaner";
+import { config } from "node-config-ts";
 
 export abstract class MessageHelpers {
   static async sendSystemErrorDM(
     member: GuildMember | User,
     data?: EmbedFieldData[]
   ) {
-    const s = `https://discord.gg/${process.env.BOT_SUPPORT_SERVER}`;
-    const m = new MessageEmbed();
+    const s = `https://discord.gg/${config.bot.supportGuild}`;
+    const messageEmbed = new MessageEmbed();
 
-    data && m.addFields(data.map((v) => ({ ...v, ...{ inline: true } })));
+    data &&
+      messageEmbed.addFields(data.map((v) => ({ ...v, ...{ inline: true } })));
 
     return (await member?.createDM())?.send(
-      m
+      messageEmbed
         .setColor("RED")
         .setTitle("I'M SORRY! But...")
         .setDescription(

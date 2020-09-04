@@ -1,7 +1,12 @@
 {
-  "bot": {},
+  "bot": {
+    "commandCoolDown": 1000,
+    "prefix": "!",
+    "allowBotMentionInCommands": true,
+    "token": "@@DISCORD_TOKEN"
+  },
   "general": {
-    "debug": "@@DEBUG",
+    "debug": true,
     "loglevel": "trace"
   },
   "database": {

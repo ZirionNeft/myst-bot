@@ -61,6 +61,7 @@ export class MystBot {
     MystBot._clientId = client.user?.id;
 
     MystBot._database = await getDatabase();
+    MystBot._logger.info(">>> Bot successfully started up!");
   }
 
   @On("guildCreate")

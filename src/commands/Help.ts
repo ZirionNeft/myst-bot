@@ -2,8 +2,8 @@ import { Client, Command, CommandMessage, Guard, Infos } from "@typeit/discord";
 import { MessageEmbed } from "discord.js";
 import * as process from "process";
 import { NotBot, ThrottleMessage } from "../guards";
-import { MessageHelpers } from "../utils/MessageHelpers";
 import BotHelpers from "../utils/BotHelpers";
+import { config } from "node-config-ts";
 
 export type CommandsByCategories = {
   [P in Category]?: string[];
@@ -31,7 +31,7 @@ export abstract class Help {
     const messageEmbed = new MessageEmbed()
       .setColor("PURPLE")
       .setAuthor(
-        `${process.env.BOT_NAME}'s help panel`,
+        `${config.bot.name}'s help panel`,
         command.client.user?.avatarURL() ?? undefined
       );
 
@@ -76,8 +76,8 @@ export abstract class Help {
       const cmdByCategories: CommandsByCategories = {};
 
       messageEmbed.setDescription(
-        `Use \`${process.env.COMMAND_PREFIX}help [command]\` to get more help about some command!
-        \n *Example* : \`${process.env.COMMAND_PREFIX}help coins\``
+        `Use \`${config.bot.prefix}help [command]\` to get more help about some command!
+        \n *Example* : \`${config.bot.prefix}help coins\``
       );
 
       for (let c of commands) {

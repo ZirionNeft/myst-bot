@@ -1,5 +1,12 @@
 {
-  "bot": {},
+  "bot": {
+    "name": "Myst",
+    "prefix": "m!",
+    "supportGuild": "CV5jh5g",
+    "commandCoolDown": 2500,
+    "allowBotMentionInCommands": false,
+    "token": ""
+  },
   "general": {
     "debug": false,
     "loglevel": "error"
@@ -17,7 +24,7 @@
       "alter": false
     },
     "define": {
-      "paranoid": true,
+      "paranoid": false,
       "timestamps": true,
       "underscored": false,
       "freezeTableName": true,

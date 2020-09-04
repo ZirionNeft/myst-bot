@@ -2,6 +2,7 @@ import { Snowflake, User } from "discord.js";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import Timeout = NodeJS.Timeout;
 import * as process from "process";
+import { config } from "node-config-ts";
 
 export interface ThrottleTimer {
   userId: Snowflake;
@@ -28,7 +29,7 @@ export default class Throttle {
               this._timers.findIndex((o) => o.userId === userId),
               1
             ),
-          +(process.env.PAUSE_BETWEEN_COMMANDS ?? 3000)
+          config.bot.commandCoolDown ?? 3000
         ),
       });
     }

@@ -1,4 +1,7 @@
 {
+  "bot": {
+    "token": "@@DISCORD_TOKEN"
+  },
   "general": {
     "debug": "@@DEBUG"
   },

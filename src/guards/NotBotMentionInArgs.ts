@@ -1,5 +1,6 @@
 import { GuardFunction } from "@typeit/discord";
 import { MessageHelpers } from "../utils/MessageHelpers";
+import { config } from "node-config-ts";
 
 export const NotBotMentionInArgs = () => {
   const guard: GuardFunction<"commandMessage"> = async (
@@ -8,7 +9,7 @@ export const NotBotMentionInArgs = () => {
     next
   ) => {
     if (
-      process.env.ALLOW_BOTS_IN_COMMANDS === "true" ||
+      config.bot.allowBotMentionInCommands ||
       !(message.commandContent && message.mentions.users.some((v) => v.bot))
     )
       await next();

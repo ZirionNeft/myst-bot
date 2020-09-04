@@ -3,6 +3,7 @@ import { Container } from "typescript-ioc";
 import Throttle from "./logic/Throttle";
 import Logger from "./utils/Logger";
 import GuildService from "./services/GuildService";
+import { config } from "node-config-ts";
 
 export default class App {
   private static _client: Client;
@@ -24,9 +25,9 @@ export default class App {
       // In the login method, you must specify the glob string to load your classes (for the framework).
       // In this case that's not necessary because the entry point of your application is this file.
       await this._client.login(
-        process.env.DISCORD_TOKEN ?? "",
-        `${__dirname}/${process.env.BOT_NAME}Bot.ts`, // glob string to load the classes
-        `${__dirname}/${process.env.BOT_NAME}Bot.js` // If you compile your bot, the file extension will be .js
+        config.bot.token ?? "",
+        `${__dirname}/${config.bot.name}Bot.ts`, // glob string to load the classes
+        `${__dirname}/${config.bot.name}Bot.js` // If you compile your bot, the file extension will be .js
       );
     } catch (e) {
       App._logger.error("Login failed!");

@@ -14,8 +14,6 @@ class Database {
   private readonly _sequelize: Sequelize;
 
   constructor() {
-    Database._logger.debug(config.database.username);
-
     this._sequelize = new Sequelize({
       ...config.database,
       logging: sequelizeLogging,
@@ -64,7 +62,7 @@ export const getDatabase = async () => {
 };
 
 export const sequelizeLogging = (sql, t) =>
-  process.env.DEBUG === "true"
+  config.general.debug
     ? Logger.get(Database).trace(
         sql,
         typeof t === "number" ? `Elapsed time: ${t}ms` : ""

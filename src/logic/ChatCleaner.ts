@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import Logger from "../utils/Logger";
 import { CommandMessage } from "@typeit/discord";
+import { config } from "node-config-ts";
 
 export interface DeletableMessage {
   message: Message | CommandMessage;
@@ -35,7 +36,7 @@ export default class ChatCleaner {
           ).join(",")}]>`
         );
     } catch (e) {
-      process.env.DEBUG === "true" && ChatCleaner._logger.error(e);
+      config.general.debug && ChatCleaner._logger.error(e);
     }
   }
 }
