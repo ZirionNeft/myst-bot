@@ -2,16 +2,21 @@ import { DataTypes, ModelCtor, Optional, Sequelize } from "sequelize";
 import { Snowflake } from "discord.js";
 import { BaseModel } from "../BaseModel";
 
-interface UserAttributes {
+export interface UserAttributes {
   id: number;
   userId: Snowflake;
   guildId: Snowflake;
   coins: number;
   rouletteDate: Date | null;
+  experience: number;
+  level: number;
 }
 
 export interface UserCreationAttributes
-  extends Optional<UserAttributes, "id" | "coins" | "rouletteDate"> {}
+  extends Optional<
+    UserAttributes,
+    "id" | "experience" | "level" | "coins" | "rouletteDate"
+  > {}
 
 export default class UserModel
   extends BaseModel<UserAttributes, UserCreationAttributes>
@@ -26,6 +31,8 @@ export default class UserModel
   userId!: Snowflake;
   coins!: number;
   rouletteDate!: Date | null;
+  experience!: number;
+  level!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -41,10 +48,12 @@ export default class UserModel
         guildId: {
           type: new DataTypes.STRING(32),
           allowNull: false,
+          unique: "compositeIndex",
         },
         userId: {
           type: new DataTypes.STRING(32),
           allowNull: false,
+          unique: "compositeIndex",
         },
         coins: {
           type: new DataTypes.INTEGER(),
@@ -55,9 +64,21 @@ export default class UserModel
           type: new DataTypes.DATE(),
           defaultValue: null,
         },
+        level: {
+          type: new DataTypes.INTEGER().UNSIGNED,
+          defaultValue: 0,
+        },
+        experience: {
+          type: new DataTypes.INTEGER().UNSIGNED,
+          defaultValue: 0,
+        },
       },
       {
         tableName: this.TableName,
+        name: {
+          singular: this.ModelName,
+          plural: this.ModelNamePlural,
+        },
         sequelize,
       }
     );

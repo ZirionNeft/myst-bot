@@ -1,10 +1,12 @@
 import { Snowflake } from "discord.js";
 import { Cacheable, CacheClear } from "@type-cacheable/core";
 import UserModel, {
+  UserAttributes,
   UserCreationAttributes,
 } from "../database/models/User.model";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Op, Transaction } from "sequelize";
+import Logger from "../utils/Logger";
 
 export interface IUserService {
   getAllPositiveCoins(guildId: Snowflake): Promise<UserModel[]>;
@@ -31,14 +33,19 @@ export interface IUserService {
   ): Promise<UserModel>;
 }
 
+const CACHE_BUILDER = (args: any[]) => `${args[0]}:${args[1]}`;
+const BULK_CACHE_BUILDER = (models: any[]) =>
+  (models as UserAttributes[]).map(
+    ({ userId, guildId }) => `${userId}:${guildId}`
+  );
+
 @Singleton
 @OnlyInstantiableByContainer
 export default class UserService implements IUserService {
-  private _userCacheKey = (args: any[]) => `${args[0]}:${args[1]}`;
-  private _allPositiveCoinsCacheKey = (args: any[]) => args[0];
+  private static _logger = Logger.get(UserService);
 
   @CacheClear({
-    cacheKey: this._userCacheKey,
+    cacheKey: CACHE_BUILDER,
   })
   async update(
     userId: Snowflake,
@@ -71,7 +78,7 @@ export default class UserService implements IUserService {
   }
 
   @Cacheable({
-    cacheKey: this._userCacheKey,
+    cacheKey: CACHE_BUILDER,
     ttlSeconds: 60,
   })
   async findOneOrCreate(
@@ -79,7 +86,7 @@ export default class UserService implements IUserService {
     guildId: Snowflake,
     data?: UserCreationAttributes
   ) {
-    const [m] = await UserModel.findCreateFind({
+    const [m] = await UserModel.findOrCreate({
       where: {
         [Op.and]: {
           userId,
@@ -93,7 +100,7 @@ export default class UserService implements IUserService {
   }
 
   @Cacheable({
-    cacheKey: this._userCacheKey,
+    cacheKey: CACHE_BUILDER,
     ttlSeconds: 60,
   })
   async findOne(
@@ -110,8 +117,18 @@ export default class UserService implements IUserService {
     });
   }
 
+  @CacheClear({
+    cacheKey: BULK_CACHE_BUILDER,
+  })
+  async bulkUpdateOrCreate(...models: UserCreationAttributes[]) {
+    return await UserModel.bulkCreate(models, {
+      updateOnDuplicate: ["experience", "level"],
+      fields: ["guildId", "userId", "experience", "level"], // Fields to insert
+    });
+  }
+
   @Cacheable({
-    cacheKey: this._allPositiveCoinsCacheKey,
+    cacheKey: (args: any[]) => args[0],
     hashKey: "all-positive-coins",
     ttlSeconds: 60,
   })

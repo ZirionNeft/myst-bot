@@ -19,6 +19,7 @@ import { EmojiScanner } from "./middlewares/EmojiScanner";
 import { GuardData } from "./globals";
 import EmojiCountManager from "./logic/EmojiCountManager";
 import Logger from "./utils/Logger";
+import UserLeveling from "./logic/UserLeveling";
 
 const prefixBehaviour = async (message?: CommandMessage, client?: Client) => {
   return Rule().startWith(
@@ -41,6 +42,9 @@ export class MystBot {
 
   @Inject
   private _emojiCountManager!: EmojiCountManager;
+
+  @Inject
+  private _userLeveling!: UserLeveling;
 
   private static _clientId?: Snowflake;
 
@@ -83,11 +87,11 @@ export class MystBot {
   ) {
     try {
       if (message.guild?.id && guardData.emojis.length) {
-        const gId = message.guild.id;
+        const guildId = message.guild.id;
         this._emojiCountManager
           .add(
             ...guardData.emojis.map((e) => ({
-              guildId: gId,
+              guildId,
               emojiId: e.id,
               name: e.name,
             }))
@@ -95,6 +99,24 @@ export class MystBot {
           .then((l) => MystBot._logger.info(`Emojis accumulated: ${l}`));
       }
     } catch (e) {
+      MystBot._logger.error("Emoji counter error!");
+      MystBot._logger.error(e);
+    }
+
+    try {
+      if (message.guild?.id) {
+        this._userLeveling
+          .resolve(message)
+          .then((v) =>
+            MystBot._logger.info(
+              `Leveling System - XP: ${v?.experience ?? -1} Level: ${
+                v?.level ?? -1
+              }`
+            )
+          );
+      }
+    } catch (e) {
+      MystBot._logger.error("Leveling system error!");
       MystBot._logger.error(e);
     }
   }

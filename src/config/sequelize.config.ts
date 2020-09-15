@@ -5,6 +5,9 @@
 
 import { config } from "node-config-ts";
 import { sequelizeLogging } from "../database/Database";
+import { bindEnvVars } from "../index";
+
+bindEnvVars(config);
 
 module.exports = {
   development: { ...config.database, logging: sequelizeLogging },

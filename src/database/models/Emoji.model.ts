@@ -84,6 +84,10 @@ export default class EmojiModel
           },
         },
         tableName: this.TableName,
+        name: {
+          singular: this.ModelName,
+          plural: this.ModelNamePlural,
+        },
         sequelize,
       }
     );
@@ -97,7 +101,10 @@ export default class EmojiModel
       (
         emojis,
         options: {
-          rawInstances?: EmojiCreationAttributes[];
+          rawInstances?: {
+            emojiId: Snowflake;
+            counter: number;
+          }[];
         } & BulkCreateOptions<EmojiAttributes>
       ) => {
         try {
@@ -116,7 +123,7 @@ export default class EmojiModel
           if (config.general.debug) this._logger.error(e);
           else
             this._logger.error(
-              `Emoji incrementing error! More info available in debug mode`
+              `Emoji counter incrementing error! More info available in debug mode`
             );
         }
       }

@@ -5,7 +5,7 @@ import { EmojiCreationAttributes } from "../database/models/Emoji.model";
 import Logger from "../utils/Logger";
 import Timeout = NodeJS.Timeout;
 
-const LOAD_INTERVAL = 5000;
+const LOAD_INTERVAL = 15000;
 
 export interface EmojiDTO {
   guildId: Snowflake;
@@ -36,21 +36,21 @@ export default class EmojiCountManager {
     this._interval = null;
   }
 
-  async add(...emoji: EmojiDTO[]) {
+  async add(...emojis: EmojiDTO[]) {
     let oldData: FullEmojiDTO | undefined;
-    let c = 0;
+    let counter = 0;
 
-    for (let e of emoji) {
-      if (!e) continue;
-      if (this._emojiAccumulator.has(e.emojiId)) {
-        oldData = this._emojiAccumulator.get(e.emojiId);
+    for (let emoji of emojis) {
+      if (!emoji) continue;
+      if (this._emojiAccumulator.has(emoji.emojiId)) {
+        oldData = this._emojiAccumulator.get(emoji.emojiId);
       }
 
-      this._emojiAccumulator.set(e.emojiId, {
-        ...e,
+      this._emojiAccumulator.set(emoji.emojiId, {
+        ...emoji,
         count: (oldData?.count ?? 0) + 1,
       });
-      c++;
+      counter++;
     }
     if (!this._interval) {
       this._interval = setInterval(
@@ -59,7 +59,7 @@ export default class EmojiCountManager {
       );
     }
 
-    return c;
+    return counter;
   }
 
   private async _loadDataToDB() {
@@ -67,7 +67,7 @@ export default class EmojiCountManager {
       const size = this._emojiAccumulator.size;
 
       if (size) {
-        const v = Array.from(this._emojiAccumulator.values()).map(
+        const emojiEntities = Array.from(this._emojiAccumulator.values()).map(
           (v) =>
             ({
               counter: v.count,
@@ -76,9 +76,9 @@ export default class EmojiCountManager {
               name: v.name,
             } as EmojiCreationAttributes)
         );
-        await this._emojiService.bulkUpdateOrCreate(...v);
+        await this._emojiService.bulkUpdateOrCreate(...emojiEntities);
 
-        EmojiCountManager._logger.info(`Emojis sent to Database: %d`, size);
+        EmojiCountManager._logger.debug(`Emojis sent to Database: %d`, size);
 
         this._clear();
       }
@@ -90,6 +90,6 @@ export default class EmojiCountManager {
 
   private _clear() {
     this._emojiAccumulator.clear();
-    EmojiCountManager._logger.info("Emojis accumulator has been cleaned!");
+    EmojiCountManager._logger.debug("Emojis accumulator has been cleaned!");
   }
 }

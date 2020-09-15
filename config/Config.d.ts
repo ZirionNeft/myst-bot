@@ -43,6 +43,7 @@ declare module "node-config-ts" {
     supportGuild: string
     commandCoolDown: number
     allowBotMentionInCommands: boolean
+    experienceMinWordLength: number
     token: string
   }
   export const config: Config

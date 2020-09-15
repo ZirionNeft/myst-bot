@@ -23,13 +23,13 @@ export interface IGuildService {
   ): Promise<number | GuildModel[] | undefined>;
 }
 
+const CACHE_BUILDER = (args: any[]) => args[0];
+
 @Singleton
 @OnlyInstantiableByContainer
 export default class GuildService implements IGuildService {
-  private _setCacheKey = (args: any[]) => args[0];
-
   @CacheClear({
-    cacheKey: this._setCacheKey,
+    cacheKey: CACHE_BUILDER,
   })
   async update(
     id: Snowflake,
@@ -53,7 +53,7 @@ export default class GuildService implements IGuildService {
     });
   }
 
-  @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 60 })
+  @Cacheable({ cacheKey: CACHE_BUILDER, ttlSeconds: 60 })
   async findOneOrCreate(id: Snowflake, data?: GuildCreationAttributes) {
     const [m] = await GuildModel.findCreateFind({
       where: {
@@ -64,7 +64,7 @@ export default class GuildService implements IGuildService {
     return m;
   }
 
-  @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 60 })
+  @Cacheable({ cacheKey: CACHE_BUILDER, ttlSeconds: 60 })
   async findOne(id: Snowflake): Promise<GuildModel | null> {
     return await GuildModel.findOne({
       where: {

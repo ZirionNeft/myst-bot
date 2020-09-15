@@ -10,9 +10,10 @@
     "start": "node build/index.js",
     "clean": "rm -rf build",
     "build": "yarn clean && tsc",
-    "migrate": "yarn build && node_modules/.bin/sequelize db:migrate --env development",
+    "migrate": "yarn build && node_modules/.bin/sequelize db:migrate --debug --env development",
     "migrate:undo": "yarn build && node_modules/.bin/sequelize db:migrate:undo --env development",
     "migrate:undo:all": "yarn build && node_modules/.bin/sequelize db:migrate:undo:all --env development",
+    "app:upgrade": "yarn install && yarn migrate",
     "postinstall": "node-config-ts"
   },
   "repository": {

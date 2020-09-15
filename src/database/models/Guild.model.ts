@@ -72,6 +72,10 @@ export default class GuildModel
       },
       {
         tableName: this.TableName,
+        name: {
+          singular: this.ModelName,
+          plural: this.ModelNamePlural,
+        },
         sequelize,
       }
     );

@@ -29,13 +29,13 @@ export interface IEmojiService {
   emojiScoped(id: Snowflake): Promise<EmojiModel[]>;
 }
 
+const CACHE_BUILDER = (args: any[]) => args[0];
+
 @Singleton
 @OnlyInstantiableByContainer
 export default class EmojiService implements IEmojiService {
-  private _setCacheKey = (args: any[]) => args[0];
-
   @CacheClear({
-    cacheKey: this._setCacheKey,
+    cacheKey: CACHE_BUILDER,
   })
   async update(
     id: Snowflake,
@@ -67,7 +67,7 @@ export default class EmojiService implements IEmojiService {
     });
   }
 
-  @Cacheable({ cacheKey: this._setCacheKey, ttlSeconds: 300 })
+  @Cacheable({ cacheKey: CACHE_BUILDER, ttlSeconds: 300 })
   async findOneOrCreate(id: Snowflake, data?: EmojiCreationAttributes) {
     const [m] = await EmojiModel.findCreateFind({
       where: {
@@ -93,7 +93,9 @@ export default class EmojiService implements IEmojiService {
       fields: ["guildId", "emojiId", "name"], // Fields to insert
       // Note: Sequelize with typescript doesn't support custom options in hooks
       //@ts-ignore
-      rawInstances: [...models],
+      rawInstances: [
+        ...models.map((m) => ({ counter: m.counter, emojiId: m.emojiId })),
+      ],
     });
   }
 }
