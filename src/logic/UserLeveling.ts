@@ -5,6 +5,15 @@ import Logger from "../utils/Logger";
 import { UserCreationAttributes } from "../database/models/User.model";
 import GuildService from "../services/GuildService";
 import Timeout = NodeJS.Timeout;
+import EventManager from "./EventManager";
+import {
+  Experience,
+  ExperienceBufferKey,
+  ExperienceDTO,
+  GuildId,
+  Level,
+  UserId,
+} from "mystbot";
 
 const FLUSH_INTERVAL = 30000;
 
@@ -13,16 +22,6 @@ export const NEXT_LEVEL_XP = (level: Level): Experience => {
   const baseXP = 800;
   return Math.floor(baseXP * (level ^ exponent));
 };
-
-type Experience = number;
-type Level = number;
-
-export type ExperienceKey = string;
-
-export interface ExperienceValue {
-  experience: Experience;
-  level: Level;
-}
 
 @Singleton
 @OnlyInstantiableByContainer
@@ -33,7 +32,10 @@ export default class UserLeveling {
   @Inject
   private _guildService!: GuildService;
 
-  private _expBuffer: Map<ExperienceKey, ExperienceValue>;
+  @Inject
+  private _eventManager!: EventManager;
+
+  private _expBuffer: Map<ExperienceBufferKey, ExperienceDTO>;
 
   private _interval: Timeout | null;
 
@@ -48,16 +50,16 @@ export default class UserLeveling {
     author,
     content,
     guild,
-  }: Message): Promise<ExperienceValue | undefined> {
+  }: Message): Promise<ExperienceDTO | undefined> {
     const symbolsLength = content.trim().length;
     if (!symbolsLength || !guild) {
       return;
     }
 
-    const experienceKey: ExperienceKey = `${author.id}:${guild.id}`;
+    const experienceKey: ExperienceBufferKey = `${author.id}:${guild.id}`;
 
     try {
-      let experienceValue: ExperienceValue;
+      let experienceValue: ExperienceDTO;
 
       if (this._expBuffer.has(experienceKey)) {
         const value = this._expBuffer.get(experienceKey);
@@ -102,12 +104,12 @@ export default class UserLeveling {
 
       if (size) {
         const userEntities = Array.from(this._expBuffer.entries()).map(
-          ([key, value]: [ExperienceKey, ExperienceValue]) => {
-            const s: Snowflake[] = key.split(":");
+          ([key, value]: [ExperienceBufferKey, ExperienceDTO]) => {
+            const bufferKey: Snowflake[] = key.split(":");
             return {
-              userId: s[0],
-              guildId: s[1],
-              ...UserLeveling._calculateLevel(value),
+              userId: bufferKey[0],
+              guildId: bufferKey[1],
+              ...this._calculateLevel(bufferKey as [UserId, GuildId], value),
             } as UserCreationAttributes;
           }
         );
@@ -128,10 +130,10 @@ export default class UserLeveling {
     UserLeveling._logger.debug("User experience buffer flushed");
   }
 
-  private static _calculateLevel({
-    experience,
-    level,
-  }: ExperienceValue): ExperienceValue {
+  private _calculateLevel(
+    ids: [UserId, GuildId],
+    { experience, level }: ExperienceDTO
+  ): ExperienceDTO {
     for (
       let nextLevelXp = NEXT_LEVEL_XP(level);
       experience >= nextLevelXp;
@@ -139,6 +141,9 @@ export default class UserLeveling {
     ) {
       experience -= nextLevelXp;
       level++;
+
+      // TODO: refactor? - S-term of SOLID
+      this._eventManager.notify("levelUp", [...ids, { level, experience }]);
     }
     return { level, experience };
   }

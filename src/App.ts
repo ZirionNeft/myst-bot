@@ -1,9 +1,12 @@
 import { Client } from "@typeit/discord";
-import { Container } from "typescript-ioc";
+import { Container, Scope } from "typescript-ioc";
 import Throttle from "./logic/Throttle";
 import Logger from "./utils/Logger";
 import GuildService from "./services/GuildService";
 import { config } from "node-config-ts";
+import EventManager from "./logic/EventManager";
+import { LevelUpSubscriber } from "./events/LevelUpSubscriber";
+import { BusinessEvent, Subscriber } from "mystbot";
 
 export default class App {
   private static _client: Client;
@@ -19,7 +22,14 @@ export default class App {
 
     this._logger.info("Logger level: %s", this._logger.level);
 
-    await this.bindings();
+    this._bindings();
+
+    this._bindSubscribers([LevelUpSubscriber]).then((ctors) =>
+      ctors.map((subscriber) =>
+        // Init classes to load event handlers
+        Container.get<typeof subscriber>(subscriber)
+      )
+    );
 
     try {
       // In the login method, you must specify the glob string to load your classes (for the framework).
@@ -34,8 +44,23 @@ export default class App {
     }
   }
 
-  private static async bindings() {
+  private static _bindings() {
     Container.bind(Throttle);
     Container.bind(GuildService);
+    Container.bind(EventManager);
+  }
+
+  // TODO: refactor to metadata and reflection API
+  private static async _bindSubscribers(
+    subscribers: { new (): Subscriber<BusinessEvent> }[]
+  ) {
+    try {
+      for (let subscriberClass of subscribers) {
+        Container.bind(subscriberClass).to(App).scope(Scope.Singleton);
+      }
+    } catch (e) {
+      this._logger.error(e);
+    }
+    return subscribers;
   }
 }

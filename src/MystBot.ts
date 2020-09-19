@@ -16,7 +16,7 @@ import GuildService from "./services/GuildService";
 import { MessageHelpers } from "./utils/MessageHelpers";
 import BotHelpers from "./utils/BotHelpers";
 import { EmojiScanner } from "./middlewares/EmojiScanner";
-import { GuardData } from "./globals";
+import { GuardDataArgs } from "mystbot";
 import EmojiCountManager from "./logic/EmojiCountManager";
 import Logger from "./utils/Logger";
 import UserLeveling from "./logic/UserLeveling";
@@ -83,14 +83,14 @@ export class MystBot {
   async onMessage(
     [message]: ArgsOf<"message">,
     client: Client,
-    guardData: GuardData
+    { emojis: [emojis] }: GuardDataArgs<"emojis">
   ) {
     try {
-      if (message.guild?.id && guardData.emojis.length) {
+      if (message.guild?.id && emojis?.length) {
         const guildId = message.guild.id;
         this._emojiCountManager
           .add(
-            ...guardData.emojis.map((e) => ({
+            ...emojis.map((e) => ({
               guildId,
               emojiId: e.id,
               name: e.name,
@@ -108,10 +108,10 @@ export class MystBot {
         this._userLeveling
           .resolve(message)
           .then((v) =>
-            MystBot._logger.info(
-              `Leveling System - XP: ${v?.experience ?? -1} Level: ${
-                v?.level ?? -1
-              }`
+            MystBot._logger.debug(
+              `<${message.guild?.id}> Leveling System - XP: ${
+                v?.experience ?? -1
+              } Level: ${v?.level ?? -1}`
             )
           );
       }

@@ -1,8 +1,8 @@
-import { EmojiData } from "../globals";
+import { Emoji } from "mystbot";
 import { Snowflake } from "discord.js";
 
 export abstract class StringHelpers {
-  static getEmojiDataFromString(s: string): EmojiData | undefined {
+  static getEmojiDataFromString(s: string): Emoji | undefined {
     if (!s) return undefined;
 
     if (s.startsWith("<") && s.endsWith(">")) {
