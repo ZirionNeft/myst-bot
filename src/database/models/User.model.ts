@@ -66,7 +66,7 @@ export default class UserModel
         },
         level: {
           type: new DataTypes.INTEGER().UNSIGNED,
-          defaultValue: 0,
+          defaultValue: 1,
         },
         experience: {
           type: new DataTypes.INTEGER().UNSIGNED,

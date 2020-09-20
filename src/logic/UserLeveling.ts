@@ -23,6 +23,8 @@ export const NEXT_LEVEL_XP = (level: Level): Experience => {
   return Math.floor(baseXP * (level ^ exponent));
 };
 
+// TODO: Свой экзепмляр менеджера на каждый гилд
+
 @Singleton
 @OnlyInstantiableByContainer
 export default class UserLeveling {
@@ -44,6 +46,11 @@ export default class UserLeveling {
   constructor() {
     this._interval = null;
     this._expBuffer = new Map();
+  }
+
+  async flush() {
+    UserLeveling._logger.info("Experience buffer flushed manually");
+    await this._flushCallback();
   }
 
   async resolve({

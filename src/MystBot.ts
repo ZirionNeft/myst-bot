@@ -104,7 +104,7 @@ export class MystBot {
     }
 
     try {
-      if (message.guild?.id) {
+      if (message.guild?.id && !message.author.bot) {
         this._userLeveling
           .resolve(message)
           .then((v) =>

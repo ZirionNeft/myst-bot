@@ -1,9 +1,9 @@
 import { Cacheable } from "@type-cacheable/core";
-import { Snowflake } from "discord.js";
+import { Snowflake, TextChannel } from "discord.js";
 import GuildService from "../services/GuildService";
 import { Container } from "typescript-ioc";
-import process from "process";
 import { config } from "node-config-ts";
+import App from "../App";
 
 export default abstract class BotHelpers {
   // TODO: clearing cache when prefix has updated
@@ -15,5 +15,19 @@ export default abstract class BotHelpers {
       config.bot.prefix ??
       "m!"
     );
+  }
+
+  static async getGuildInfoChannel(
+    guildId: Snowflake
+  ): Promise<TextChannel | undefined> {
+    const guildService: GuildService = Container.get(GuildService);
+
+    const guildEntity = await guildService.findOneOrCreate(guildId);
+    const discordGuild = App.Client.guilds.cache.get(guildId);
+
+    const channel = guildEntity.infoChannelId
+      ? discordGuild?.channels.cache.get(guildEntity.infoChannelId)
+      : discordGuild?.systemChannel;
+    if (channel) return channel as TextChannel;
   }
 }

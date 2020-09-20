@@ -7,6 +7,7 @@ import { config } from "node-config-ts";
 import EventManager from "./logic/EventManager";
 import { LevelUpSubscriber } from "./events/LevelUpSubscriber";
 import { BusinessEvent, Subscriber } from "mystbot";
+import UserLeveling from "./logic/UserLeveling";
 
 export default class App {
   private static _client: Client;
@@ -42,6 +43,9 @@ export default class App {
     } catch (e) {
       App._logger.error("Login failed!");
     }
+
+    process.on("SIGINT", this.processExit);
+    process.on("SIGTERM", this.processExit);
   }
 
   private static _bindings() {
@@ -62,5 +66,13 @@ export default class App {
       this._logger.error(e);
     }
     return subscribers;
+  }
+
+  private static async processExit() {
+    const eventManager = Container.get(UserLeveling);
+
+    await eventManager.flush();
+
+    process.exit();
   }
 }

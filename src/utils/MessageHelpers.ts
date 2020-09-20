@@ -2,12 +2,14 @@ import {
   EmbedFieldData,
   GuildMember,
   MessageEmbed,
+  Snowflake,
   TextChannel,
   User,
 } from "discord.js";
 import { CommandMessage } from "@typeit/discord";
 import ChatCleaner from "../logic/ChatCleaner";
 import { config } from "node-config-ts";
+import BotHelpers from "./BotHelpers";
 
 export abstract class MessageHelpers {
   static async sendSystemErrorDM(
@@ -54,6 +56,13 @@ export abstract class MessageHelpers {
         .setTitle(title ?? "Oops! There's an Error")
         .setDescription(`\`${message}\``)
     );
+  }
+
+  static async sendInInfoChannel(
+    guildId: Snowflake,
+    message: string | MessageEmbed
+  ): Promise<void> {
+    await (await BotHelpers.getGuildInfoChannel(guildId))?.send(message);
   }
 
   static async sendPublicNote(commandMessage: CommandMessage, message: string) {

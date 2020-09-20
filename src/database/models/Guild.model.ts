@@ -19,10 +19,15 @@ export interface GuildAttributes {
   id: number;
   guildId: Snowflake;
   prefix: string;
+  staffChannelId: Snowflake;
+  infoChannelId: Snowflake;
 }
 
 export interface GuildCreationAttributes
-  extends Optional<GuildAttributes, "id" | "prefix"> {}
+  extends Optional<
+    GuildAttributes,
+    "id" | "prefix" | "staffChannelId" | "infoChannelId"
+  > {}
 
 export default class GuildModel
   extends BaseModel<GuildAttributes, GuildCreationAttributes>
@@ -36,6 +41,8 @@ export default class GuildModel
   id!: number;
   prefix!: string;
   guildId!: Snowflake;
+  staffChannelId!: Snowflake;
+  infoChannelId!: Snowflake;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -67,6 +74,16 @@ export default class GuildModel
         },
         prefix: {
           type: new DataTypes.STRING(16),
+          defaultValue: null,
+        },
+        staffChannelId: {
+          type: new DataTypes.STRING(32),
+          allowNull: true,
+          defaultValue: null,
+        },
+        infoChannelId: {
+          type: new DataTypes.STRING(32),
+          allowNull: true,
           defaultValue: null,
         },
       },
