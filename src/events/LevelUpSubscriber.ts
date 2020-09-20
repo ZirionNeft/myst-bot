@@ -15,9 +15,8 @@ export class LevelUpSubscriber implements Subscriber<"levelUp"> {
 
   @Subscribe("levelUp")
   async handle([userId, guildId, experienceDTO]: BusinessEventArgs<"levelUp">) {
-    LevelUpSubscriber._logger.debug(userId, guildId, experienceDTO);
-
-    await MessageHelpers.sendInInfoChannel(
+    await MessageHelpers.sendInInfoChannel.call(
+      this,
       guildId,
       new MessageEmbed()
         .setDescription(
