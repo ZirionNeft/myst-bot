@@ -7,7 +7,7 @@ import { config } from "node-config-ts";
 import EventManager from "./logic/EventManager";
 import { LevelUpSubscriber } from "./events/LevelUpSubscriber";
 import { BusinessEvent, Subscriber } from "mystbot";
-import UserLeveling from "./logic/UserLeveling";
+import LevelingManager from "./logic/LevelingManager";
 
 export default class App {
   private static _client: Client;
@@ -69,9 +69,9 @@ export default class App {
   }
 
   private static async processExit() {
-    const eventManager = Container.get(UserLeveling);
+    const eventManager = Container.get(LevelingManager);
 
-    await eventManager.flush();
+    await eventManager.flushAll();
 
     process.exit();
   }

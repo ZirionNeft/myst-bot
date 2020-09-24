@@ -7,7 +7,7 @@ declare module "mystbot" {
   export type Experience = number;
   export type Level = number;
 
-  export type ExperienceBufferKey = string;
+  export type ExperienceBufferKey = Snowflake;
   export interface ExperienceDTO {
     experience: Experience;
     level: Level;

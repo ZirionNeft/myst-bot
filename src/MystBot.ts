@@ -19,7 +19,7 @@ import { EmojiScanner } from "./middlewares/EmojiScanner";
 import { GuardDataArgs } from "mystbot";
 import EmojiCountManager from "./logic/EmojiCountManager";
 import Logger from "./utils/Logger";
-import UserLeveling from "./logic/UserLeveling";
+import LevelingManager from "./logic/LevelingManager";
 
 const prefixBehaviour = async (message?: CommandMessage, client?: Client) => {
   return Rule().startWith(
@@ -44,7 +44,7 @@ export class MystBot {
   private _emojiCountManager!: EmojiCountManager;
 
   @Inject
-  private _userLeveling!: UserLeveling;
+  private _levelingManager!: LevelingManager;
 
   private static _clientId?: Snowflake;
 
@@ -105,7 +105,7 @@ export class MystBot {
 
     try {
       if (message.guild?.id && !message.author.bot) {
-        this._userLeveling
+        this._levelingManager
           .resolve(message)
           .then((v) =>
             MystBot._logger.debug(

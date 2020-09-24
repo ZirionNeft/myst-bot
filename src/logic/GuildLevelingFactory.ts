@@ -1,33 +1,30 @@
-import { Inject, OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
+import { Factory, Inject, OnlyInstantiableByContainer } from "typescript-ioc";
 import UserService from "../services/UserService";
-import { Message, Snowflake } from "discord.js";
+import { Message, Snowflake, User } from "discord.js";
 import Logger from "../utils/Logger";
 import { UserCreationAttributes } from "../database/models/User.model";
 import GuildService from "../services/GuildService";
 import Timeout = NodeJS.Timeout;
 import EventManager from "./EventManager";
-import {
-  Experience,
-  ExperienceBufferKey,
-  ExperienceDTO,
-  GuildId,
-  Level,
-  UserId,
-} from "mystbot";
+import { Experience, ExperienceBufferKey, ExperienceDTO, Level } from "mystbot";
 
 const FLUSH_INTERVAL = 30000;
 
 export const NEXT_LEVEL_XP = (level: Level): Experience => {
-  const exponent = 1.6;
-  const baseXP = 800;
+  const exponent = 1.8;
+  const baseXP = 900;
   return Math.floor(baseXP * (level ^ exponent));
 };
 
 // TODO: Свой экзепмляр менеджера на каждый гилд
 
-@Singleton
+interface IExtendedExpDTO extends ExperienceDTO {
+  nextLevelExp: Experience;
+}
+
+@Factory(() => new GuildLevelingFactory())
 @OnlyInstantiableByContainer
-export default class UserLeveling {
+export default class GuildLevelingFactory {
   @Inject
   private _userService!: UserService;
 
@@ -37,54 +34,76 @@ export default class UserLeveling {
   @Inject
   private _eventManager!: EventManager;
 
-  private _expBuffer: Map<ExperienceBufferKey, ExperienceDTO>;
+  private _expBuffer: Map<ExperienceBufferKey, IExtendedExpDTO>;
 
   private _interval: Timeout | null;
 
-  private static _logger = Logger.get(UserLeveling);
+  private static _logger = Logger.get(GuildLevelingFactory);
+
+  private _guildId!: Snowflake;
 
   constructor() {
     this._interval = null;
     this._expBuffer = new Map();
   }
 
+  get guildId(): Snowflake {
+    return this._guildId;
+  }
+
+  set guildId(value: Snowflake) {
+    this._guildId = value;
+  }
+
   async flush() {
-    UserLeveling._logger.info("Experience buffer flushed manually");
+    GuildLevelingFactory._logger.info("Experience buffer flushed manually");
     await this._flushCallback();
   }
 
-  async resolve({
-    author,
-    content,
-    guild,
-  }: Message): Promise<ExperienceDTO | undefined> {
+  async resolve(
+    author: User,
+    content: string
+  ): Promise<ExperienceDTO | undefined> {
+    if (!this._guildId)
+      throw new Error("GuildLeveling resolving error: guildId not specified");
+
     const symbolsLength = content.trim().length;
-    if (!symbolsLength || !guild) {
+    if (!symbolsLength) {
       return;
     }
 
-    const experienceKey: ExperienceBufferKey = `${author.id}:${guild.id}`;
+    const experienceKey: ExperienceBufferKey = author.id;
 
     try {
-      let experienceValue: ExperienceDTO;
+      let experienceValue: IExtendedExpDTO;
 
       if (this._expBuffer.has(experienceKey)) {
         const value = this._expBuffer.get(experienceKey);
         experienceValue = {
           experience: (value?.experience ?? 0) + symbolsLength,
-          level: value?.level ?? 0,
+          level: value?.level ?? 1,
+          nextLevelExp: NEXT_LEVEL_XP(value?.level ?? 1),
         };
       } else {
         // Before we try to create the user, we must to check that the guild is exist
-        await this._guildService.findOneOrCreate(guild.id);
+        await this._guildService.findOneOrCreate(this._guildId);
 
         const userEntity = await this._userService.findOneOrCreate(
           author.id,
-          guild.id
+          this._guildId
         );
         experienceValue = {
           experience: userEntity.experience + symbolsLength,
           level: userEntity.level,
+          nextLevelExp: NEXT_LEVEL_XP(userEntity.level),
+        };
+      }
+
+      if (experienceValue.experience >= experienceValue.nextLevelExp) {
+        const calculated = this._calculateLevel(author.id, experienceValue);
+        experienceValue = {
+          ...calculated,
+          nextLevelExp: NEXT_LEVEL_XP(calculated.level),
         };
       }
 
@@ -99,7 +118,7 @@ export default class UserLeveling {
 
       return experienceValue;
     } catch (e) {
-      UserLeveling._logger.error(e);
+      GuildLevelingFactory._logger.error(e);
     }
 
     return;
@@ -112,33 +131,35 @@ export default class UserLeveling {
       if (size) {
         const userEntities = Array.from(this._expBuffer.entries()).map(
           ([key, value]: [ExperienceBufferKey, ExperienceDTO]) => {
-            const bufferKey: Snowflake[] = key.split(":");
             return {
-              userId: bufferKey[0],
-              guildId: bufferKey[1],
-              ...this._calculateLevel(bufferKey as [UserId, GuildId], value),
+              userId: key,
+              guildId: this._guildId,
+              ...this._calculateLevel(key, value),
             } as UserCreationAttributes;
           }
         );
         await this._userService.bulkUpdateOrCreate(...userEntities);
 
-        UserLeveling._logger.debug(`User experience positions sent: %d`, size);
+        GuildLevelingFactory._logger.debug(
+          `User experience positions sent: %d`,
+          size
+        );
 
         this._clear();
       }
     } catch (e) {
-      UserLeveling._logger.error(e);
+      GuildLevelingFactory._logger.error(e);
       this._clear();
     }
   }
 
   private _clear() {
     this._expBuffer.clear();
-    UserLeveling._logger.debug("User experience buffer flushed");
+    GuildLevelingFactory._logger.debug("User experience buffer flushed");
   }
 
   private _calculateLevel(
-    ids: [UserId, GuildId],
+    userId: Snowflake,
     { experience, level }: ExperienceDTO
   ): ExperienceDTO {
     for (
@@ -150,7 +171,11 @@ export default class UserLeveling {
       level++;
 
       // TODO: refactor? - S-term of SOLID
-      this._eventManager.notify("levelUp", [...ids, { level, experience }]);
+      this._eventManager.notify("levelUp", [
+        userId,
+        this._guildId,
+        { level, experience },
+      ]);
     }
     return { level, experience };
   }
