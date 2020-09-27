@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import Logger from "../utils/Logger";
+import LoggerFactory from "../utils/LoggerFactory";
 import { CommandMessage } from "@typeit/discord";
 import { config } from "node-config-ts";
 
@@ -9,8 +9,6 @@ export interface DeletableMessage {
 }
 
 export default class ChatCleaner {
-  private static _logger = Logger.get(ChatCleaner);
-
   static clean(...messages: DeletableMessage[]) {
     try {
       let counter = 0;
@@ -23,20 +21,22 @@ export default class ChatCleaner {
           })
           .then((msg) => {
             if (messages.length <= 1)
-              ChatCleaner._logger.debug(`Message deleted -- <${msg.id}>`);
+              LoggerFactory.get(ChatCleaner).debug(
+                `Message deleted -- <${msg.id}>`
+              );
             else counter++;
             msg.guild && g.add(msg.guild.id);
           });
       }
       counter &&
-        ChatCleaner._logger.info(
+        LoggerFactory.get(ChatCleaner).info(
           `Messages cleaned [${counter}] in guilds [${Array.from(
             g.values(),
             (v) => `<${v}>`
           ).join(",")}]>`
         );
     } catch (e) {
-      config.general.debug && ChatCleaner._logger.error(e);
+      config.general.debug && LoggerFactory.get(ChatCleaner).error(e);
     }
   }
 }

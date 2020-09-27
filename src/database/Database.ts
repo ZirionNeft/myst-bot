@@ -1,5 +1,5 @@
 import { Options, Sequelize } from "sequelize";
-import Logger from "../utils/Logger";
+import LoggerFactory from "../utils/LoggerFactory";
 import Models from "./Models";
 import process from "process";
 import { config } from "node-config-ts";
@@ -7,8 +7,6 @@ import { config } from "node-config-ts";
 export type TDatabase = Database;
 
 class Database {
-  private static _logger = Logger.get(Database);
-
   public readonly _modelConstructors = Models.load();
 
   private readonly _sequelize: Sequelize;
@@ -44,7 +42,7 @@ class Database {
       // do not sync otherwise current data in database will be emptied out (Dropping all tables and recreating them)
       // return await this._sequelize.sync();
     } catch (e) {
-      Database._logger.fatal("Database init error!\n", e);
+      LoggerFactory.get(Database).fatal("Database init error!\n", e);
       process.exit(1);
     }
   }
@@ -63,7 +61,7 @@ export const getDatabase = async () => {
 
 export const sequelizeLogging = (sql, t) =>
   config.general.debug
-    ? Logger.get(Database).trace(
+    ? LoggerFactory.get(Database).trace(
         sql,
         typeof t === "number" ? `Elapsed time: ${t}ms` : ""
       )

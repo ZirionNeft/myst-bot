@@ -7,6 +7,8 @@ declare module "mystbot" {
   export type Experience = number;
   export type Level = number;
 
+  export type Constructor<T = {}> = new (...args: any[]) => T;
+
   export type ExperienceBufferKey = Snowflake;
   export interface ExperienceDTO {
     experience: Experience;

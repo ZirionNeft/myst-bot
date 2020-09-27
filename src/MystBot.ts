@@ -18,7 +18,7 @@ import BotHelpers from "./utils/BotHelpers";
 import { EmojiScanner } from "./middlewares/EmojiScanner";
 import { GuardDataArgs } from "mystbot";
 import EmojiCountManager from "./logic/EmojiCountManager";
-import Logger from "./utils/Logger";
+import LoggerFactory from "./utils/LoggerFactory";
 import LevelingManager from "./logic/LevelingManager";
 
 const prefixBehaviour = async (message?: CommandMessage, client?: Client) => {
@@ -50,8 +50,6 @@ export class MystBot {
 
   private static _database: TDatabase;
 
-  private static _logger = Logger.get(MystBot);
-
   static get clientId(): Snowflake | undefined {
     return MystBot._clientId;
   }
@@ -65,7 +63,7 @@ export class MystBot {
     MystBot._clientId = client.user?.id;
 
     MystBot._database = await getDatabase();
-    MystBot._logger.info(">>> Bot successfully started up!");
+    LoggerFactory.get(MystBot).info(">>> Bot successfully started up!");
   }
 
   @On("guildCreate")
@@ -73,7 +71,7 @@ export class MystBot {
     try {
       await this._guildService.findOneOrCreate(guild.id);
     } catch (e) {
-      MystBot._logger.error(e);
+      LoggerFactory.get(MystBot).error(e);
       guild.owner ? await MessageHelpers.sendSystemErrorDM(guild.owner) : null;
     }
   }
@@ -96,11 +94,13 @@ export class MystBot {
               name: e.name,
             }))
           )
-          .then((l) => MystBot._logger.info(`Emojis accumulated: ${l}`));
+          .then((l) =>
+            LoggerFactory.get(MystBot).info(`Emojis accumulated: ${l}`)
+          );
       }
     } catch (e) {
-      MystBot._logger.error("Emoji counter error!");
-      MystBot._logger.error(e);
+      LoggerFactory.get(MystBot).error("Emoji counter error!");
+      LoggerFactory.get(MystBot).error(e);
     }
 
     try {
@@ -108,7 +108,7 @@ export class MystBot {
         this._levelingManager
           .resolve(message)
           .then((v) =>
-            MystBot._logger.debug(
+            LoggerFactory.get(MystBot).debug(
               `<${message.guild?.id}> Leveling System - XP: ${
                 v?.experience ?? -1
               } Level: ${v?.level ?? -1}`
@@ -116,8 +116,8 @@ export class MystBot {
           );
       }
     } catch (e) {
-      MystBot._logger.error("Leveling system error!");
-      MystBot._logger.error(e);
+      LoggerFactory.get(MystBot).error("Leveling system error!");
+      LoggerFactory.get(MystBot).error(e);
     }
   }
 }

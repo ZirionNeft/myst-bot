@@ -6,7 +6,7 @@ import UserModel, {
 } from "../database/models/User.model";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Op, Transaction } from "sequelize";
-import Logger from "../utils/Logger";
+import LoggerFactory from "../utils/LoggerFactory";
 
 export interface IUserService {
   getAllPositiveCoins(guildId: Snowflake): Promise<UserModel[]>;
@@ -42,8 +42,6 @@ const BULK_CACHE_BUILDER = (models: any[]) =>
 @Singleton
 @OnlyInstantiableByContainer
 export default class UserService implements IUserService {
-  private static _logger = Logger.get(UserService);
-
   @CacheClear({
     cacheKey: CACHE_BUILDER,
   })

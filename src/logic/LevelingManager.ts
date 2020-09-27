@@ -36,11 +36,11 @@ export default class LevelingManager {
   }
 
   async flushAll() {
-    return Promise.all([
+    return Promise.all(
       [...this._guildLevelingBuffer.values()].map((guildLevelingFactory) =>
         guildLevelingFactory.flush()
-      ),
-    ]);
+      )
+    );
   }
 
   async flush(guildId: Snowflake) {

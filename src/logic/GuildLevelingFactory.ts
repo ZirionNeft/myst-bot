@@ -1,7 +1,7 @@
 import { Factory, Inject, OnlyInstantiableByContainer } from "typescript-ioc";
 import UserService from "../services/UserService";
 import { Message, Snowflake, User } from "discord.js";
-import Logger from "../utils/Logger";
+import LoggerFactory from "../utils/LoggerFactory";
 import { UserCreationAttributes } from "../database/models/User.model";
 import GuildService from "../services/GuildService";
 import Timeout = NodeJS.Timeout;
@@ -15,8 +15,6 @@ export const NEXT_LEVEL_XP = (level: Level): Experience => {
   const baseXP = 900;
   return Math.floor(baseXP * (level ^ exponent));
 };
-
-// TODO: Свой экзепмляр менеджера на каждый гилд
 
 interface IExtendedExpDTO extends ExperienceDTO {
   nextLevelExp: Experience;
@@ -38,8 +36,6 @@ export default class GuildLevelingFactory {
 
   private _interval: Timeout | null;
 
-  private static _logger = Logger.get(GuildLevelingFactory);
-
   private _guildId!: Snowflake;
 
   constructor() {
@@ -56,7 +52,10 @@ export default class GuildLevelingFactory {
   }
 
   async flush() {
-    GuildLevelingFactory._logger.info("Experience buffer flushed manually");
+    LoggerFactory.get(GuildLevelingFactory).info(
+      "[Guild: %s] Experience buffer flushing...",
+      this.guildId
+    );
     await this._flushCallback();
   }
 
@@ -118,7 +117,7 @@ export default class GuildLevelingFactory {
 
       return experienceValue;
     } catch (e) {
-      GuildLevelingFactory._logger.error(e);
+      LoggerFactory.get(GuildLevelingFactory).error(e);
     }
 
     return;
@@ -140,7 +139,7 @@ export default class GuildLevelingFactory {
         );
         await this._userService.bulkUpdateOrCreate(...userEntities);
 
-        GuildLevelingFactory._logger.debug(
+        LoggerFactory.get(GuildLevelingFactory).debug(
           `User experience positions sent: %d`,
           size
         );
@@ -148,14 +147,16 @@ export default class GuildLevelingFactory {
         this._clear();
       }
     } catch (e) {
-      GuildLevelingFactory._logger.error(e);
+      LoggerFactory.get(GuildLevelingFactory).error(e);
       this._clear();
     }
   }
 
   private _clear() {
     this._expBuffer.clear();
-    GuildLevelingFactory._logger.debug("User experience buffer flushed");
+    LoggerFactory.get(GuildLevelingFactory).debug(
+      "User experience buffer flushed"
+    );
   }
 
   private _calculateLevel(

@@ -12,7 +12,7 @@ import {
 } from "sequelize";
 import { Snowflake } from "discord.js";
 import UserModel from "./User.model";
-import Logger from "../../utils/Logger";
+import LoggerFactory from "../../utils/LoggerFactory";
 import { BaseModel } from "../BaseModel";
 
 export interface GuildAttributes {
@@ -35,8 +35,6 @@ export default class GuildModel
   public static readonly ModelName: string = "Guild";
   public static readonly ModelNamePlural: string = "Guilds";
   public static readonly TableName: string = "guilds";
-
-  private static _logger = Logger.get(GuildModel);
 
   id!: number;
   prefix!: string;
@@ -102,7 +100,7 @@ export default class GuildModel
     [modelName: string]: ModelCtor<BaseModel>;
   }) {
     this.addHook("afterCreate", (guild) =>
-      this._logger.info(
+      LoggerFactory.get(GuildModel).info(
         `New Guild added in Database: <%s>`,
         guild.get().guildId
       )

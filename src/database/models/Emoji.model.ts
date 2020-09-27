@@ -6,7 +6,7 @@ import {
   Sequelize,
 } from "sequelize";
 import { Snowflake } from "discord.js";
-import Logger from "../../utils/Logger";
+import LoggerFactory from "../../utils/LoggerFactory";
 import { BaseModel } from "../BaseModel";
 import { config } from "node-config-ts";
 
@@ -27,8 +27,6 @@ export default class EmojiModel
   public static readonly ModelName: string = "Emoji";
   public static readonly ModelNamePlural: string = "Emojis";
   public static readonly TableName: string = "emojis";
-
-  private static _logger = Logger.get(EmojiModel);
 
   id!: number;
   name!: string;
@@ -120,11 +118,11 @@ export default class EmojiModel
               .then();
           }
         } catch (e) {
-          if (config.general.debug) this._logger.error(e);
-          else
-            this._logger.error(
-              `Emoji counter incrementing error! More info available in debug mode`
-            );
+          LoggerFactory.get(EmojiModel).error(
+            config.general.debug
+              ? e
+              : `Emoji counter incrementing error! More info available in debug mode`
+          );
         }
       }
     );

@@ -1,7 +1,7 @@
 import { Client } from "@typeit/discord";
 import { Container, Scope } from "typescript-ioc";
 import Throttle from "./logic/Throttle";
-import Logger from "./utils/Logger";
+import LoggerFactory from "./utils/LoggerFactory";
 import GuildService from "./services/GuildService";
 import { config } from "node-config-ts";
 import EventManager from "./logic/EventManager";
@@ -12,8 +12,6 @@ import LevelingManager from "./logic/LevelingManager";
 export default class App {
   private static _client: Client;
 
-  private static _logger = Logger.get(App);
-
   static get Client(): Client {
     return this._client;
   }
@@ -21,7 +19,10 @@ export default class App {
   static async start(): Promise<void> {
     this._client = new Client();
 
-    this._logger.info("Logger level: %s", this._logger.level);
+    LoggerFactory.get(App).info(
+      "Logger level: %s",
+      LoggerFactory.get(App).level
+    );
 
     this._bindings();
 
@@ -41,7 +42,7 @@ export default class App {
         `${__dirname}/${config.bot.name}Bot.js` // If you compile your bot, the file extension will be .js
       );
     } catch (e) {
-      App._logger.error("Login failed!");
+      LoggerFactory.get(App).error("Login failed!");
     }
 
     process.on("SIGINT", this.processExit);
@@ -63,16 +64,17 @@ export default class App {
         Container.bind(subscriberClass).to(App).scope(Scope.Singleton);
       }
     } catch (e) {
-      this._logger.error(e);
+      LoggerFactory.get(App).error(e);
     }
     return subscribers;
   }
 
-  private static async processExit() {
+  private static processExit() {
     const eventManager = Container.get(LevelingManager);
 
-    await eventManager.flushAll();
-
-    process.exit();
+    eventManager.flushAll().then(() => {
+      LoggerFactory.get(App).info("Experience has been flushed!");
+      process.exit();
+    });
   }
 }

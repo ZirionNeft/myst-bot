@@ -1,6 +1,6 @@
 import { Subscribe } from "../decorators/Subscribe";
 import { BusinessEventArgs, Subscriber } from "mystbot";
-import Logger from "../utils/Logger";
+import LoggerFactory from "../utils/LoggerFactory";
 import { Inject, OnlyInstantiableByContainer } from "typescript-ioc";
 import GuildService from "../services/GuildService";
 import { MessageHelpers } from "../utils/MessageHelpers";
@@ -8,8 +8,6 @@ import { MessageEmbed } from "discord.js";
 
 @OnlyInstantiableByContainer
 export class LevelUpSubscriber implements Subscriber<"levelUp"> {
-  private static _logger = Logger.get(LevelUpSubscriber);
-
   @Inject
   private _guildService!: GuildService;
 

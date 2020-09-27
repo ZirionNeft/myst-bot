@@ -3,11 +3,9 @@ import GuildService from "../services/GuildService";
 import { Container } from "typescript-ioc";
 import { config } from "node-config-ts";
 import App from "../App";
-import Logger from "./Logger";
+import LoggerFactory from "./LoggerFactory";
 
 export default class BotHelpers {
-  private static _logger = Logger.get(BotHelpers);
-
   static async getGuildPrefix(guildId: Snowflake | undefined | null) {
     const guildService: GuildService = Container.get(GuildService);
     return (

@@ -13,7 +13,7 @@ import {
 } from "../guards";
 import { MessageHelpers } from "../utils/MessageHelpers";
 import { StringHelpers } from "../utils/StringHelpers";
-import Logger from "../utils/Logger";
+import LoggerFactory from "../utils/LoggerFactory";
 import { MystBot } from "../MystBot";
 
 const COINS_TOP =
@@ -21,9 +21,7 @@ const COINS_TOP =
 const COINS_EMOJI = "<:coin:742364602662125648>";
 const SUB_COMMANDS = ["top", "give"];
 
-export abstract class Coins {
-  private static _logger = Logger.get(Logger);
-
+export class Coins {
   @Inject
   private userService!: UserService;
 
@@ -72,7 +70,7 @@ export abstract class Coins {
 
       return await command.channel.send({ embed: messageEmbed });
     } catch (e) {
-      Coins._logger.error(e);
+      LoggerFactory.get(Coins).error(e);
     }
   }
 
@@ -101,7 +99,7 @@ export abstract class Coins {
         .setChannel(
           command.channel as Exclude<typeof command.channel, NewsChannel>
         )
-        .setClientAssets({ prompt: "Yo, {{user}}, pick number of page!" })
+        .setClientAssets({ prompt: "Hey, {{user}}, pick a number of page!" })
         .setArray(memberModels)
         .setElementsPerPage(10)
         .setPageIndicator(false)
@@ -121,7 +119,7 @@ export abstract class Coins {
         })
         .build();
     } catch (e) {
-      Coins._logger.error(e.message);
+      LoggerFactory.get(Coins).error(e.message);
       return await MessageHelpers.sendPublicError(
         command.channel as TextChannel,
         "I'm not enough permitted in this guild to perform that action :("
@@ -157,7 +155,7 @@ export abstract class Coins {
         contextGuildId
       );
     } catch (e) {
-      Coins._logger.error(e);
+      LoggerFactory.get(Coins).error(e);
       return (
         command.member &&
         (await MessageHelpers.sendSystemErrorDM(command.member, [
@@ -210,7 +208,7 @@ export abstract class Coins {
         ])
       );
     } catch (e) {
-      Coins._logger.error(e);
+      LoggerFactory.get(Coins).error(e);
       return (
         command.member &&
         (await MessageHelpers.sendSystemErrorDM(command.member, [
