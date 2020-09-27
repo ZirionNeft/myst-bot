@@ -22,11 +22,7 @@ export class Emoji {
   @Guard(NotBot(), InGuildOnly(), ThrottleMessage())
   async runEmoji(command: CommandMessage) {
     try {
-      if (!command.guild)
-        return MessageHelpers.sendPublicError(
-          command.channel as TextChannel,
-          "Guild not found"
-        );
+      if (!command.guild) return;
 
       const statEmoji = (
         await this._emojiService.guildScoped(command.guild.id)

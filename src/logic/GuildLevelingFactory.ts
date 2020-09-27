@@ -11,9 +11,9 @@ import { Experience, ExperienceBufferKey, ExperienceDTO, Level } from "mystbot";
 const FLUSH_INTERVAL = 30000;
 
 export const NEXT_LEVEL_XP = (level: Level): Experience => {
-  const exponent = 1.8;
-  const baseXP = 900;
-  return Math.floor(baseXP * (level ^ exponent));
+  const exponent = 1.5;
+  const baseXP = 500;
+  return Math.floor(baseXP * Math.pow(level, exponent));
 };
 
 interface IExtendedExpDTO extends ExperienceDTO {

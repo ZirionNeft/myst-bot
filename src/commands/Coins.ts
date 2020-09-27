@@ -82,12 +82,20 @@ export class Coins {
   })
   @Guard(NotBot(), InGuildOnly(), ThrottleMessage())
   async coinsTop(command: CommandMessage) {
-    const contextGuildId = command.guild?.id ?? "";
-    const memberModels = await this.userService.getAllPositiveCoins(
-      contextGuildId
-    );
+    if (!command.guild?.id) return;
 
     try {
+      const memberModels = await this.userService.getAllPositiveCoins(
+        command.guild.id
+      );
+
+      if (!memberModels.length) {
+        return await MessageHelpers.sendPublicNote(
+          command,
+          "There is no at least one member who has more than 0 coins..."
+        );
+      }
+
       const coinsTopEmbed = new FieldsEmbed<UserModel>();
 
       coinsTopEmbed.embed
@@ -120,15 +128,12 @@ export class Coins {
         .build();
     } catch (e) {
       LoggerFactory.get(Coins).error(e.message);
-      return await MessageHelpers.sendPublicError(
-        command.channel as TextChannel,
-        "I'm not enough permitted in this guild to perform that action :("
-      );
+      // return await MessageHelpers.sendPublicError(
+      //   command.channel as TextChannel,
+      //   "I'm not enough permitted in this guild to perform that action :("
+      // );
     }
   }
-
-  // @Command("coins award :member")
-  // async adminAddCoins(command: CommandMessage) {}
 
   @Command("coins give :member :coins")
   @Infos<CommandInfo>({

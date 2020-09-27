@@ -11,6 +11,8 @@ import LoggerFactory from "../utils/LoggerFactory";
 export interface IUserService {
   getAllPositiveCoins(guildId: Snowflake): Promise<UserModel[]>;
 
+  getUsersLeveling(guildId: Snowflake): Promise<UserModel[]>;
+
   update(
     id: Snowflake,
     guildDataId: Snowflake,
@@ -128,7 +130,7 @@ export default class UserService implements IUserService {
   @Cacheable({
     cacheKey: (args: any[]) => args[0],
     hashKey: "all-positive-coins",
-    ttlSeconds: 60,
+    ttlSeconds: 600,
   })
   async getAllPositiveCoins(guildId: Snowflake): Promise<UserModel[]> {
     return UserModel.findAll({
@@ -141,6 +143,18 @@ export default class UserService implements IUserService {
         },
       },
       order: [["coins", "DESC"]],
+    });
+  }
+
+  async getUsersLeveling(guildId: Snowflake): Promise<UserModel[]> {
+    return UserModel.findAll({
+      where: {
+        guildId,
+      },
+      order: [
+        ["level", "DESC"],
+        ["experience", "DESC"],
+      ],
     });
   }
 }
