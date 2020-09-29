@@ -17,7 +17,7 @@ export class Top {
 
   @Command("top")
   @Infos<CommandInfo>({
-    description: "Guild members top",
+    description: "Guild members levels top",
     category: "Guild",
     coreCommand: true,
     usages: "top",

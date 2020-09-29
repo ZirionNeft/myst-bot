@@ -1,11 +1,11 @@
 import {
   Association,
   DataTypes,
-  HasManyAddAssociationMixin,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyHasAssociationMixin,
+  // HasManyAddAssociationMixin,
+  // HasManyCountAssociationsMixin,
+  // HasManyCreateAssociationMixin,
+  // HasManyGetAssociationsMixin,
+  // HasManyHasAssociationMixin,
   ModelCtor,
   Optional,
   Sequelize,
@@ -14,6 +14,7 @@ import { Snowflake } from "discord.js";
 import UserModel from "./User.model";
 import LoggerFactory from "../../utils/LoggerFactory";
 import { BaseModel } from "../BaseModel";
+import SettingModel from "./Setting.model";
 
 export interface GuildAttributes {
   id: number;
@@ -45,16 +46,24 @@ export default class GuildModel
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
-  public getUsers!: HasManyGetAssociationsMixin<UserModel>;
-  public addUser!: HasManyAddAssociationMixin<UserModel, number>;
-  public hasUser!: HasManyHasAssociationMixin<UserModel, number>;
-  public countUsers!: HasManyCountAssociationsMixin;
-  public createUser!: HasManyCreateAssociationMixin<UserModel>;
+  // public getUsers!: HasManyGetAssociationsMixin<UserModel>;
+  // public addUser!: HasManyAddAssociationMixin<UserModel, number>;
+  // public hasUser!: HasManyHasAssociationMixin<UserModel, number>;
+  // public countUsers!: HasManyCountAssociationsMixin;
+  // public createUser!: HasManyCreateAssociationMixin<UserModel>;
+  //
+  // public getSettings!: HasManyGetAssociationsMixin<SettingModel>;
+  // public addSetting!: HasManyAddAssociationMixin<SettingModel, number>;
+  // public hasSetting!: HasManyHasAssociationMixin<SettingModel, number>;
+  // public countSettings!: HasManyCountAssociationsMixin;
+  // public createSetting!: HasManyCreateAssociationMixin<SettingModel>;
 
   public readonly users?: UserModel[];
+  public readonly settings?: SettingModel[];
 
   public static associations: {
     users: Association<GuildModel, UserModel>;
+    settings: Association<GuildModel, SettingModel>;
   };
 
   public static prepareInit(sequelize: Sequelize): Promise<GuildModel> | void {
@@ -117,6 +126,15 @@ export default class GuildModel
         allowNull: false,
       },
       as: "users",
+    });
+    this.hasMany(SettingModel, {
+      sourceKey: "guildId",
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: "guildId",
+        allowNull: false,
+      },
+      as: "settings",
     });
   }
 }

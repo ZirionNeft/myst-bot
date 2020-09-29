@@ -1,4 +1,4 @@
-declare type Category = "Economy" | "Guild" | "Other";
+declare type Category = "Economy" | "Guild" | "Other" | "Admin";
 
 declare interface CommandInfo {
   usages: string;

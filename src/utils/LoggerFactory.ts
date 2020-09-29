@@ -5,7 +5,7 @@ import { Constructor } from "mystbot";
 export default class LoggerFactory {
   private static _logger: P.Logger;
 
-  public static get<T extends Constructor>(context: T): P.Logger {
+  public static get<T extends Constructor>(context: T | Function): P.Logger {
     let level: string | undefined = config.general.loglevel;
 
     if (level && !P.levels.values[level]) level = undefined;

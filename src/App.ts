@@ -8,6 +8,7 @@ import EventManager from "./logic/EventManager";
 import { LevelUpSubscriber } from "./events/LevelUpSubscriber";
 import { BusinessEvent, Subscriber } from "mystbot";
 import LevelingManager from "./logic/LevelingManager";
+import SettingService from "./services/SettingService";
 
 export default class App {
   private static _client: Client;
@@ -52,6 +53,7 @@ export default class App {
   private static _bindings() {
     Container.bind(Throttle);
     Container.bind(GuildService);
+    Container.bind(SettingService);
     Container.bind(EventManager);
   }
 
