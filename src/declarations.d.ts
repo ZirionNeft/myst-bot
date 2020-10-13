@@ -9,6 +9,20 @@ declare module "mystbot" {
 
   export type Constructor<T = {}> = new (...args: any[]) => T;
 
+  export type PermissionName = "ChangeSettings";
+
+  export enum Setting {
+    Prefix = 0,
+    StaffChannelId = 1,
+    InfoChannelId = 2,
+  }
+
+  interface SettingTypes {
+    [Setting.Prefix]: string;
+    [Setting.StaffChannelId]: Snowflake;
+    [Setting.InfoChannelId]: Snowflake;
+  }
+
   export type ExperienceBufferKey = Snowflake;
   export interface ExperienceDTO {
     experience: Experience;

@@ -28,4 +28,31 @@ export default class BotHelpers {
       : discordGuild?.systemChannel;
     if (channel) return channel as TextChannel;
   }
+
+  /**
+   * Return true (early) if any of the provided Promises are true
+   * @param {Function(arg: *): Boolean} predicate The test the resolved Promise value must pass to be considered true
+   * @param {Promise[]} promises The Promises to wait on
+   * @returns {Promise<Boolean>} Whether one of the the provided Promises passed the predicate
+   */
+  static async promiseSome(
+    promises: Promise<boolean>[],
+    predicate: (...args: boolean[]) => boolean = (...args: boolean[]) => args[0]
+  ): Promise<boolean> {
+    while (promises.length) {
+      // Give all our promises IDs so that we can remove them when they are done
+      const arrWithIDs = promises.map((p, idx) =>
+        p
+          .then((data) => ({ idx, data }))
+          .catch((_err) => ({ idx, data: false }))
+      );
+      // Wait for one of the Promises to resolve
+      const soon = await Promise.race(arrWithIDs);
+      // If it passes the test, we're done
+      if (predicate(soon.data)) return true;
+      // Otherwise, remove that Promise and race again
+      promises.splice(soon.idx, 1);
+    }
+    return false;
+  }
 }

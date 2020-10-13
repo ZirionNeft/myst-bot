@@ -1,11 +1,6 @@
 import {
   Association,
   DataTypes,
-  // HasManyAddAssociationMixin,
-  // HasManyCountAssociationsMixin,
-  // HasManyCreateAssociationMixin,
-  // HasManyGetAssociationsMixin,
-  // HasManyHasAssociationMixin,
   ModelCtor,
   Optional,
   Sequelize,
@@ -15,6 +10,7 @@ import UserModel from "./User.model";
 import LoggerFactory from "../../utils/LoggerFactory";
 import { BaseModel } from "../BaseModel";
 import SettingModel from "./Setting.model";
+import PermissionModel from "./Permission.model";
 
 export interface GuildAttributes {
   id: number;
@@ -60,10 +56,12 @@ export default class GuildModel
 
   public readonly users?: UserModel[];
   public readonly settings?: SettingModel[];
+  public readonly permissions?: PermissionModel[];
 
   public static associations: {
     users: Association<GuildModel, UserModel>;
     settings: Association<GuildModel, SettingModel>;
+    permissions: Association<GuildModel, PermissionModel>;
   };
 
   public static prepareInit(sequelize: Sequelize): Promise<GuildModel> | void {
@@ -121,6 +119,7 @@ export default class GuildModel
   }) {
     this.hasMany(UserModel, {
       sourceKey: "guildId",
+      onDelete: "CASCADE",
       foreignKey: {
         name: "guildId",
         allowNull: false,
@@ -135,6 +134,15 @@ export default class GuildModel
         allowNull: false,
       },
       as: "settings",
+    });
+    this.hasMany(PermissionModel, {
+      sourceKey: "guildId",
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: "guildId",
+        allowNull: false,
+      },
+      as: "permissions",
     });
   }
 }

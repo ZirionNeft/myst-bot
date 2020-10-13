@@ -31,6 +31,8 @@ export interface IEmojiService {
 
 const CACHE_BUILDER = (args: any[]) => args[0];
 
+// TODO: cache refactor
+
 @Singleton
 @OnlyInstantiableByContainer
 export default class EmojiService implements IEmojiService {

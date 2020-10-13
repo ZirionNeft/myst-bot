@@ -18,7 +18,7 @@ export class Setting {
   @Guard(
     NotBot(),
     InGuildOnly(),
-    Permitted(),
+    Permitted(["ChangeSettings"]),
     ThrottleMessage(),
     NotBotMentionInArgs()
   )

@@ -35,6 +35,8 @@ export interface IUserService {
   ): Promise<UserModel>;
 }
 
+// TODO: cache refactor
+
 const CACHE_BUILDER = (args: any[]) => `${args[0]}:${args[1]}`;
 const BULK_CACHE_BUILDER = (models: any[]) =>
   (models as UserAttributes[]).map(

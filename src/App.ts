@@ -9,6 +9,7 @@ import { LevelUpSubscriber } from "./events/LevelUpSubscriber";
 import { BusinessEvent, Subscriber } from "mystbot";
 import LevelingManager from "./logic/LevelingManager";
 import SettingService from "./services/SettingService";
+import { PermissionsManager } from "./logic/PermissionsManager";
 
 export default class App {
   private static _client: Client;
@@ -55,6 +56,7 @@ export default class App {
     Container.bind(GuildService);
     Container.bind(SettingService);
     Container.bind(EventManager);
+    Container.bind(PermissionsManager);
   }
 
   // TODO: refactor to metadata and reflection API
