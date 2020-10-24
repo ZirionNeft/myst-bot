@@ -1,11 +1,12 @@
 import { DataTypes, ModelCtor, Optional, Sequelize } from "sequelize";
 import { Snowflake } from "discord.js";
 import { BaseModel } from "../BaseModel";
+import { Setting } from "mystbot";
 
 export interface SettingAttributes {
   id: number;
   guildId: Snowflake;
-  name: string;
+  name: Setting;
   value: Snowflake;
 }
 
@@ -21,7 +22,7 @@ export default class SettingModel
 
   id!: number;
   guildId!: Snowflake;
-  name!: string;
+  name!: Setting;
   value!: string;
 
   public readonly createdAt!: Date;

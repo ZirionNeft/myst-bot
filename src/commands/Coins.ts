@@ -47,7 +47,7 @@ export class Coins {
     const author = command.author;
     const contextGuildId = command.guild?.id ?? "";
 
-    const id = StringHelpers.getUserIdFromMention(member);
+    const id = StringHelpers.getSnowflakeFromMention(member);
     const guildMember =
       command.guild?.members.cache.find((m) => m.id === id) ?? command.member;
 
@@ -144,7 +144,7 @@ export class Coins {
   @Guard(NotBot(), InGuildOnly(), ThrottleMessage(), NotBotMentionInArgs())
   async giveCoins(command: CommandMessage) {
     const { member, coins }: { member: string; coins: string } = command.args;
-    const targetId = StringHelpers.getUserIdFromMention(member);
+    const targetId = StringHelpers.getSnowflakeFromMention(member);
     const target = command.guild?.members.cache.find((m) => m.id === targetId);
     const amount = parseInt(coins);
     const contextGuildId = command.member?.guild?.id;

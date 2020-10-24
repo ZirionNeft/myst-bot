@@ -6,7 +6,6 @@ import UserModel, {
 } from "../database/models/User.model";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Op, Transaction } from "sequelize";
-import LoggerFactory from "../utils/LoggerFactory";
 
 export interface IUserService {
   getAllPositiveCoins(guildId: Snowflake): Promise<UserModel[]>;
@@ -33,6 +32,8 @@ export interface IUserService {
     guildId: Snowflake,
     data?: UserCreationAttributes
   ): Promise<UserModel>;
+
+  bulkUpdateOrCreate(...models: UserCreationAttributes[]): Promise<UserModel[]>;
 }
 
 // TODO: cache refactor

@@ -19,8 +19,15 @@ export abstract class StringHelpers {
     return undefined;
   }
 
-  static getUserIdFromMention(mention: string): Snowflake | undefined {
+  static getSnowflakeFromMention(
+    mention: string,
+    strict?: boolean
+  ): Snowflake | undefined {
     if (!mention) return undefined;
+
+    if (strict) {
+      if (!mention.match(/([0-9]{14,16})/)) return undefined;
+    }
 
     if (mention.startsWith("<@") && mention.endsWith(">")) {
       mention = mention.slice(2, -1);

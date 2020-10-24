@@ -12,16 +12,22 @@ declare module "mystbot" {
   export type PermissionName = "ChangeSettings";
 
   export enum Setting {
-    Prefix = 0,
-    StaffChannelId = 1,
-    InfoChannelId = 2,
+    "Prefix" = 0,
+    "StaffChannelId" = 1,
+    "InfoChannelId" = 2,
+    "TEMPORARY" = 3,
   }
 
-  interface SettingTypes {
+  export type SettingValueTypes = {
     [Setting.Prefix]: string;
-    [Setting.StaffChannelId]: Snowflake;
-    [Setting.InfoChannelId]: Snowflake;
-  }
+    [Setting.StaffChannelId]: RawSnowflake;
+    [Setting.InfoChannelId]: RawSnowflake;
+    [Setting.TEMPORARY]: number; // TODO: Remove when a true number type will be added
+  };
+
+  export type RawSnowflake = Snowflake; // when snowflake is braced with discord chat construction <@123>
+
+  export type SettingValueType<T extends Setting> = SettingValueTypes[T];
 
   export type ExperienceBufferKey = Snowflake;
   export interface ExperienceDTO {

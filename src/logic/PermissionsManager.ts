@@ -20,49 +20,34 @@ export class PermissionsManager {
     const guildId = (guild as Guild).id;
     const authorId = author.id;
 
-    const roles = (guild as Guild).members.cache.find((m) => m.id === authorId)
-      ?.roles.cache;
-    if (!roles) return false;
+    const roles = (guild as Guild).members.cache
+      .find((m) => m.id === authorId)
+      ?.roles.cache.filter((role) => role.name !== "@everyone");
+    if (!roles?.size) return false;
 
-    let all: SpecifiedPermsStatus = {};
+    let foundRoles: PermissionName[] = [];
     for (let [roleId] of roles) {
-      const result = await this.roleHasPermissions(
+      const result = await this.getSamePermissionsFromRole(
         guildId,
         roleId,
         permissionNames
       );
-      all = {
-        ...all,
-        // Filtering to only true and collecting all entries in one object
-        ...Object.entries(result).reduce<SpecifiedPermsStatus>(
-          (prev, [perm, status]) => ({
-            ...prev,
-            ...(status ? { [perm]: status } : {}),
-          }),
-          {}
-        ),
-      };
-      if (Object.entries(all).every(([permission, status]) => status))
-        return true;
+      foundRoles = [...foundRoles, ...result];
     }
-
-    return false;
+    return [...new Set(foundRoles)].length === permissionNames.length;
   }
 
-  async roleHasPermissions(
+  async getSamePermissionsFromRole(
     guildId: Snowflake,
     roleId: Snowflake,
     permissionNames: PermissionName[]
-  ): Promise<SpecifiedPermsStatus> {
-    const targetPermissions = (
+  ): Promise<PermissionName[]> {
+    const rolePermissions = (
       await this._permissionService.getRoleAll(guildId, roleId)
     ).map((t) => t.permissionName);
-    return permissionNames.reduce<SpecifiedPermsStatus>(
-      (prev, cur) => ({
-        ...prev,
-        ...{ [cur]: targetPermissions.includes(cur) },
-      }),
-      {}
+
+    return rolePermissions.filter((roleName) =>
+      permissionNames.includes(roleName)
     );
   }
 

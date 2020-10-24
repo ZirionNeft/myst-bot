@@ -20,6 +20,8 @@ export interface ISettingService {
   ): Promise<number | SettingModel[] | undefined>;
 
   guildScoped(guildId: Snowflake);
+
+  upsert(data: SettingCreationAttributes);
 }
 
 @Singleton
@@ -48,6 +50,17 @@ export default class SettingService implements ISettingService {
     return await SettingModel.create(data);
   }
 
+  async upsert(data: SettingCreationAttributes) {
+    const item = await SettingModel.findOne({
+      where: {
+        name: data.name,
+        guildId: data.guildId,
+      },
+    });
+
+    return item ? this.update(data) : this.create(data);
+  }
+
   @Cacheable({
     cacheKey: (args) => `${args[0].name}`,
     hashKey: (args) => `${args[0].guildId}`,
@@ -57,6 +70,7 @@ export default class SettingService implements ISettingService {
     const [m] = await SettingModel.findCreateFind({
       where: {
         guildId: data.guildId,
+        name: data.name,
       },
       defaults: data,
     });
