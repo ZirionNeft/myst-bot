@@ -20,16 +20,16 @@ import { StringHelpers } from "../utils/StringHelpers";
 import LoggerFactory from "../utils/LoggerFactory";
 import BotHelpers from "../utils/BotHelpers";
 
-export class Setting {
+export abstract class Set {
   @Inject
   private _settingService!: SettingService;
 
   @Command("set :settingName :settingValue")
   @Infos<CommandInfo>({
-    description: "Settings",
-    usages: "set <setting_name> <setting_value>",
+    description: "Guild scoped bot configuration",
     category: "Admin",
     coreCommand: true,
+    usages: "set <setting_name> <setting_value>",
   })
   @Guard(
     NotBot(),
@@ -38,7 +38,7 @@ export class Setting {
     ThrottleMessage(),
     NotBotMentionInArgs()
   )
-  async runSet<T = SettingName>(command: CommandMessage) {
+  async runSet(command: CommandMessage) {
     const {
       settingName,
       settingValue,
@@ -48,6 +48,19 @@ export class Setting {
     } = command.args;
 
     try {
+      if (!settingName || !settingValue)
+        return await MessageHelpers.sendPublicNote(
+          command,
+          `wrong arguments. Command usage: \`${command.infos.usages}\``
+        );
+
+      if (String(settingValue).length > 32) {
+        return await MessageHelpers.sendPublicNote(
+          command,
+          "maximum length of value is 32 chars"
+        );
+      }
+
       const guildId = (command.guild as Guild).id;
 
       const [validatedName, validatedValue]: [
@@ -65,7 +78,7 @@ export class Setting {
           command,
           `${error}Use \`${await BotHelpers.getGuildPrefix(
             guildId
-          )}help set\` to view full list of all possible settings`
+          )}help set\` to display full list of all possible settings`
         );
       }
 
@@ -78,10 +91,10 @@ export class Setting {
       if (upsertResult) {
         await command.react("✅");
       } else {
-        LoggerFactory.get(Setting).warn(`${guildId} - Setting is not updated`);
+        LoggerFactory.get(Set).warn(`${guildId} - Setting is not updated`);
       }
     } catch (e) {
-      LoggerFactory.get(Setting).error(e);
+      LoggerFactory.get(Set).error(e);
     }
   }
 
@@ -119,7 +132,7 @@ export class Setting {
         }
       }
     } catch (e) {
-      LoggerFactory.get(Setting).error(e);
+      LoggerFactory.get(Set).error(e);
     }
 
     return [null, null];

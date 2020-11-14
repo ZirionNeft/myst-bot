@@ -27,8 +27,8 @@ export const Permitted = (permissionNames: PermissionName[]) => {
       permitted = true;
     }
 
-    permitted &&
-      (await MessageHelpers.sendAndDelete(message, "not enough permissions!"));
+    !permitted &&
+      (await MessageHelpers.sendPublicNote(message, "not enough permissions!"));
 
     permitted && (await next());
   };

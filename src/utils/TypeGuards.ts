@@ -26,5 +26,9 @@ export function isSettingNameTypeMatch(
   name: unknown,
   type: string
 ): name is Setting {
-  return typeof name === "string" && SettingsTypeGuards[type][name];
+  return (
+    typeof name === "string" &&
+    SettingsTypeGuards[type] &&
+    SettingsTypeGuards[type].find((n) => n === name)
+  );
 }

@@ -8,7 +8,7 @@ import { MessageHelpers } from "../utils/MessageHelpers";
 import { Embeds, PaginationEmbed } from "discord-paginationembed";
 import LoggerFactory from "../utils/LoggerFactory";
 
-export class Emoji {
+export abstract class Emoji {
   @Inject
   private _emojiService!: EmojiService;
 

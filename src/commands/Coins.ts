@@ -128,10 +128,6 @@ export class Coins {
         .build();
     } catch (e) {
       LoggerFactory.get(Coins).error(e.message);
-      // return await MessageHelpers.sendPublicError(
-      //   command.channel as TextChannel,
-      //   "I'm not enough permitted in this guild to perform that action :("
-      // );
     }
   }
 
@@ -175,7 +171,7 @@ export class Coins {
     if (!amount || amount <= 0)
       return MessageHelpers.sendPublicNote(
         command,
-        "amount of icons specified not properly"
+        "amount of coins specified not properly"
       );
 
     const authorModelInstance = await this.userService.findOne(
@@ -192,7 +188,7 @@ export class Coins {
     if (command.author.id === targetId)
       return MessageHelpers.sendPublicNote(
         command,
-        "transferring coins to yourself will not work. It would be so simple..."
+        "you cannot give coins to yourself!"
       );
 
     try {

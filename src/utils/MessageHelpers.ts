@@ -69,7 +69,7 @@ export abstract class MessageHelpers {
     return this.sendAndDelete(
       commandMessage,
       `**${commandMessage.author.username}**, ${message}`,
-      10
+      12
     );
   }
 

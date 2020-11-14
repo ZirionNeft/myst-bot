@@ -11,7 +11,7 @@ import { NEXT_LEVEL_XP } from "../logic/GuildLevelingFactory";
 
 const EXP_ICON = "https://icon-library.com/images/score-icon/score-icon-21.jpg";
 
-export class Top {
+export abstract class Top {
   @Inject
   private _userService!: UserService;
 

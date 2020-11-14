@@ -914,10 +914,9 @@
   dependencies:
     "@type-cacheable/core" "^6.2.0"
 
-"@typeit/discord@^4.0.8":
+"@typeit/discord@ZirionNeft/discord.ts":
   version "4.0.8"
-  resolved "https://registry.yarnpkg.com/@typeit/discord/-/discord-4.0.8.tgz#c0cbe1aa04320e7022fd51ba8a538aa733b20f88"
-  integrity sha512-znJKUN96lpeWa3eThdjpx56yTAS7aOATwz6TwjA2BrSQ4ohmGYG45y/zhArn1b62nGBUClMNd0Q3FjNoyk96Yg==
+  resolved "https://codeload.github.com/ZirionNeft/discord.ts/tar.gz/14cb9f0648ae47db945f744d1584c303fc8bd8f3"
   dependencies:
     discord.js "^12.2.0"
     glob "^7.1.6"
