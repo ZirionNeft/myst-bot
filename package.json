@@ -26,7 +26,6 @@
   "dependencies": {
     "@type-cacheable/core": "^6.2.0",
     "@type-cacheable/node-cache-adapter": "^6.2.0",
-    "@typeit/discord": "ZirionNeft/discord.ts",
     "discord-paginationembed": "^2.1.0",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
