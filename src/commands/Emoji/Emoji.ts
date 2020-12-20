@@ -1,6 +1,6 @@
 import { Command, CommandMessage, Guard, Infos } from "@typeit/discord";
 import { InGuildOnly, NotBot, ThrottleMessage } from "../guards";
-import { MystBot } from "../MystBot";
+import { MystBotClient } from "../MystBotClient";
 import { MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { Inject } from "typescript-ioc";
 import EmojiService from "../services/EmojiService";

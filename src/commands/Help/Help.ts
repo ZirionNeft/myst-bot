@@ -40,7 +40,7 @@ export abstract class Help {
       : null;
 
     if (filteredCommands && filteredCommands.length) {
-      const prefix = await BotHelpers.getGuildPrefix(command.guild?.id);
+      const prefix = await BotHelpers.getPrefixWithPriority(command.guild?.id);
       const coreCommand = filteredCommands.find((v) => v.infos.coreCommand);
 
       messageEmbed

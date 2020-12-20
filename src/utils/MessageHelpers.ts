@@ -6,10 +6,10 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import { CommandMessage } from "@typeit/discord";
 import ChatCleaner from "../logic/ChatCleaner";
 import { config } from "node-config-ts";
 import BotHelpers from "./BotHelpers";
+import { Message } from "discord.js";
 
 export abstract class MessageHelpers {
   static async sendSystemErrorDM(
@@ -65,21 +65,21 @@ export abstract class MessageHelpers {
     await (await BotHelpers.getGuildInfoChannel(guildId))?.send(message);
   }
 
-  static async sendPublicNote(commandMessage: CommandMessage, message: string) {
+  static async sendPublicNote(message: Message, text: string) {
     return this.sendAndDelete(
-      commandMessage,
-      `**${commandMessage.author.username}**, ${message}`,
+      message,
+      `**${message.author.username}**, ${text}`,
       12
     );
   }
 
   static async sendAndDelete(
-    commandMessage: CommandMessage,
-    message: string,
+    message: Message,
+    text: string,
     deleteDelay?: number
   ) {
-    return commandMessage.channel
-      .send(message)
+    return message.channel
+      .send(text)
       .then((m) => ChatCleaner.clean({ message: m, sec: deleteDelay }));
   }
 }

@@ -44,6 +44,14 @@ declare module "node-config-ts" {
     commandCoolDown: number
     allowBotMentionInCommands: boolean
     token: string
+    currencyEmoji: string
+    commands: Commands
+  }
+  interface Commands {
+    coins: Coins
+  }
+  interface Coins {
+    topIcon: string
   }
   export const config: Config
   export type Config = IConfig

@@ -76,7 +76,7 @@ export abstract class Set {
           : "";
         return MessageHelpers.sendPublicNote(
           command,
-          `${error}Use \`${await BotHelpers.getGuildPrefix(
+          `${error}Use \`${await BotHelpers.getPrefixWithPriority(
             guildId
           )}help set\` to display full list of all possible settings`
         );

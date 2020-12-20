@@ -6,7 +6,7 @@ import App from "../App";
 import LoggerFactory from "./LoggerFactory";
 
 export default class BotHelpers {
-  static async getGuildPrefix(guildId: Snowflake | undefined | null) {
+  static async getPrefixWithPriority(guildId?: Snowflake | null) {
     const guildService: GuildService = Container.get(GuildService);
     return (
       (guildId ? await guildService.findOne(guildId) : undefined)?.prefix ??

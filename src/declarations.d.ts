@@ -1,5 +1,6 @@
 declare module "mystbot" {
   import { Snowflake } from "discord.js";
+  import { CommandOptions } from "@sapphire/framework";
 
   export type UserId = Snowflake;
   export type GuildId = Snowflake;
@@ -26,8 +27,8 @@ declare module "mystbot" {
   };
 
   export type RawSnowflake = Snowflake; // when snowflake is braced with discord chat construction <@123>
-
   export type SettingValueType<T extends Setting> = SettingValueTypes[T];
+  export type Category = "Economy" | "Guild" | "Other" | "Admin";
 
   export type ExperienceBufferKey = Snowflake;
   export interface ExperienceDTO {
@@ -41,15 +42,7 @@ declare module "mystbot" {
 
   export type BusinessEvent = keyof BusinessEvents;
 
-  export interface GuardData {
-    emojis: [Emoji[]];
-  }
-
   export type BusinessEventArgs<K extends BusinessEvent> = BusinessEvents[K];
-  export type GuardDataArgs<K extends keyof GuardData> = {
-    [key in keyof GuardData]: GuardData[K];
-  };
-
   export interface Emoji {
     name: string;
     id: Snowflake;
@@ -66,6 +59,12 @@ declare module "mystbot" {
 
   export interface Subscriber<T extends BusinessEvent> {
     handle(args: BusinessEventArgs<T>);
+  }
+
+  export interface MystCommandOptions extends CommandOptions {
+    usages?: string;
+    category?: Category;
+    coreCommand?: boolean;
   }
 }
 

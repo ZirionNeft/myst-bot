@@ -24,6 +24,8 @@
   "author": "ZirionNeft",
   "license": "ISC",
   "dependencies": {
+    "@sapphire/decorators": "^1.0.3",
+    "@sapphire/framework": "github:sapphire-project/framework#build",
     "@type-cacheable/core": "^6.2.0",
     "@type-cacheable/node-cache-adapter": "^6.2.0",
     "discord-paginationembed": "^2.1.0",

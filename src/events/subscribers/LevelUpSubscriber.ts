@@ -1,9 +1,8 @@
-import { Subscribe } from "../decorators/Subscribe";
+import { Subscribe } from "../../decorators/Subscribe";
 import { BusinessEventArgs, Subscriber } from "mystbot";
-import LoggerFactory from "../utils/LoggerFactory";
 import { Inject, OnlyInstantiableByContainer } from "typescript-ioc";
-import GuildService from "../services/GuildService";
-import { MessageHelpers } from "../utils/MessageHelpers";
+import GuildService from "../../services/GuildService";
+import { MessageHelpers } from "../../utils/MessageHelpers";
 import { MessageEmbed } from "discord.js";
 
 @OnlyInstantiableByContainer
@@ -20,7 +19,7 @@ export class LevelUpSubscriber implements Subscriber<"levelUp"> {
         .setDescription(
           `<@${userId}> just leveled up [**${
             experienceDTO.level - 1
-          }**] --> [**${experienceDTO.level}**], yeee!`
+          }**] --> [**${experienceDTO.level}**], yeeea!`
         )
         .setColor("GOLD")
     );

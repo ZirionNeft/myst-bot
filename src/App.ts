@@ -1,25 +1,50 @@
-import { Client } from "@typeit/discord";
 import { Container, Scope } from "typescript-ioc";
-import Throttle from "./logic/Throttle";
 import LoggerFactory from "./utils/LoggerFactory";
 import GuildService from "./services/GuildService";
 import { config } from "node-config-ts";
 import EventManager from "./logic/EventManager";
-import { LevelUpSubscriber } from "./events/LevelUpSubscriber";
+import { LevelUpSubscriber } from "./events/subscribers/LevelUpSubscriber";
 import { BusinessEvent, Subscriber } from "mystbot";
 import LevelingManager from "./logic/LevelingManager";
 import SettingService from "./services/SettingService";
 import { PermissionsManager } from "./logic/PermissionsManager";
+import { MystBotClient } from "./MystBotClient";
+import BotHelpers from "./utils/BotHelpers";
+import { LogLevel } from "@sapphire/framework";
+import { StringHelpers } from "./utils/StringHelpers";
+import { Message } from "discord.js";
 
 export default class App {
-  private static _client: Client;
+  private static _client: MystBotClient;
 
-  static get Client(): Client {
+  static get Client(): MystBotClient {
     return this._client;
   }
 
   static async start(): Promise<void> {
-    this._client = new Client();
+    this._client = new MystBotClient({
+      messageEditHistoryMaxSize: 0,
+      presence: {
+        status: "online",
+        activity: { type: "LISTENING", name: `${config.bot.prefix}help` },
+      },
+      logger: {
+        instance: LoggerFactory.get(App),
+        level:
+          // @ts-ignore
+          LogLevel[StringHelpers.capitalize(LoggerFactory.get(App).level)] ??
+          config.general.debug
+            ? LogLevel.Debug
+            : LogLevel.Info,
+      },
+      fetchPrefix: async (message: Message) =>
+        await BotHelpers.getPrefixWithPriority(message.guild?.id),
+      // TODO when high-load: Design intents
+      // https://discordjs.guide/popular-topics/intents.html
+      // ws: {
+      //   intents: new Intents(["GUILD_MESSAGES", "GUILDS"]),
+      // },
+    });
 
     LoggerFactory.get(App).info(
       "Logger level: %s",
@@ -36,13 +61,7 @@ export default class App {
     );
 
     try {
-      // In the login method, you must specify the glob string to load your classes (for the framework).
-      // In this case that's not necessary because the entry point of your application is this file.
-      await this._client.login(
-        config.bot.token ?? "",
-        `${__dirname}/${config.bot.name}Bot.ts`, // glob string to load the classes
-        `${__dirname}/${config.bot.name}Bot.js` // If you compile your bot, the file extension will be .js
-      );
+      await this._client.login(config.bot.token ?? "");
     } catch (e) {
       LoggerFactory.get(App).error("Login failed!");
     }
@@ -52,7 +71,6 @@ export default class App {
   }
 
   private static _bindings() {
-    Container.bind(Throttle);
     Container.bind(GuildService);
     Container.bind(SettingService);
     Container.bind(EventManager);
@@ -77,7 +95,7 @@ export default class App {
     const eventManager = Container.get(LevelingManager);
 
     eventManager.flushAll().then(() => {
-      LoggerFactory.get(App).info("Experience has been flushed!");
+      LoggerFactory.get(App).info("Experience was flushed!");
       process.exit();
     });
   }
