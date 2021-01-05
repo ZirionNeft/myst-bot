@@ -1,20 +1,20 @@
 import { Factory, Inject, OnlyInstantiableByContainer } from "typescript-ioc";
 import UserService from "../services/UserService";
-import { Message, Snowflake, User } from "discord.js";
+import { Snowflake, User } from "discord.js";
 import LoggerFactory from "../utils/LoggerFactory";
 import { UserCreationAttributes } from "../database/models/User.model";
 import GuildService from "../services/GuildService";
-import Timeout = NodeJS.Timeout;
 import EventManager from "./EventManager";
 import { Experience, ExperienceBufferKey, ExperienceDTO, Level } from "mystbot";
+import Timeout = NodeJS.Timeout;
 
 const FLUSH_INTERVAL = 30000;
 
-export const NEXT_LEVEL_XP = (level: Level): Experience => {
+export function calculateNextLevelXp(level: Level): Experience {
   const exponent = 1.5;
   const baseXP = 500;
   return Math.floor(baseXP * Math.pow(level, exponent));
-};
+}
 
 interface IExtendedExpDTO extends ExperienceDTO {
   nextLevelExp: Experience;
@@ -81,7 +81,7 @@ export default class GuildLevelingFactory {
         experienceValue = {
           experience: (value?.experience ?? 0) + symbolsLength,
           level: value?.level ?? 1,
-          nextLevelExp: NEXT_LEVEL_XP(value?.level ?? 1),
+          nextLevelExp: calculateNextLevelXp(value?.level ?? 1),
         };
       } else {
         // Before we try to create the user, we must to check that the guild is exist
@@ -94,7 +94,7 @@ export default class GuildLevelingFactory {
         experienceValue = {
           experience: userEntity.experience + symbolsLength,
           level: userEntity.level,
-          nextLevelExp: NEXT_LEVEL_XP(userEntity.level),
+          nextLevelExp: calculateNextLevelXp(userEntity.level),
         };
       }
 
@@ -102,7 +102,7 @@ export default class GuildLevelingFactory {
         const calculated = this._calculateLevel(author.id, experienceValue);
         experienceValue = {
           ...calculated,
-          nextLevelExp: NEXT_LEVEL_XP(calculated.level),
+          nextLevelExp: calculateNextLevelXp(calculated.level),
         };
       }
 
@@ -164,9 +164,9 @@ export default class GuildLevelingFactory {
     { experience, level }: ExperienceDTO
   ): ExperienceDTO {
     for (
-      let nextLevelXp = NEXT_LEVEL_XP(level);
+      let nextLevelXp = calculateNextLevelXp(level);
       experience >= nextLevelXp;
-      nextLevelXp = NEXT_LEVEL_XP(level)
+      nextLevelXp = calculateNextLevelXp(level)
     ) {
       experience -= nextLevelXp;
       level++;

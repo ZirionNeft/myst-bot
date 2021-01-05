@@ -1,10 +1,9 @@
 import { Message } from "discord.js";
 import LoggerFactory from "../utils/LoggerFactory";
-import { CommandMessage } from "@typeit/discord";
 import { config } from "node-config-ts";
 
 export interface DeletableMessage {
-  message: Message | CommandMessage;
+  message: Message;
   sec?: number;
 }
 
@@ -12,7 +11,7 @@ export default class ChatCleaner {
   static clean(...messages: DeletableMessage[]) {
     try {
       let counter = 0;
-      const g = new Set();
+      const guildsIdbuffer = new Set();
 
       for (let m of messages) {
         m.message
@@ -25,13 +24,13 @@ export default class ChatCleaner {
                 `Message deleted -- <${msg.id}>`
               );
             else counter++;
-            msg.guild && g.add(msg.guild.id);
+            msg.guild && guildsIdbuffer.add(msg.guild.id);
           });
       }
       counter &&
         LoggerFactory.get(ChatCleaner).info(
           `Messages cleaned [${counter}] in guilds [${Array.from(
-            g.values(),
+            guildsIdbuffer.values(),
             (v) => `<${v}>`
           ).join(",")}]>`
         );

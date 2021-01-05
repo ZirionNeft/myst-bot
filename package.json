@@ -25,7 +25,7 @@
   "license": "ISC",
   "dependencies": {
     "@sapphire/decorators": "^1.0.3",
-    "@sapphire/framework": "github:sapphire-project/framework#build",
+    "@sapphire/framework": "^1.0.0-alpha.1",
     "@type-cacheable/core": "^6.2.0",
     "@type-cacheable/node-cache-adapter": "^6.2.0",
     "discord-paginationembed": "^2.1.0",
@@ -48,6 +48,8 @@
     "@types/node": "^14.0.22",
     "@types/pino": "^6.3.0",
     "@types/validator": "^13.1.0",
+    "@types/ws": "^7.4.0",
+    "@sapphire/plugin-subcommands": "1.0.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "sequelize-cli": "^6.2.0",

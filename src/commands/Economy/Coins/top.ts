@@ -1,27 +1,26 @@
-import { ApplyOptions } from "@sapphire/decorators";
-import { Args, Command } from "@sapphire/framework";
-import { Message } from "discord.js";
-import { MystCommandOptions } from "mystbot";
-import { Guild } from "discord.js";
-import { MessageHelpers } from "../../utils/MessageHelpers";
-import UserService from "../../services/UserService";
+import { Guild, Message, NewsChannel } from "discord.js";
 import { Inject } from "typescript-ioc";
-import { FieldsEmbed } from "discord-paginationembed/typings";
-import { UserModel } from "../../database/models";
 import { config } from "node-config-ts";
-import { NewsChannel } from "discord.js";
-import LoggerFactory from "../../utils/LoggerFactory";
+import { ApplyOptions } from "@sapphire/decorators";
+import { Args } from "@sapphire/framework";
+import { MystCommandOptions } from "mystbot";
+import LoggerFactory from "../../../utils/LoggerFactory";
+import UserService from "../../../services/UserService";
+import { MessageHelpers } from "../../../utils/MessageHelpers";
+import { MystCommand } from "../../../lib/structures/MystCommand";
+import { UserModel } from "../../../database/models";
+import { FieldsEmbed } from "discord-paginationembed/typings";
 
 const COINS_TOP = config.bot.commands.coins.topIcon;
 
 @ApplyOptions<MystCommandOptions>({
+  name: "top",
   aliases: ["board", "leaderboard", "list"],
   description: "Members top filtered by amount of coins",
-  preconditions: ["GuildOnly", "Cooldown"],
   usages: "coins top",
   category: "Economy",
 })
-export default class CoinsTopCommand extends Command {
+export default class CoinsTopSubcommand extends MystCommand {
   @Inject
   private userService!: UserService;
 
@@ -75,7 +74,7 @@ export default class CoinsTopCommand extends Command {
         })
         .build();
     } catch (e) {
-      LoggerFactory.get(CoinsTopCommand).error(e.message);
+      LoggerFactory.get(CoinsTopSubcommand).error(e.message);
     }
   }
 }

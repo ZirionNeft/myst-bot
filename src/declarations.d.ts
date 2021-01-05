@@ -1,6 +1,10 @@
 declare module "mystbot" {
   import { Snowflake } from "discord.js";
-  import { CommandOptions } from "@sapphire/framework";
+  import {
+    CommandContext,
+    CommandOptions,
+    ICommandPayload,
+  } from "@sapphire/framework";
 
   export type UserId = Snowflake;
   export type GuildId = Snowflake;
@@ -11,24 +15,20 @@ declare module "mystbot" {
   export type Constructor<T = {}> = new (...args: any[]) => T;
 
   export type PermissionName = "ChangeSettings";
-
-  export enum Setting {
-    "Prefix" = 0,
-    "StaffChannelId" = 1,
-    "InfoChannelId" = 2,
-    "TEMPORARY" = 3,
+  export type TSettingName = keyof typeof SettingName;
+  export enum SettingName {
+    "Prefix" = 1,
+    "StaffChannelId",
+    "InfoChannelId",
   }
 
-  export type SettingValueTypes = {
-    [Setting.Prefix]: string;
-    [Setting.StaffChannelId]: RawSnowflake;
-    [Setting.InfoChannelId]: RawSnowflake;
-    [Setting.TEMPORARY]: number; // TODO: Remove when a true number type will be added
-  };
+  export enum SettingValueTypes {
+    "Prefix" = "string",
+    "StaffChannelId" = "textChannel",
+    "InfoChannelId" = "textChannel",
+  }
 
-  export type RawSnowflake = Snowflake; // when snowflake is braced with discord chat construction <@123>
-  export type SettingValueType<T extends Setting> = SettingValueTypes[T];
-  export type Category = "Economy" | "Guild" | "Other" | "Admin";
+  export type Category = "Economy" | "Guild" | "Misc" | "Admin" | "General";
 
   export type ExperienceBufferKey = Snowflake;
   export interface ExperienceDTO {
@@ -62,9 +62,38 @@ declare module "mystbot" {
   }
 
   export interface MystCommandOptions extends CommandOptions {
+    /**
+     * Is how to use this command, for example: !cmd <@member> [number]
+     * @default ''
+     */
     usages?: string;
+    /**
+     * This command category
+     */
     category?: Category;
-    coreCommand?: boolean;
+
+    subcommands?: SubcommandOptions[];
+  }
+  export type SubcommandOptions = Omit<
+    MystCommandOptions,
+    "category" | "subcommands"
+  >;
+
+  export interface MystCommandContext extends CommandContext {
+    /**
+     * The subcommand options of this command
+     */
+    subcommand?: SubcommandOptions;
+  }
+
+  export interface MystCommandAcceptedPayload extends ICommandPayload {
+    context: MystCommandContext;
+    parameters: string;
+  }
+
+  export interface MystPreCommandRunPayload extends ICommandPayload {
+    context: MystCommandContext;
+    parameters: string;
   }
 }
 

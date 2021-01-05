@@ -1,24 +1,35 @@
-import { ApplyOptions } from "@sapphire/decorators";
-import { Args, Command, UserError } from "@sapphire/framework";
 import { Message } from "discord.js";
-import { MystCommandOptions } from "mystbot";
-import { MessageHelpers } from "../../utils/MessageHelpers";
-import UserService from "../../services/UserService";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
-import LoggerFactory from "../../utils/LoggerFactory";
-import App from "../../App";
+import { ApplyOptions } from "@sapphire/decorators";
+import { Args, BucketType, Command, UserError } from "@sapphire/framework";
+import { MystCommandOptions } from "mystbot";
+import LoggerFactory from "../../../utils/LoggerFactory";
+import UserService from "../../../services/UserService";
+import App from "../../../App";
+import { MessageHelpers } from "../../../utils/MessageHelpers";
+import { MystCommand } from "../../../lib/structures/MystCommand";
 
 const COINS_EMOJI = config.bot.currencyEmoji;
 
 @ApplyOptions<MystCommandOptions>({
+  name: "give",
   aliases: ["send", "gift"],
   description: "Allows you to give some coins to mentioned member",
-  preconditions: ["GuildOnly", "Cooldown"],
   usages: "coins give <@member> <amount>",
+  preconditions: [
+    "GuildOnly",
+    {
+      name: "Cooldown",
+      context: {
+        bucketType: BucketType.Guild,
+        delay: config.bot.commandCoolDown,
+      },
+    },
+  ],
   category: "Economy",
 })
-export default class CoinsGiveCommand extends Command {
+export default class CoinsGiveSubcommand extends MystCommand {
   @Inject
   private userService!: UserService;
 
@@ -60,7 +71,7 @@ export default class CoinsGiveCommand extends Command {
         contextGuildId
       );
     } catch (e) {
-      LoggerFactory.get(CoinsGiveCommand).error(e);
+      LoggerFactory.get(CoinsGiveSubcommand).error(e);
       return (
         message.member &&
         (await MessageHelpers.sendSystemErrorDM(message.member, errorData))
@@ -108,7 +119,7 @@ export default class CoinsGiveCommand extends Command {
         ])
       );
     } catch (e) {
-      LoggerFactory.get(CoinsGiveCommand).error(e);
+      LoggerFactory.get(CoinsGiveSubcommand).error(e);
       return (
         message.member &&
         (await MessageHelpers.sendSystemErrorDM(message.member, errorData))
