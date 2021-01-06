@@ -4,7 +4,7 @@
  */
 
 import { config } from "node-config-ts";
-import { sequelizeLogging } from "../database/Database";
+import { sequelizeLogging } from "../lib/database/Database";
 import { bindEnvVars } from "../index";
 
 bindEnvVars(config);

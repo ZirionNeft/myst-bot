@@ -1,13 +1,13 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { Event, EventOptions, Events } from "@sapphire/framework";
-import LoggerFactory from "../utils/LoggerFactory";
-import { MystBotClient } from "../MystBotClient";
-import { StringHelpers } from "../utils/StringHelpers";
+import LoggerFactory from "../lib/utils/LoggerFactory";
+import { MystBotClient } from "../lib/MystBotClient";
+import { StringHelpers } from "../lib/utils/StringHelpers";
 import { Emoji } from "mystbot";
 import { Message } from "discord.js";
-import EmojiCountManager from "../logic/EmojiCountManager";
+import EmojiCountManager from "../lib/structures/EmojiCountManager";
 import { Inject } from "typescript-ioc";
-import LevelingManager from "../logic/LevelingManager";
+import LevelingManager from "../lib/structures/LevelingManager";
 
 @ApplyOptions<EventOptions>({ once: true })
 export class UserEvent extends Event<Events.Message> {

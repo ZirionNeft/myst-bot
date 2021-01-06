@@ -4,8 +4,8 @@ import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
 import { Args, BucketType, UserError } from "@sapphire/framework";
 import { MystCommandOptions } from "mystbot";
-import LoggerFactory from "../../utils/LoggerFactory";
-import UserService from "../../services/UserService";
+import LoggerFactory from "../../lib/utils/LoggerFactory";
+import UserService from "../../lib/services/UserService";
 import { MystCommand } from "../../lib/structures/MystCommand";
 
 const COINS_EMOJI = config.bot.currencyEmoji;

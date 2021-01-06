@@ -4,9 +4,9 @@ import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
 import { Args, BucketType, Command } from "@sapphire/framework";
 import { MystCommandOptions } from "mystbot";
-import UserService from "../../services/UserService";
+import UserService from "../../lib/services/UserService";
 import { MystCommand } from "../../lib/structures/MystCommand";
-import { StringHelpers } from "../../utils/StringHelpers";
+import { StringHelpers } from "../../lib/utils/StringHelpers";
 
 export interface IGuildCommand extends Command {}
 

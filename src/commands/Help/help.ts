@@ -5,9 +5,8 @@ import { ApplyOptions } from "@sapphire/decorators";
 import { Args, BucketType } from "@sapphire/framework";
 import { Category, MystCommandOptions } from "mystbot";
 import { MystCommand } from "../../lib/structures/MystCommand";
-import UserService from "../../services/UserService";
-import App from "../../App";
-import BotHelpers from "../../utils/BotHelpers";
+import UserService from "../../lib/services/UserService";
+import BotHelpers from "../../lib/utils/BotHelpers";
 
 export type CommandsByCategories = {
   [key in Category]?: string[];

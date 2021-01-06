@@ -1,11 +1,10 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { Event, Events, EventOptions } from "@sapphire/framework";
-import { getDatabase } from "../database/Database";
-import LoggerFactory from "../utils/LoggerFactory";
-import { MystBotClient } from "../MystBotClient";
+import LoggerFactory from "../lib/utils/LoggerFactory";
+import { MystBotClient } from "../lib/MystBotClient";
 import { Guild } from "discord.js";
-import { MessageHelpers } from "../utils/MessageHelpers";
-import GuildService from "../services/GuildService";
+import { MessageHelpers } from "../lib/utils/MessageHelpers";
+import GuildService from "../lib/services/GuildService";
 import { Inject } from "typescript-ioc";
 
 @ApplyOptions<EventOptions>({ once: true })

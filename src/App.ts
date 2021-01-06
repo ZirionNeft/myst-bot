@@ -1,17 +1,17 @@
 import { Container, Scope } from "typescript-ioc";
-import LoggerFactory from "./utils/LoggerFactory";
-import GuildService from "./services/GuildService";
+import LoggerFactory from "./lib/utils/LoggerFactory";
+import GuildService from "./lib/services/GuildService";
 import { config } from "node-config-ts";
-import EventManager from "./logic/EventManager";
+import EventManager from "./lib/structures/EventManager";
 import { LevelUpSubscriber } from "./events/subscribers/LevelUpSubscriber";
 import { BusinessEvent, Subscriber } from "mystbot";
-import LevelingManager from "./logic/LevelingManager";
-import SettingService from "./services/SettingService";
-import { PermissionsManager } from "./logic/PermissionsManager";
-import { MystBotClient } from "./MystBotClient";
-import BotHelpers from "./utils/BotHelpers";
+import LevelingManager from "./lib/structures/LevelingManager";
+import SettingService from "./lib/services/SettingService";
+import { PermissionsManager } from "./lib/structures/PermissionsManager";
+import { MystBotClient } from "./lib/MystBotClient";
+import BotHelpers from "./lib/utils/BotHelpers";
 import { LogLevel } from "@sapphire/framework";
-import { StringHelpers } from "./utils/StringHelpers";
+import { StringHelpers } from "./lib/utils/StringHelpers";
 import { Message } from "discord.js";
 
 export default class App {

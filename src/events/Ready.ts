@@ -1,7 +1,7 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { Event, Events, EventOptions } from "@sapphire/framework";
-import { getDatabase } from "../database/Database";
-import LoggerFactory from "../utils/LoggerFactory";
+import { getDatabase } from "../lib/database/Database";
+import LoggerFactory from "../lib/utils/LoggerFactory";
 import App from "../App";
 
 @ApplyOptions<EventOptions>({ once: true })

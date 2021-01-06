@@ -4,10 +4,10 @@ import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
 import { Args, BucketType } from "@sapphire/framework";
 import { MystCommandOptions } from "mystbot";
-import LoggerFactory from "../../utils/LoggerFactory";
-import { MessageHelpers } from "../../utils/MessageHelpers";
+import LoggerFactory from "../../lib/utils/LoggerFactory";
+import { MessageHelpers } from "../../lib/utils/MessageHelpers";
 import { MystCommand } from "../../lib/structures/MystCommand";
-import EmojiService from "../../services/EmojiService";
+import EmojiService from "../../lib/services/EmojiService";
 import { Embeds } from "discord-paginationembed";
 import { TextChannel } from "discord.js";
 

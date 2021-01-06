@@ -2,12 +2,12 @@ import { Message } from "discord.js";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import { Args, BucketType, Command, UserError } from "@sapphire/framework";
+import { Args, BucketType, UserError } from "@sapphire/framework";
 import { MystCommandOptions } from "mystbot";
-import LoggerFactory from "../../../utils/LoggerFactory";
-import UserService from "../../../services/UserService";
+import LoggerFactory from "../../../lib/utils/LoggerFactory";
+import UserService from "../../../lib/services/UserService";
 import App from "../../../App";
-import { MessageHelpers } from "../../../utils/MessageHelpers";
+import { MessageHelpers } from "../../../lib/utils/MessageHelpers";
 import { MystCommand } from "../../../lib/structures/MystCommand";
 
 const COINS_EMOJI = config.bot.currencyEmoji;

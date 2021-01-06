@@ -6,7 +6,7 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import ChatCleaner from "../logic/ChatCleaner";
+import ChatCleaner from "../structures/ChatCleaner";
 import { config } from "node-config-ts";
 import BotHelpers from "./BotHelpers";
 import { Message } from "discord.js";

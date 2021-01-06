@@ -9,9 +9,9 @@ import {
   SettingValueTypes,
   TSettingName,
 } from "mystbot";
-import LoggerFactory from "../../utils/LoggerFactory";
+import LoggerFactory from "../../lib/utils/LoggerFactory";
 import { MystCommand } from "../../lib/structures/MystCommand";
-import SettingService from "../../services/SettingService";
+import SettingService from "../../lib/services/SettingService";
 
 @ApplyOptions<MystCommandOptions>({
   name: "set",

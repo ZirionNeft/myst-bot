@@ -5,13 +5,13 @@ import { ApplyOptions } from "@sapphire/decorators";
 import { Args, BucketType } from "@sapphire/framework";
 import { MystCommandOptions } from "mystbot";
 import { MystCommand } from "../../lib/structures/MystCommand";
-import UserService from "../../services/UserService";
+import UserService from "../../lib/services/UserService";
 import { FieldsEmbed } from "discord-paginationembed/typings";
-import { UserModel } from "../../database/models";
+import { UserModel } from "../../lib/database/models";
 import { NewsChannel } from "discord.js";
-import { calculateNextLevelXp } from "../../logic/GuildLevelingFactory";
-import LoggerFactory from "../../utils/LoggerFactory";
-import { MessageHelpers } from "../../utils/MessageHelpers";
+import { calculateNextLevelXp } from "../../lib/structures/GuildLevelingFactory";
+import LoggerFactory from "../../lib/utils/LoggerFactory";
+import { MessageHelpers } from "../../lib/utils/MessageHelpers";
 import { TextChannel } from "discord.js";
 
 const EXP_ICON = "https://icon-library.com/images/score-icon/score-icon-21.jpg";

@@ -1,5 +1,5 @@
 import { Container } from "typescript-ioc";
-import EventManager from "../logic/EventManager";
+import EventManager from "../structures/EventManager";
 import { BusinessEvent } from "mystbot";
 
 export function Subscribe(event: BusinessEvent) {

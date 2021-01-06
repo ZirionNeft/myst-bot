@@ -1,9 +1,9 @@
 import { DMChannel } from "discord.js";
 import { Container } from "typescript-ioc";
-import GuildService from "../services/GuildService";
-import LoggerFactory from "../utils/LoggerFactory";
-import type { Message } from 'discord.js';
-import { Precondition, AsyncPreconditionResult } from '@sapphire/framework';
+import GuildService from "../lib/services/GuildService";
+import LoggerFactory from "../lib/utils/LoggerFactory";
+import type { Message } from "discord.js";
+import { Precondition, AsyncPreconditionResult } from "@sapphire/framework";
 
 export class GuildOnly extends Precondition {
   public async run(message: Message): AsyncPreconditionResult {
@@ -19,6 +19,6 @@ export class GuildOnly extends Precondition {
       return this.ok();
     }
 
-    return this.error(this.name, 'You cannot run this command in DMs.');
+    return this.error(this.name, "You cannot run this command in DMs.");
   }
 }

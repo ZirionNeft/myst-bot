@@ -2,8 +2,7 @@ import { Snowflake, TextChannel } from "discord.js";
 import GuildService from "../services/GuildService";
 import { Container } from "typescript-ioc";
 import { config } from "node-config-ts";
-import App from "../App";
-import LoggerFactory from "./LoggerFactory";
+import App from "../../App";
 
 export default class BotHelpers {
   static async getPrefixWithPriority(guildId?: Snowflake | null) {
