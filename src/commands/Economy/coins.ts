@@ -27,19 +27,14 @@ const COINS_EMOJI = config.bot.currencyEmoji;
   ],
   usages: "coins [@member | top | give]",
   category: "Economy",
-  subcommands: [
+  subCommands: [
     {
       name: "give",
-      aliases: ["send", "gift"],
-      description: "Allows you to give some coins to mentioned member",
-      usages: "coins give <@member> <amount>",
-      preconditions: [],
+      command: "coins-give",
     },
     {
       name: "top",
-      aliases: ["board", "leaderboard", "list"],
-      description: "Members top filtered by amount of coins",
-      usages: "coins top",
+      command: "coins-top",
     },
   ],
 })

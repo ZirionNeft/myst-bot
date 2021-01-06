@@ -78,9 +78,9 @@ export default class HelpCommand extends MystCommand {
           true
         );
 
-      const usageList = commandToDisplay.subcommands
-        .map((subcommand) => {
-          const subcommandInstance = commands.get(subcommand);
+      const usageList = commandToDisplay.subCommands
+        .map((subCommand) => {
+          const subcommandInstance = commands.get(subCommand.command ?? "");
           if (subcommandInstance)
             return `\`${prefix}${subcommandInstance.usages}\`\n${subcommandInstance.description}\n`;
           return undefined;
@@ -99,7 +99,7 @@ export default class HelpCommand extends MystCommand {
       );
 
       for (const c of commands.array()) {
-        if ((c as MystCommand).parentName) continue;
+        if ((c as MystCommand).isSubcommand) continue;
 
         !commandsByCategories[c.category] &&
           (commandsByCategories[c.category] = []);

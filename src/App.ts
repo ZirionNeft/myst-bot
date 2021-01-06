@@ -11,8 +11,9 @@ import { PermissionsManager } from "./lib/structures/PermissionsManager";
 import { MystBotClient } from "./lib/MystBotClient";
 import BotHelpers from "./lib/utils/BotHelpers";
 import { LogLevel } from "@sapphire/framework";
-import { StringHelpers } from "./lib/utils/StringHelpers";
 import { Message } from "discord.js";
+
+import "@sapphire/plugin-subcommands/register";
 
 export default class App {
   private static _client: MystBotClient;
@@ -28,12 +29,13 @@ export default class App {
         status: "online",
         activity: { type: "LISTENING", name: `${config.bot.prefix}help` },
       },
+      subCommands: {
+        overlappedPreconditions: ["Cooldown"],
+      },
       logger: {
         instance: LoggerFactory.get(App),
         level:
-          // @ts-ignore
-          LogLevel[StringHelpers.capitalize(LoggerFactory.get(App).level)] ??
-          config.general.debug
+          LoggerFactory.get(App).level ?? config.general.debug
             ? LogLevel.Debug
             : LogLevel.Info,
       },
