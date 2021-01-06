@@ -2,18 +2,30 @@ import { Guild, Message } from "discord.js";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import { Args, BucketType, UserError } from "@sapphire/framework";
 import {
-  MystCommandOptions,
-  SettingName,
-  SettingValueTypes,
-  TSettingName,
-} from "mystbot";
+  Args,
+  BucketType,
+  UserError,
+  CommandOptions,
+} from "@sapphire/framework";
 import LoggerFactory from "../../lib/utils/LoggerFactory";
 import { MystCommand } from "../../lib/structures/MystCommand";
 import SettingService from "../../lib/services/SettingService";
 
-@ApplyOptions<MystCommandOptions>({
+export type TSettingName = keyof typeof SettingName;
+export enum SettingName {
+  "Prefix" = 1,
+  "StaffChannelId",
+  "InfoChannelId",
+}
+
+export enum SettingValueTypes {
+  "Prefix" = "string",
+  "StaffChannelId" = "textChannel",
+  "InfoChannelId" = "textChannel",
+}
+
+@ApplyOptions<CommandOptions>({
   name: "set",
   aliases: ["setting", "config"],
   description: "Guild scoped bot configuration",

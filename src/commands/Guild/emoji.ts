@@ -2,8 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import { Args, BucketType } from "@sapphire/framework";
-import { MystCommandOptions } from "mystbot";
+import { Args, BucketType, CommandOptions } from "@sapphire/framework";
 import LoggerFactory from "../../lib/utils/LoggerFactory";
 import { MessageHelpers } from "../../lib/utils/MessageHelpers";
 import { MystCommand } from "../../lib/structures/MystCommand";
@@ -11,7 +10,7 @@ import EmojiService from "../../lib/services/EmojiService";
 import { Embeds } from "discord-paginationembed";
 import { TextChannel } from "discord.js";
 
-@ApplyOptions<MystCommandOptions>({
+@ApplyOptions<CommandOptions>({
   name: "emoji",
   description: "Shows usages count of every custom emoji on guild",
   preconditions: [

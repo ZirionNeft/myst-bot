@@ -1,6 +1,8 @@
-import { PermissionName } from "mystbot";
 import { Container } from "typescript-ioc";
-import { PermissionsManager } from "../lib/structures/PermissionsManager";
+import {
+  PermissionName,
+  PermissionsManager,
+} from "../lib/structures/PermissionsManager";
 import { MessageHelpers } from "../lib/utils/MessageHelpers";
 import type { Message } from "discord.js";
 import {

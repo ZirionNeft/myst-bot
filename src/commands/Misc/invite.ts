@@ -1,11 +1,10 @@
 import { Message } from "discord.js";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import { Args, BucketType } from "@sapphire/framework";
-import { MystCommandOptions } from "mystbot";
+import { Args, BucketType, CommandOptions } from "@sapphire/framework";
 import { MystCommand } from "../../lib/structures/MystCommand";
 
-@ApplyOptions<MystCommandOptions>({
+@ApplyOptions<CommandOptions>({
   name: "invite",
   description: "Gets bot invite link",
   preconditions: [

@@ -2,11 +2,11 @@ import { Message, MessageEmbed } from "discord.js";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import { Args, BucketType } from "@sapphire/framework";
-import { Category, MystCommandOptions } from "mystbot";
+import { Args, BucketType, CommandOptions } from "@sapphire/framework";
 import { MystCommand } from "../../lib/structures/MystCommand";
 import UserService from "../../lib/services/UserService";
 import BotHelpers from "../../lib/utils/BotHelpers";
+import { Category } from "../../App";
 
 export type CommandsByCategories = {
   [key in Category]?: string[];
@@ -18,7 +18,7 @@ const CATEGORY_ICON: { [P in Category]?: string } = {
   Misc: ":roll_of_paper:",
 };
 
-@ApplyOptions<MystCommandOptions>({
+@ApplyOptions<CommandOptions>({
   name: "help",
   description: "Gets a commands and whole usage info",
   preconditions: [

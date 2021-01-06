@@ -1,14 +1,15 @@
 import P from "pino";
 import { config } from "node-config-ts";
-import { Constructor } from "mystbot";
 import { LogLevel, ILogger } from "@sapphire/framework";
 
 type Logger = P.Logger & ILogger;
 
+type Ctor<T = {}> = new (...args: any[]) => T;
+
 export default class LoggerFactory {
   private static _logger: P.Logger;
 
-  public static get<T extends Constructor>(context: T | Function): Logger {
+  public static get<T extends Ctor>(context: T | Function): Logger {
     let level: string | undefined = config.general.loglevel;
 
     if (level && !P.levels.values[level]) level = undefined;

@@ -2,15 +2,19 @@ import { Message, MessageEmbed } from "discord.js";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import { Args, BucketType, UserError } from "@sapphire/framework";
-import { MystCommandOptions } from "mystbot";
+import {
+  Args,
+  BucketType,
+  UserError,
+  CommandOptions,
+} from "@sapphire/framework";
 import LoggerFactory from "../../lib/utils/LoggerFactory";
 import UserService from "../../lib/services/UserService";
 import { MystCommand } from "../../lib/structures/MystCommand";
 
 const COINS_EMOJI = config.bot.currencyEmoji;
 
-@ApplyOptions<MystCommandOptions>({
+@ApplyOptions<CommandOptions>({
   name: "coins",
   aliases: ["money", "cash"],
   description:

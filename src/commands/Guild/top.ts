@@ -2,11 +2,10 @@ import { Message } from "discord.js";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import { Args, BucketType } from "@sapphire/framework";
-import { MystCommandOptions } from "mystbot";
+import { Args, BucketType, CommandOptions } from "@sapphire/framework";
 import { MystCommand } from "../../lib/structures/MystCommand";
 import UserService from "../../lib/services/UserService";
-import { FieldsEmbed } from "discord-paginationembed/typings";
+import { FieldsEmbed } from "discord-paginationembed";
 import { UserModel } from "../../lib/database/models";
 import { NewsChannel } from "discord.js";
 import { calculateNextLevelXp } from "../../lib/structures/GuildLevelingFactory";
@@ -16,7 +15,7 @@ import { TextChannel } from "discord.js";
 
 const EXP_ICON = "https://icon-library.com/images/score-icon/score-icon-21.jpg";
 
-@ApplyOptions<MystCommandOptions>({
+@ApplyOptions<CommandOptions>({
   name: "top",
   aliases: ["leaderboard", "lb"],
   description: "Guild leaderboard by levels and experience",

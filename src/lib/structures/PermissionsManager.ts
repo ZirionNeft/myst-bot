@@ -1,10 +1,11 @@
 import { Inject, OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import PermissionService from "../services/PermissionService";
 import { Guild, Snowflake, User } from "discord.js";
-import { PermissionName } from "mystbot";
 import LoggerFactory from "../utils/LoggerFactory";
 
 type SpecifiedPermsStatus = { [K in Partial<PermissionName>]?: boolean };
+
+export type PermissionName = "ChangeSettings";
 
 @Singleton
 @OnlyInstantiableByContainer

@@ -1,8 +1,8 @@
-import { Emoji } from "mystbot";
 import { Snowflake } from "discord.js";
+import { EmojiCounterDTO } from "../../events/Message";
 
 export abstract class StringHelpers {
-  static getEmojiDataFromString(s: string): Emoji | undefined {
+  static getEmojiDataFromString(s: string): EmojiCounterDTO | undefined {
     if (!s) return undefined;
 
     if (s.startsWith("<") && s.endsWith(">")) {

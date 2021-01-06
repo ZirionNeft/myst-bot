@@ -1,11 +1,10 @@
-import GuildLevelingFactory from "./GuildLevelingFactory";
+import GuildLevelingFactory, { ExperienceDTO } from "./GuildLevelingFactory";
 import {
   Container,
   OnlyInstantiableByContainer,
   Singleton,
 } from "typescript-ioc";
 import { Message, Snowflake } from "discord.js";
-import { ExperienceDTO } from "mystbot";
 
 @Singleton
 @OnlyInstantiableByContainer

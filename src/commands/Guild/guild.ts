@@ -2,15 +2,14 @@ import { Message, MessageEmbed } from "discord.js";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import { Args, BucketType, Command } from "@sapphire/framework";
-import { MystCommandOptions } from "mystbot";
+import { Args, BucketType, Command, CommandOptions } from "@sapphire/framework";
 import UserService from "../../lib/services/UserService";
 import { MystCommand } from "../../lib/structures/MystCommand";
 import { StringHelpers } from "../../lib/utils/StringHelpers";
 
 export interface IGuildCommand extends Command {}
 
-@ApplyOptions<MystCommandOptions>({
+@ApplyOptions<CommandOptions>({
   name: "guild",
   aliases: ["server"],
   description: "Information about guild",

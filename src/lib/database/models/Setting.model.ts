@@ -1,7 +1,7 @@
 import { DataTypes, ModelCtor, Optional, Sequelize } from "sequelize";
 import { Snowflake } from "discord.js";
 import { BaseModel } from "../BaseModel";
-import { TSettingName } from "mystbot";
+import { TSettingName } from "../../../commands/Admin/set";
 
 export interface SettingAttributes {
   id: number;

@@ -1,6 +1,7 @@
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { EventEmitter } from "events";
-import { BusinessEvent, BusinessEventArgs } from "mystbot";
+import { Snowflake } from "discord.js";
+import { ExperienceDTO } from "./GuildLevelingFactory";
 
 @Singleton
 @OnlyInstantiableByContainer
@@ -22,3 +23,17 @@ export default class EventManager {
     this._eventEmitter.emit(event, args);
   }
 }
+
+export interface Subscriber<T extends BusinessEvent> {
+  handle(args: BusinessEventArgs<T>);
+}
+
+type UserId = Snowflake;
+type GuildId = Snowflake;
+interface BusinessEvents {
+  levelUp: [UserId, GuildId, ExperienceDTO];
+}
+
+export type BusinessEvent = keyof BusinessEvents;
+
+export type BusinessEventArgs<K extends BusinessEvent> = BusinessEvents[K];

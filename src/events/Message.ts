@@ -3,11 +3,16 @@ import { Event, EventOptions, Events } from "@sapphire/framework";
 import LoggerFactory from "../lib/utils/LoggerFactory";
 import { MystBotClient } from "../lib/MystBotClient";
 import { StringHelpers } from "../lib/utils/StringHelpers";
-import { Emoji } from "mystbot";
-import { Message } from "discord.js";
+import { Message, Snowflake } from "discord.js";
 import EmojiCountManager from "../lib/structures/EmojiCountManager";
 import { Inject } from "typescript-ioc";
 import LevelingManager from "../lib/structures/LevelingManager";
+
+export interface EmojiCounterDTO {
+  name: string;
+  id: Snowflake;
+  animated?: boolean;
+}
 
 @ApplyOptions<EventOptions>({ once: true })
 export class UserEvent extends Event<Events.Message> {
@@ -23,9 +28,10 @@ export class UserEvent extends Event<Events.Message> {
     this._handleLeveling(message);
   }
 
+  // TODO: move to another structure
   private _handleEmojis(message: Message) {
     const emojis = (message.content.match(/<a:.+?:\d+>|<:.+?:\d+>/g) || []).map(
-      (e) => StringHelpers.getEmojiDataFromString(e) as Emoji
+      (e) => StringHelpers.getEmojiDataFromString(e) as EmojiCounterDTO
     );
 
     try {
@@ -49,6 +55,7 @@ export class UserEvent extends Event<Events.Message> {
     }
   }
 
+  // TODO: move to another structure
   private _handleLeveling(message: Message) {
     try {
       if (message.guild?.id && !message.author.bot) {

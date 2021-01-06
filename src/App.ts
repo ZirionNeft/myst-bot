@@ -2,9 +2,11 @@ import { Container, Scope } from "typescript-ioc";
 import LoggerFactory from "./lib/utils/LoggerFactory";
 import GuildService from "./lib/services/GuildService";
 import { config } from "node-config-ts";
-import EventManager from "./lib/structures/EventManager";
-import { LevelUpSubscriber } from "./events/subscribers/LevelUpSubscriber";
-import { BusinessEvent, Subscriber } from "mystbot";
+import EventManager, {
+  BusinessEvent,
+  Subscriber,
+} from "./lib/structures/EventManager";
+import { LevelUpSubscriber } from "./lib/subscribers/LevelUpSubscriber";
 import LevelingManager from "./lib/structures/LevelingManager";
 import SettingService from "./lib/services/SettingService";
 import { PermissionsManager } from "./lib/structures/PermissionsManager";
@@ -13,6 +15,7 @@ import BotHelpers from "./lib/utils/BotHelpers";
 import { LogLevel } from "@sapphire/framework";
 import { Message } from "discord.js";
 
+// *** SAPPHIRE PLUGINS ***
 import "@sapphire/plugin-subcommands/register";
 
 export default class App {
@@ -84,7 +87,7 @@ export default class App {
     subscribers: { new (): Subscriber<BusinessEvent> }[]
   ) {
     try {
-      for (let subscriberClass of subscribers) {
+      for (const subscriberClass of subscribers) {
         Container.bind(subscriberClass).to(App).scope(Scope.Singleton);
       }
     } catch (e) {
@@ -94,11 +97,13 @@ export default class App {
   }
 
   private static processExit() {
-    const eventManager = Container.get(LevelingManager);
+    const levelingManager = Container.get(LevelingManager);
 
-    eventManager.flushAll().then(() => {
-      LoggerFactory.get(App).info("Experience was flushed!");
+    levelingManager.flushAll().then(() => {
+      LoggerFactory.get(App).info("Experience buffer was flushed!");
       process.exit();
     });
   }
 }
+
+export type Category = "Economy" | "Guild" | "Misc" | "Admin" | "General";

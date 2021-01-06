@@ -2,7 +2,7 @@ import { DataTypes, ModelCtor, Optional, Sequelize } from "sequelize";
 import { Snowflake } from "discord.js";
 import { BaseModel } from "../BaseModel";
 import { GuildModel } from "./index";
-import { PermissionName } from "mystbot";
+import { PermissionName } from "../../structures/PermissionsManager";
 
 export interface PermissionAttributes {
   id: number;

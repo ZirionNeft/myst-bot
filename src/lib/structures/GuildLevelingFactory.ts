@@ -5,10 +5,11 @@ import LoggerFactory from "../utils/LoggerFactory";
 import { UserCreationAttributes } from "../database/models/User.model";
 import GuildService from "../services/GuildService";
 import EventManager from "./EventManager";
-import { Experience, ExperienceBufferKey, ExperienceDTO, Level } from "mystbot";
 import Timeout = NodeJS.Timeout;
 
 const FLUSH_INTERVAL = 30000;
+
+export type ExperienceBufferKey = Snowflake;
 
 export function calculateNextLevelXp(level: Level): Experience {
   const exponent = 1.5;
@@ -16,9 +17,16 @@ export function calculateNextLevelXp(level: Level): Experience {
   return Math.floor(baseXP * Math.pow(level, exponent));
 }
 
+// TODO: refactor interfaces names
 interface IExtendedExpDTO extends ExperienceDTO {
   nextLevelExp: Experience;
 }
+export interface ExperienceDTO {
+  experience: Experience;
+  level: Level;
+}
+type Experience = number;
+type Level = number;
 
 @Factory(() => new GuildLevelingFactory())
 @OnlyInstantiableByContainer

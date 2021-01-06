@@ -1,6 +1,5 @@
 import { Container } from "typescript-ioc";
-import EventManager from "../structures/EventManager";
-import { BusinessEvent } from "mystbot";
+import EventManager, { BusinessEvent } from "../structures/EventManager";
 
 export function Subscribe(event: BusinessEvent) {
   const eventManager = Container.get(EventManager);

@@ -2,20 +2,18 @@ import { Guild, Message, NewsChannel } from "discord.js";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import { Args } from "@sapphire/framework";
-import { MystCommandOptions } from "mystbot";
+import { Args, CommandOptions } from "@sapphire/framework";
 import LoggerFactory from "../../../lib/utils/LoggerFactory";
 import UserService from "../../../lib/services/UserService";
 import { MessageHelpers } from "../../../lib/utils/MessageHelpers";
 import { MystCommand } from "../../../lib/structures/MystCommand";
 import { UserModel } from "../../../lib/database/models";
-import { FieldsEmbed } from "discord-paginationembed/typings";
+import { FieldsEmbed } from "discord-paginationembed";
 
 const COINS_TOP = config.bot.commands.coins.topIcon;
 
-@ApplyOptions<MystCommandOptions>({
+@ApplyOptions<CommandOptions>({
   name: "top",
-  aliases: ["board", "leaderboard", "list"],
   description: "Members top filtered by amount of coins",
   usages: "coins top",
   category: "Economy",
