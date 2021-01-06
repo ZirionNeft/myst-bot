@@ -903,10 +903,10 @@
   dependencies:
     twemoji-parser "^13.0.0"
 
-"@sapphire/framework@^1.0.0-alpha.1":
-  version "1.0.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@sapphire/framework/-/framework-1.0.0-alpha.1.tgz#c6f85860151e0999f700cf58095c7c5efcd3783e"
-  integrity sha512-sI8x51qyxqLwEINeGWwg53/dZsGV63SQfr8aImgwnTfu7doZavrLUrrLSTfkDkk7EVvZLdhczRJLQ/Fs+ZztZw==
+"@sapphire/framework@^1.0.0-alpha.2":
+  version "1.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@sapphire/framework/-/framework-1.0.0-alpha.2.tgz#f9af0da4b0b4eb6771fac9af7af813f0cc84586d"
+  integrity sha512-HpCP2X11yhwQ51tyH504oWAwEYDan532YS7svTogKl5HVbCqrwJFTLT/Nrd3fO15lmB8e3+sgQklHLE9nooNbg==
   dependencies:
     "@sapphire/discord-utilities" "^1.0.3"
     "@sapphire/pieces" "^1.0.1"
