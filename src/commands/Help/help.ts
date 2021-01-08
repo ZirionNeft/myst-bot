@@ -91,7 +91,7 @@ export default class HelpCommand extends MystCommand {
         messageEmbed.addField(":small_orange_diamond: Usages list", usageList);
     } else {
       const commandsByCategories: CommandsByCategories = {};
-      const prefix = message.client.fetchPrefix(message);
+      const prefix = await message.client.fetchPrefix(message);
 
       messageEmbed.setDescription(
         `Use \`${prefix}help [command]\` to get more help about some command!
