@@ -5,7 +5,13 @@
     "supportGuild": "CV5jh5g",
     "commandCoolDown": 2500,
     "allowBotMentionInCommands": false,
-    "token": ""
+    "token": "",
+    "currencyEmoji": "<:coin:742364602662125648>",
+    "commands": {
+      "coins": {
+        "topIcon": "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png"
+      }
+    }
   },
   "general": {
     "debug": false,
