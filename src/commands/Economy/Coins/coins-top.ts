@@ -17,7 +17,7 @@ const COINS_TOP = config.bot.commands.coins.topIcon;
   usages: "coins top",
   category: "Economy",
 })
-export default class CoinsTopSubcommand extends MystCommand {
+export class CoinsTopSubcommand extends MystCommand {
   @Inject
   private userService!: UserService;
 
@@ -71,7 +71,7 @@ export default class CoinsTopSubcommand extends MystCommand {
         })
         .build();
     } catch (e) {
-      LoggerFactory.get(CoinsTopSubcommand).error(e.message);
+      LoggerFactory.get(CoinsTopSubcommand).error(e);
     }
   }
 }

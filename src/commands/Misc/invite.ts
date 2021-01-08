@@ -19,7 +19,7 @@ import { MystCommand } from "../../lib/structures/MystCommand";
   usages: "invite",
   category: "Misc",
 })
-export default class InviteCommand extends MystCommand {
+export class InviteCommand extends MystCommand {
   public async run(message: Message, args: Args) {
     const inviteLink = `https://bit.ly/30OEi8G`;
     return await message.channel.send(

@@ -26,7 +26,7 @@ import { TextChannel } from "discord.js";
   usages: "emoji",
   category: "Guild",
 })
-export default class EmojiCommand extends MystCommand {
+export class EmojiCommand extends MystCommand {
   @Inject
   private _emojiService!: EmojiService;
 

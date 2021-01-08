@@ -31,7 +31,7 @@ const COINS_EMOJI = config.bot.currencyEmoji;
   ],
   category: "Economy",
 })
-export default class CoinsGiveSubcommand extends MystCommand {
+export class CoinsGiveSubcommand extends MystCommand {
   @Inject
   private userService!: UserService;
 

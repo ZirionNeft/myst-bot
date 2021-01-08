@@ -33,7 +33,7 @@ const CATEGORY_ICON: { [P in Category]?: string } = {
   usages: "help [command]",
   category: "Misc",
 })
-export default class HelpCommand extends MystCommand {
+export class HelpCommand extends MystCommand {
   @Inject
   private _userService!: UserService;
 

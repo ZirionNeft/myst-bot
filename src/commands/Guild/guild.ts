@@ -26,7 +26,7 @@ export interface IGuildCommand extends Command {}
   usages: "guild",
   category: "Guild",
 })
-export default class GuildCommand extends MystCommand implements IGuildCommand {
+export class GuildCommand extends MystCommand implements IGuildCommand {
   @Inject
   private userService!: UserService;
 

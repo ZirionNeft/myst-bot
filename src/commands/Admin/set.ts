@@ -48,7 +48,7 @@ export enum SettingValueTypes {
   usages: "set <setting_name> <setting_value>",
   category: "Admin",
 })
-export default class SetCommand extends MystCommand {
+export class SetCommand extends MystCommand {
   @Inject
   private _settingService!: SettingService;
 

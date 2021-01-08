@@ -32,7 +32,7 @@ const EXP_ICON = "https://icon-library.com/images/score-icon/score-icon-21.jpg";
   usages: "top",
   category: "Guild",
 })
-export default class TopCommand extends MystCommand {
+export class TopCommand extends MystCommand {
   @Inject
   private _userService!: UserService;
 
