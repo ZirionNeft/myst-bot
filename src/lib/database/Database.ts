@@ -6,6 +6,14 @@ import { config } from "node-config-ts";
 
 export type TDatabase = Database;
 
+export const sequelizeLogging = (sql, t) =>
+  config.general.debug
+    ? LoggerFactory.get(Database).trace(
+        sql,
+        typeof t === "number" ? `Elapsed time: ${t}ms` : ""
+      )
+    : false;
+
 class Database {
   public readonly _modelConstructors = Models.load();
 
@@ -58,11 +66,3 @@ export const getDatabase = async () => {
 
   return database;
 };
-
-export const sequelizeLogging = (sql, t) =>
-  config.general.debug
-    ? LoggerFactory.get(Database).trace(
-        sql,
-        typeof t === "number" ? `Elapsed time: ${t}ms` : ""
-      )
-    : false;

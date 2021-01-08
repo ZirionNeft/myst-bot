@@ -2,12 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { Inject } from "typescript-ioc";
 import { config } from "node-config-ts";
 import { ApplyOptions } from "@sapphire/decorators";
-import {
-  Args,
-  BucketType,
-  UserError,
-  CommandOptions,
-} from "@sapphire/framework";
+import { Args, BucketType, CommandOptions } from "@sapphire/framework";
 import LoggerFactory from "../../lib/utils/LoggerFactory";
 import UserService from "../../lib/services/UserService";
 import { MystCommand } from "../../lib/structures/MystCommand";
@@ -48,11 +43,6 @@ export default class CoinsCommand extends MystCommand {
 
   public async run(message: Message, args: Args) {
     const target = await args.pickResult("member");
-    if (!target.success)
-      throw new UserError(
-        "CoinsArgumentError",
-        "You must specify a member, and it did not match."
-      );
 
     const messageEmbed = new MessageEmbed();
     const author = message.author;
@@ -72,9 +62,7 @@ export default class CoinsCommand extends MystCommand {
           `${guildMember?.displayName ?? author.username}'s currency info`,
           guildMember?.user.avatarURL() || author?.avatarURL() || undefined
         )
-        .setDescription(
-          `__Coins:__ ${memberModelInstance.coins} ${COINS_EMOJI}`
-        )
+        .setDescription(`Coins: ${memberModelInstance.coins} ${COINS_EMOJI}`)
         .setColor("YELLOW");
 
       return await message.channel.send({ embed: messageEmbed });

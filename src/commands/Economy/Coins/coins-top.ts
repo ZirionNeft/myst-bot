@@ -13,7 +13,6 @@ import { FieldsEmbed } from "discord-paginationembed";
 const COINS_TOP = config.bot.commands.coins.topIcon;
 
 @ApplyOptions<CommandOptions>({
-  name: "top",
   description: "Members top filtered by amount of coins",
   usages: "coins top",
   category: "Economy",

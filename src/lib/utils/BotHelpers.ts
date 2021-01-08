@@ -3,15 +3,21 @@ import GuildService from "../services/GuildService";
 import { Container } from "typescript-ioc";
 import { config } from "node-config-ts";
 import App from "../../App";
+import LoggerFactory from "./LoggerFactory";
 
 export default class BotHelpers {
   static async getPrefixWithPriority(guildId?: Snowflake | null) {
-    const guildService: GuildService = Container.get(GuildService);
-    return (
-      (guildId ? await guildService.findOne(guildId) : undefined)?.prefix ??
-      config.bot.prefix ??
-      "m!"
-    );
+    const prefixResolved = config.bot.prefix ?? "m!";
+    try {
+      const guildService: GuildService = Container.get(GuildService);
+      return (
+        (guildId ? await guildService.findOne(guildId) : undefined)?.prefix ??
+        prefixResolved
+      );
+    } catch (e) {
+      LoggerFactory.get(BotHelpers).error(e);
+      return prefixResolved;
+    }
   }
 
   static async getGuildInfoChannel(

@@ -17,6 +17,7 @@ import { Message } from "discord.js";
 
 // *** SAPPHIRE PLUGINS ***
 import "@sapphire/plugin-subcommands/register";
+import { getDatabase } from "./lib/database/Database";
 
 export default class App {
   private static _client: MystBotClient;
@@ -66,9 +67,11 @@ export default class App {
     );
 
     try {
+      this.Client.database = await getDatabase();
       await this._client.login(config.bot.token ?? "");
+      LoggerFactory.get(App).info(">>> Bot successfully started up!");
     } catch (e) {
-      LoggerFactory.get(App).error("Login failed!");
+      LoggerFactory.get(App).error(e);
     }
 
     process.on("SIGINT", this.processExit);

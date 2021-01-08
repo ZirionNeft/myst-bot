@@ -17,7 +17,6 @@ import { MystCommand } from "../../../lib/structures/MystCommand";
 const COINS_EMOJI = config.bot.currencyEmoji;
 
 @ApplyOptions<CommandOptions>({
-  name: "give",
   description: "Allows you to give some coins to mentioned member",
   usages: "coins give <@member> <amount>",
   preconditions: [

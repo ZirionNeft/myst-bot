@@ -35,8 +35,7 @@ export default class LoggerFactory {
       write: {
         value: (level: LogLevel, ...values: readonly unknown[]) => {
           const [firstArg, ...other] = values;
-          // @ts-ignore
-          child[LogLevel[level]]((firstArg as string) ?? "", ...other);
+          child[level]((firstArg as string) ?? "", ...other);
         },
       },
     });
