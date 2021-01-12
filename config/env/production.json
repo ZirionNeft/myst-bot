@@ -1,0 +1,14 @@
+{
+  "bot": {
+    "token": "@@DISCORD_TOKEN"
+  },
+  "general": {
+    "debug": "@@DEBUG"
+  },
+  "database": {
+    "host": "@@DB_HOST",
+    "username": "@@DB_USER",
+    "password": "@@DB_PASS",
+    "database": "@@DB_DATABASE"
+  }
+}

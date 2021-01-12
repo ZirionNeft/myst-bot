@@ -1,0 +1,18 @@
+{
+  "bot": {
+    "commandCoolDown": 1000,
+    "prefix": "!",
+    "allowBotMentionInCommands": true,
+    "token": "@@DISCORD_TOKEN"
+  },
+  "general": {
+    "debug": true,
+    "loglevel": "trace"
+  },
+  "database": {
+    "host": "@@DB_HOST",
+    "username": "@@DB_USER",
+    "password": "@@DB_PASS",
+    "database": "@@DB_DATABASE"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "bot": {
+    "name": "Myst",
+    "prefix": "m!",
+    "supportGuild": "CV5jh5g",
+    "commandCoolDown": 2500,
+    "allowBotMentionInCommands": false,
+    "token": "",
+    "currencyEmoji": "<:coin:742364602662125648>",
+    "commands": {
+      "coins": {
+        "topIcon": "https://cdn4.iconfinder.com/data/icons/popular-3/512/best-512.png"
+      }
+    }
+  },
+  "general": {
+    "debug": false,
+    "loglevel": "error"
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "username": "default_user",
+    "password": "default_pass",
+    "database": "default_db",
+    "dialect": "postgres",
+    "sync": {
+      "force": false,
+      "logging": false,
+      "alter": false
+    },
+    "define": {
+      "paranoid": false,
+      "timestamps": true,
+      "underscored": false,
+      "freezeTableName": true,
+      "createdAt": "createdAt",
+      "updatedAt": "updatedAt",
+      "deletedAt": "deletedAt",
+      "charset": "utf8",
+      "schema": "public"
+    },
+    "timezone": "UTC"
+  }
+}
