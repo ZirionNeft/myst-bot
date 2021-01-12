@@ -1,10 +1,10 @@
 import dts from "rollup-plugin-dts";
 
 export default {
-	input: "../index.d.ts",
+	input: "../Myst.d.ts",
 	output: [
 		{
-			file: "./../index.d.ts",
+			file: "./../Myst.d.ts",
 			format: "es",
 		},
 	],

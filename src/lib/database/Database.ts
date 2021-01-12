@@ -53,7 +53,7 @@ class Database {
 			// do not sync otherwise current data in database will be emptied out (Dropping all tables and recreating them)
 			// return await this._sequelize.sync();
 		} catch (e) {
-			LoggerFactory.get(Database).fatal("Database init error!\n", e);
+			LoggerFactory.get(Database).fatal(e);
 			process.exit(1);
 		}
 	}

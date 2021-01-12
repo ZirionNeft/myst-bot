@@ -1,6 +1,5 @@
 import { DataTypes, QueryInterface } from "sequelize";
-import { GuildModel } from "../models";
-import PermissionModel from "../models/Permission.model";
+import { GuildModel, PermissionModel } from "../models";
 
 export async function up(query: QueryInterface) {
 	try {
