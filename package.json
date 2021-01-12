@@ -8,8 +8,8 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint src tests scripts --ext ts --fix",
-    "format": "prettier --write {src,tests,scripts}/**/*.ts",
+    "lint": "eslint src config --ext ts --fix",
+    "format": "prettier --write {src,tests,scripts,config}/**/*.ts",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'babel-node' ./dist/index.js",
     "start": "node ./dist/index.js",
     "build:cleanup": "node scripts/clean-up.mjs",
@@ -38,12 +38,12 @@
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "node-cache": "^5.1.2",
-    "node-config-ts": "^3.0.4",
+    "node-config-ts": "^3.1.0",
     "pg": "^8.3.0",
     "pg-hstore": "^2.3.3",
     "pino": "^6.5.1",
     "pino-pretty": "^4.1.0",
-    "sequelize": "^6.3.1",
+    "sequelize": "^6.3.5",
     "typescript-ioc": "^3.2.2"
   },
   "devDependencies": {

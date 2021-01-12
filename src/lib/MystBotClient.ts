@@ -1,30 +1,30 @@
-import { TDatabase } from "./database/Database";
+import type { TDatabase } from "./database/Database";
 import { SapphireClient } from "@sapphire/framework";
-import { Category } from "../App";
+
+export type Category = "Economy" | "Guild" | "Misc" | "Admin" | "General";
 
 export class MystBotClient extends SapphireClient {
-  // Initialises in events/Ready
-  private _database!: TDatabase;
+	private Database!: TDatabase;
 
-  get database() {
-    return this._database;
-  }
+	public get database(): TDatabase {
+		return this.Database;
+	}
 
-  set database(database) {
-    this._database = database;
-  }
+	public set database(database) {
+		this.Database = database;
+	}
 }
 
 declare module "@sapphire/framework" {
-  export interface CommandOptions {
-    /**
-     * Is how to use this command, for example: !cmd <@member> [number]
-     * @default ''
-     */
-    usages?: string;
-    /**
-     * The command category
-     */
-    category?: Category;
-  }
+	export interface CommandOptions {
+		/**
+		 * Is how to use this command, for example: !cmd <@member> [number]
+		 * @default ''
+		 */
+		usages?: string;
+		/**
+		 * The command category
+		 */
+		category?: Category;
+	}
 }

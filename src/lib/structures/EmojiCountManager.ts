@@ -1,98 +1,102 @@
 import { Inject, OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
-import { Snowflake } from "discord.js";
+import type { Snowflake } from "discord.js";
 import EmojiService from "../services/EmojiService";
-import { EmojiCreationAttributes } from "../database/models/Emoji.model";
+import type { EmojiCreationAttributes } from "../database/models";
 import LoggerFactory from "../utils/LoggerFactory";
 import Timeout = NodeJS.Timeout;
 
 const LOAD_INTERVAL = 15000;
 
 export interface EmojiDTO {
-  guildId: Snowflake;
-  emojiId: Snowflake;
-  name: string;
+	guildId: Snowflake;
+	emojiId: Snowflake;
+	name: string;
 }
 
 export interface Counter {
-  count: number;
+	count: number;
 }
 
 export type FullEmojiDTO = EmojiDTO & Counter;
 
+// TODO: Too messy. Create abstract 'Manager'(or similar) class
+
 @Singleton
 @OnlyInstantiableByContainer
 export default class EmojiCountManager {
-  @Inject
-  private _emojiService!: EmojiService;
+	@Inject
+	private emojiService!: EmojiService;
 
-  private _emojiAccumulator: Map<Snowflake, FullEmojiDTO>;
+	private emojiAccumulator: Map<Snowflake, FullEmojiDTO>;
 
-  private _interval: Timeout | null;
+	private interval: Timeout | null;
 
-  constructor() {
-    this._emojiAccumulator = new Map();
-    this._interval = null;
-  }
+	public constructor() {
+		this.emojiAccumulator = new Map();
+		this.interval = null;
+	}
 
-  async add(...emojis: EmojiDTO[]) {
-    let oldData: FullEmojiDTO | undefined;
-    let counter = 0;
+	public add(...emojis: EmojiDTO[]) {
+		let oldData: FullEmojiDTO | undefined = undefined;
+		let counter = 0;
 
-    for (let emoji of emojis) {
-      if (!emoji) continue;
-      if (this._emojiAccumulator.has(emoji.emojiId)) {
-        oldData = this._emojiAccumulator.get(emoji.emojiId);
-      }
+		for (const emoji of emojis) {
+			if (!emoji) continue;
+			if (this.emojiAccumulator.has(emoji.emojiId)) {
+				oldData = this.emojiAccumulator.get(emoji.emojiId);
+			}
 
-      this._emojiAccumulator.set(emoji.emojiId, {
-        ...emoji,
-        count: (oldData?.count ?? 0) + 1,
-      });
-      counter++;
-    }
-    if (!this._interval) {
-      this._interval = setInterval(
-        this._loadDataToDB.bind(this),
-        LOAD_INTERVAL
-      );
-    }
+			this.emojiAccumulator.set(emoji.emojiId, {
+				...emoji,
+				count: (oldData?.count ?? 0) + 1,
+			});
+			counter++;
+		}
+		if (!this.interval) {
+			this.interval = setInterval(
+				this.loadDataToDB.bind(this),
+				LOAD_INTERVAL
+			);
+		}
 
-    return counter;
-  }
+		return counter;
+	}
 
-  private async _loadDataToDB() {
-    try {
-      const size = this._emojiAccumulator.size;
+	private async loadDataToDB() {
+		try {
+			const { size } = this.emojiAccumulator;
 
-      if (size) {
-        const emojiEntities = Array.from(this._emojiAccumulator.values()).map(
-          (v) =>
-            ({
-              counter: v.count,
-              guildId: v.guildId,
-              emojiId: v.emojiId,
-              name: v.name,
-            } as EmojiCreationAttributes)
-        );
-        await this._emojiService.bulkUpdateOrCreate(...emojiEntities);
+			if (size) {
+				const emojiEntities = Array.from(
+					this.emojiAccumulator.values()
+				).map(
+					(v) =>
+						({
+							counter: v.count,
+							guildId: v.guildId,
+							emojiId: v.emojiId,
+							name: v.name,
+						} as EmojiCreationAttributes)
+				);
+				await this.emojiService.bulkUpdateOrCreate(...emojiEntities);
 
-        LoggerFactory.get(EmojiCountManager).debug(
-          `Emojis sent to Database: %d`,
-          size
-        );
+				LoggerFactory.get(EmojiCountManager).debug(
+					`Emojis sent to Database: %d`,
+					size
+				);
 
-        this._clear();
-      }
-    } catch (e) {
-      LoggerFactory.get(EmojiCountManager).error(e);
-      this._clear();
-    }
-  }
+				this.clear();
+			}
+		} catch (e) {
+			LoggerFactory.get(EmojiCountManager).error(e);
+			this.clear();
+		}
+	}
 
-  private _clear() {
-    this._emojiAccumulator.clear();
-    LoggerFactory.get(EmojiCountManager).debug(
-      "Emojis accumulator has been cleaned!"
-    );
-  }
+	private clear() {
+		this.emojiAccumulator.clear();
+		LoggerFactory.get(EmojiCountManager).debug(
+			"Emojis accumulator has been cleaned!"
+		);
+	}
 }

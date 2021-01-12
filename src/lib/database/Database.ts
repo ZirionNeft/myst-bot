@@ -6,63 +6,66 @@ import { config } from "node-config-ts";
 
 export type TDatabase = Database;
 
-export const sequelizeLogging = (sql, t) =>
-  config.general.debug
-    ? LoggerFactory.get(Database).trace(
-        sql,
-        typeof t === "number" ? `Elapsed time: ${t}ms` : ""
-      )
-    : false;
+export const sequelizeLogging = (sql: string, t?: number) =>
+	config.general.debug
+		? // eslint-disable-next-line @typescript-eslint/no-use-before-define
+		  LoggerFactory.get(Database).trace(
+				sql,
+				typeof t === "number" ? `Elapsed time: ${t}ms` : ""
+		  )
+		: false;
 
 class Database {
-  public readonly _modelConstructors = Models.load();
+	public readonly _modelConstructors = Models.load();
 
-  private readonly _sequelize: Sequelize;
+	private readonly _sequelize: Sequelize;
 
-  constructor() {
-    this._sequelize = new Sequelize({
-      ...config.database,
-      logging: sequelizeLogging,
-    } as Options);
+	public constructor() {
+		this._sequelize = new Sequelize({
+			...config.database,
+			logging: sequelizeLogging,
+		} as Options);
 
-    // init every model
-    Object.keys(this._modelConstructors).forEach((modelName) => {
-      this._modelConstructors[modelName].prepareInit(this._sequelize);
-    });
+		// init every model
+		Object.keys(this._modelConstructors).forEach((modelName) => {
+			this._modelConstructors[modelName].prepareInit(this._sequelize);
+		});
 
-    // call (create) associations for each model
-    Object.keys(this._modelConstructors).forEach((modelName) => {
-      this._modelConstructors[modelName].setAssociations(
-        this._modelConstructors
-      );
-    });
+		// call (create) associations for each model
+		Object.keys(this._modelConstructors).forEach((modelName) => {
+			this._modelConstructors[modelName].setAssociations(
+				this._modelConstructors
+			);
+		});
 
-    // create hooks for each model
-    Object.keys(this._modelConstructors).forEach((modelName) => {
-      this._modelConstructors[modelName].setHooks(this._modelConstructors);
-    });
-  }
+		// create hooks for each model
+		Object.keys(this._modelConstructors).forEach((modelName) => {
+			this._modelConstructors[modelName].setHooks(
+				this._modelConstructors
+			);
+		});
+	}
 
-  public async prepare() {
-    try {
-      // return await to catch error if thrown
-      return await this._sequelize.authenticate();
-      // do not sync otherwise current data in database will be emptied out (Dropping all tables and recreating them)
-      // return await this._sequelize.sync();
-    } catch (e) {
-      LoggerFactory.get(Database).fatal("Database init error!\n", e);
-      process.exit(1);
-    }
-  }
+	public async prepare() {
+		try {
+			// return await to catch error if thrown
+			return await this._sequelize.authenticate();
+			// do not sync otherwise current data in database will be emptied out (Dropping all tables and recreating them)
+			// return await this._sequelize.sync();
+		} catch (e) {
+			LoggerFactory.get(Database).fatal("Database init error!\n", e);
+			process.exit(1);
+		}
+	}
 
-  get sequelize(): Sequelize {
-    return this._sequelize;
-  }
+	public get sequelize(): Sequelize {
+		return this._sequelize;
+	}
 }
 
 export const getDatabase = async () => {
-  const database = new Database();
-  await database.prepare();
+	const database = new Database();
+	await database.prepare();
 
-  return database;
+	return database;
 };

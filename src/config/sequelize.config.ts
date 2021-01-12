@@ -5,11 +5,11 @@
 
 import { config } from "node-config-ts";
 import { sequelizeLogging } from "../lib/database/Database";
-import { bindEnvVars } from "../index";
+import { bindEnvVars } from "../Myst";
 
 bindEnvVars(config);
 
 module.exports = {
-  development: { ...config.database, logging: sequelizeLogging },
-  production: { ...config.database, logging: sequelizeLogging },
+	development: { ...config.database, logging: sequelizeLogging },
+	production: { ...config.database, logging: sequelizeLogging },
 };

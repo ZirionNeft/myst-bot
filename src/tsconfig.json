@@ -7,5 +7,5 @@
     "preserveConstEnums": true,
     "useDefineForClassFields": false
   },
-  "include": ["."]
+  "include": [".", "../config"]
 }

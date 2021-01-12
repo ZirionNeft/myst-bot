@@ -1,163 +1,156 @@
-import { Snowflake } from "discord.js";
+import type { Snowflake } from "discord.js";
 import { Cacheable, CacheClear } from "@type-cacheable/core";
-import UserModel, {
-  UserAttributes,
-  UserCreationAttributes,
-} from "../database/models/User.model";
+import { UserCreationAttributes, UserModel } from "../database/models";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Op, Transaction } from "sequelize";
 
 export interface IUserService {
-  getAllPositiveCoins(guildId: Snowflake): Promise<UserModel[]>;
+	getAllPositiveCoins(guildId: Snowflake): Promise<UserModel[]>;
 
-  getUsersLeveling(guildId: Snowflake): Promise<UserModel[]>;
+	getUsersLeveling(guildId: Snowflake): Promise<UserModel[]>;
 
-  update(
-    id: Snowflake,
-    guildDataId: Snowflake,
-    data: Omit<UserCreationAttributes, "guildId" | "userId">,
-    transaction?: Transaction
-  ): Promise<number | UserModel[] | undefined>;
+	update(
+		id: Snowflake,
+		guildDataId: Snowflake,
+		data: Omit<UserCreationAttributes, "guildId" | "userId">,
+		transaction?: Transaction
+	): Promise<number | UserModel[] | undefined>;
 
-  create(
-    userId: Snowflake,
-    guildId: Snowflake,
-    data?: UserCreationAttributes
-  ): Promise<UserModel | undefined>;
+	create(
+		userId: Snowflake,
+		guildId: Snowflake,
+		data?: UserCreationAttributes
+	): Promise<UserModel | undefined>;
 
-  findOne(userId: Snowflake, guildId: Snowflake): Promise<UserModel | null>;
+	findOne(userId: Snowflake, guildId: Snowflake): Promise<UserModel | null>;
 
-  findOneOrCreate(
-    userId: Snowflake,
-    guildId: Snowflake,
-    data?: UserCreationAttributes
-  ): Promise<UserModel>;
+	findOneOrCreate(
+		userId: Snowflake,
+		guildId: Snowflake,
+		data?: UserCreationAttributes
+	): Promise<UserModel>;
 
-  bulkUpdateOrCreate(...models: UserCreationAttributes[]): Promise<UserModel[]>;
+	bulkUpdateOrCreate(
+		...models: UserCreationAttributes[]
+	): Promise<UserModel[]>;
 }
-
-// TODO: cache refactor
-
-const CACHE_BUILDER = (args: any[]) => `${args[0]}:${args[1]}`;
-const BULK_CACHE_BUILDER = (models: any[]) =>
-  (models as UserAttributes[]).map(
-    ({ userId, guildId }) => `${userId}:${guildId}`
-  );
 
 @Singleton
 @OnlyInstantiableByContainer
 export default class UserService implements IUserService {
-  @CacheClear({
-    cacheKey: CACHE_BUILDER,
-  })
-  async update(
-    userId: Snowflake,
-    guildId: Snowflake,
-    data: Omit<UserCreationAttributes, "guildId" | "userId">,
-    transaction?: Transaction
-  ) {
-    return (
-      await UserModel.update(data, {
-        where: {
-          [Op.and]: {
-            guildId,
-            userId,
-          },
-        },
-        transaction,
-      })
-    ).shift();
-  }
+	@CacheClear({
+		cacheKey: (args: any[]) => args[0],
+		hashKey: (args) => args[1],
+	})
+	public async update(
+		userId: Snowflake,
+		guildId: Snowflake,
+		data: Omit<UserCreationAttributes, "guildId" | "userId">,
+		transaction?: Transaction
+	) {
+		return (
+			await UserModel.update(data, {
+				where: {
+					[Op.and]: {
+						guildId,
+						userId,
+					},
+				},
+				transaction,
+			})
+		).shift();
+	}
 
-  async create(
-    userId: Snowflake,
-    guildId: Snowflake,
-    data?: UserCreationAttributes
-  ) {
-    return UserModel.create({
-      ...{ userId, guildId },
-      ...data,
-    });
-  }
+	public async create(
+		userId: Snowflake,
+		guildId: Snowflake,
+		data?: UserCreationAttributes
+	) {
+		return UserModel.create({
+			...{ userId, guildId },
+			...data,
+		});
+	}
 
-  @Cacheable({
-    cacheKey: CACHE_BUILDER,
-    ttlSeconds: 60,
-  })
-  async findOneOrCreate(
-    userId: Snowflake,
-    guildId: Snowflake,
-    data?: UserCreationAttributes
-  ) {
-    const [m] = await UserModel.findOrCreate({
-      where: {
-        [Op.and]: {
-          userId,
-          guildId,
-        },
-      },
-      defaults: { ...data, guildId, userId } as UserCreationAttributes,
-    });
+	@Cacheable({
+		cacheKey: (args) => args[0],
+		hashKey: (args) => args[1],
+		ttlSeconds: 120,
+	})
+	public async findOneOrCreate(
+		userId: Snowflake,
+		guildId: Snowflake,
+		data?: UserCreationAttributes
+	) {
+		const [m] = await UserModel.findOrCreate({
+			where: {
+				[Op.and]: {
+					userId,
+					guildId,
+				},
+			},
+			defaults: { ...data, guildId, userId } as UserCreationAttributes,
+		});
 
-    return m;
-  }
+		return m;
+	}
 
-  @Cacheable({
-    cacheKey: CACHE_BUILDER,
-    ttlSeconds: 60,
-  })
-  async findOne(
-    userId: Snowflake,
-    guildId: Snowflake
-  ): Promise<UserModel | null> {
-    return await UserModel.findOne({
-      where: {
-        [Op.and]: {
-          userId,
-          guildId,
-        },
-      },
-    });
-  }
+	@Cacheable({
+		cacheKey: (args) => `${args[0]}`,
+		hashKey: (args) => `${args[1]}`,
+		ttlSeconds: 120,
+	})
+	public async findOne(
+		userId: Snowflake,
+		guildId: Snowflake
+	): Promise<UserModel | null> {
+		return UserModel.findOne({
+			where: {
+				userId,
+				guildId,
+			},
+		});
+	}
 
-  @CacheClear({
-    cacheKey: BULK_CACHE_BUILDER,
-  })
-  async bulkUpdateOrCreate(...models: UserCreationAttributes[]) {
-    return await UserModel.bulkCreate(models, {
-      updateOnDuplicate: ["experience", "level"],
-      fields: ["guildId", "userId", "experience", "level"], // Fields to insert
-    });
-  }
+	@CacheClear({
+		cacheKey: (models: any[]) =>
+			(models as UserCreationAttributes[]).map(({ userId }) => userId),
+	})
+	public async bulkUpdateOrCreate(...models: UserCreationAttributes[]) {
+		return UserModel.bulkCreate(models, {
+			updateOnDuplicate: ["experience", "level"],
+			fields: ["guildId", "userId", "experience", "level"], // Fields to insert
+		});
+	}
 
-  @Cacheable({
-    cacheKey: (args: any[]) => args[0],
-    hashKey: "all-positive-coins",
-    ttlSeconds: 600,
-  })
-  async getAllPositiveCoins(guildId: Snowflake): Promise<UserModel[]> {
-    return UserModel.findAll({
-      where: {
-        [Op.and]: {
-          coins: {
-            [Op.gt]: 0,
-          },
-          guildId,
-        },
-      },
-      order: [["coins", "DESC"]],
-    });
-  }
+	@Cacheable({
+		cacheKey: (args: any[]) => args[0],
+		hashKey: "all-positive-coins",
+		ttlSeconds: 600,
+	})
+	public async getAllPositiveCoins(guildId: Snowflake): Promise<UserModel[]> {
+		return UserModel.findAll({
+			where: {
+				[Op.and]: {
+					coins: {
+						[Op.gt]: 0,
+					},
+					guildId,
+				},
+			},
+			order: [["coins", "DESC"]],
+		});
+	}
 
-  async getUsersLeveling(guildId: Snowflake): Promise<UserModel[]> {
-    return UserModel.findAll({
-      where: {
-        guildId,
-      },
-      order: [
-        ["level", "DESC"],
-        ["experience", "DESC"],
-      ],
-    });
-  }
+	public async getUsersLeveling(guildId: Snowflake): Promise<UserModel[]> {
+		return UserModel.findAll({
+			where: {
+				guildId,
+			},
+			order: [
+				["level", "DESC"],
+				["experience", "DESC"],
+			],
+		});
+	}
 }

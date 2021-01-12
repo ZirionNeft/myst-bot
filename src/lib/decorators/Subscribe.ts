@@ -1,10 +1,14 @@
 import { Container } from "typescript-ioc";
-import EventManager, { BusinessEvent } from "../structures/EventManager";
+import EventBus, { BusinessEvent } from "../structures/EventBus";
 
 export function Subscribe(event: BusinessEvent) {
-  const eventManager = Container.get(EventManager);
+	const eventManager = Container.get(EventBus);
 
-  return (target: Object, key?: string, descriptor?: PropertyDescriptor) => {
-    eventManager.subscribe(event, descriptor?.value);
-  };
+	return (
+		_target: unknown,
+		_key?: string,
+		descriptor?: PropertyDescriptor
+	) => {
+		eventManager.subscribe(event, descriptor?.value);
+	};
 }

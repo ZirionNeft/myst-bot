@@ -1,5 +1,5 @@
-export { default as GuildModel } from "./Guild.model";
-export { default as EmojiModel } from "./Emoji.model";
-export { default as UserModel } from "./User.model";
-export { default as SettingModel } from "./Setting.model";
-export { default as PermissionModel } from "./Permission.model";
+export * from "./Guild.model";
+export * from "./Emoji.model";
+export * from "./User.model";
+export * from "./Setting.model";
+export * from "./Permission.model";

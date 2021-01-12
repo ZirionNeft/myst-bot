@@ -1,77 +1,76 @@
-import { Snowflake } from "discord.js";
+import type { Snowflake } from "discord.js";
 import { Cacheable, CacheClear } from "@type-cacheable/core";
 import { OnlyInstantiableByContainer, Singleton } from "typescript-ioc";
 import { Transaction } from "sequelize";
-import GuildModel, {
-  GuildCreationAttributes,
-} from "../database/models/Guild.model";
+import { GuildModel, GuildCreationAttributes } from "../database/models";
 
 export interface IGuildService {
-  findOne(id: Snowflake): Promise<GuildModel | null>;
+	findOne(id: Snowflake): Promise<GuildModel | null>;
 
-  create(id: Snowflake, data?: GuildCreationAttributes): Promise<GuildModel>;
+	create(id: Snowflake, data?: GuildCreationAttributes): Promise<GuildModel>;
 
-  findOneOrCreate(
-    id: Snowflake,
-    data?: GuildCreationAttributes
-  ): Promise<GuildModel>;
+	findOneOrCreate(
+		id: Snowflake,
+		data?: GuildCreationAttributes
+	): Promise<GuildModel>;
 
-  update(
-    id: Snowflake,
-    data: Omit<GuildCreationAttributes, "guildId">,
-    transaction?: Transaction
-  ): Promise<number | GuildModel[] | undefined>;
+	update(
+		id: Snowflake,
+		data: Omit<GuildCreationAttributes, "guildId">,
+		transaction?: Transaction
+	): Promise<number | GuildModel[] | undefined>;
 }
 
-const CACHE_BUILDER = (args: any[]) => args[0];
-
-// TODO: cache refactor
+// TODO: need refactor for methods arguments
 
 @Singleton
 @OnlyInstantiableByContainer
 export default class GuildService implements IGuildService {
-  @CacheClear({
-    cacheKey: CACHE_BUILDER,
-  })
-  async update(
-    id: Snowflake,
-    data: Omit<GuildCreationAttributes, "guildId">,
-    transaction?: Transaction
-  ) {
-    return (
-      await GuildModel.update(data, {
-        where: {
-          guildId: id,
-        },
-        transaction,
-      })
-    ).shift();
-  }
+	@CacheClear({
+		cacheKey: (args) => args[0],
+	})
+	public async update(
+		id: Snowflake,
+		data: Omit<GuildCreationAttributes, "guildId">,
+		transaction?: Transaction
+	) {
+		return (
+			await GuildModel.update(data, {
+				where: {
+					guildId: id,
+				},
+				transaction,
+			})
+		).shift();
+	}
 
-  async create(id: Snowflake, data?: GuildCreationAttributes) {
-    return await GuildModel.create({
-      ...{ guildId: id },
-      ...data,
-    });
-  }
+	public async create(id: Snowflake, data?: GuildCreationAttributes) {
+		return GuildModel.create({
+			...{ guildId: id },
+			...data,
+		});
+	}
 
-  @Cacheable({ cacheKey: CACHE_BUILDER, ttlSeconds: 60 })
-  async findOneOrCreate(id: Snowflake, data?: GuildCreationAttributes) {
-    const [m] = await GuildModel.findCreateFind({
-      where: {
-        guildId: id,
-      },
-      defaults: { ...data, guildId: id } as GuildCreationAttributes,
-    });
-    return m;
-  }
+	@Cacheable({ cacheKey: (args) => args[0], ttlSeconds: 120 })
+	public async findOneOrCreate(
+		id: Snowflake,
+		data?: GuildCreationAttributes
+	) {
+		const [m] = await GuildModel.findCreateFind({
+			where: {
+				guildId: id,
+			},
+			defaults: { ...data, guildId: id } as GuildCreationAttributes,
+		});
+		return m;
+	}
 
-  @Cacheable({ cacheKey: CACHE_BUILDER, ttlSeconds: 60 })
-  async findOne(id: Snowflake): Promise<GuildModel | null> {
-    return await GuildModel.findOne({
-      where: {
-        guildId: id,
-      },
-    });
-  }
+	@Cacheable({ cacheKey: (args) => args[0], ttlSeconds: 120 })
+	public async findOne(id: Snowflake): Promise<GuildModel | null> {
+		return GuildModel.findOne({
+			where: {
+				guildId: id,
+			},
+		});
+	}
 }
